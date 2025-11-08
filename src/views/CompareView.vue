@@ -53,7 +53,7 @@ const showedSections = ref({
   Upgrades: true
 })
 
-const sectionLabels = { Defense: "HP & cost" }
+const sectionLabels = { Defense: "Def & cost" }
 
 onMounted(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
@@ -115,7 +115,7 @@ const contenders = computed(() => ids.value
           background: rgba(255, 255, 255, 0.15)
 
   &__unitlist
-    padding-top: 10px
+    padding: 10px 0
     flex-grow: 1
     >*
       flex-grow: 0 !important
