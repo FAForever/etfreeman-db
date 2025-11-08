@@ -65,6 +65,7 @@ async function generate() {
 
   console.log(`\nParsing ${blueprints.length} blueprints...`);
   const units = [];
+  const exceptions = new Set(['SRL0310']) // Pulsar
 
   for (const bp of blueprints) {
     try {
@@ -75,14 +76,15 @@ async function generate() {
         c === 'OPERATION' || c === 'CIVILIAN' || c === 'CIVILLIAN' ||
         c === 'INSIGNIFICANTUNIT' || c === 'UNTARGETABLE' || c === 'UNSELECTABLE'
       );
+      
+      if (isCampaign || exceptions.has(data.Id)) continue;
 
-      if (!isCampaign) {
-        if (!data.General) data.General = {};
-        if (!data.General.Classification) {
-          data.General.Classification = deriveClassification(data.Categories);
-        }
-        units.push(data);
+      if (!data.General) data.General = {};
+      if (!data.General.Classification) {
+        data.General.Classification = deriveClassification(data.Categories);
       }
+      units.push(data);
+
     } catch (error) {
       console.error(`  ✗ ${bp.id}: ${error.message}`);
     }
