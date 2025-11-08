@@ -31,6 +31,7 @@ export const factionIdLookup = {
 }
 
 export const detailedClassificationById = {
+  'ZEB9601': 'T3 Land Factory',
   'XEB0204': 'T2 Engineering Station',
   'UEL0401': 'Direct Fire Experimental',
   'UAL0401': 'Direct Fire Experimental',
@@ -118,8 +119,8 @@ export const detailedClassificationById = {
 }
 
 export const categoryDefinitions = {
-  'Construction - Buildpower': ['T1 Engineer', 'T2 Engineer', 'T2 Field Engineer', 'T3 Engineer', 'T3 Support Armored Command Unit', 'Armored Command Unit', 'ACU Engineering Drone', 'T1 Engineering Drone', 'T2 Engineering Station', 'T3 Engineering Station'],
-  'Land': ['T1 Bot/Tank', 'T1 Light Assault Bot', 'T1 Light Assault Vehicle', 'T1 Mobile Light Artillery', 'T1 Tank Destroyer', 'T1 Mobile Anti-Air', 'T1 Land Scout', 'T2 Heavy Tank', 'T2 Hover Tank', 'T2 EMP Tank', 'T2 Amphibious Tank', 'T2 Bot', 'T2 Mobile Missile Launcher', 'T2 Mobile Anti-Air', 'T2 Mobile Shield Generator', 'T2 Mobile Stealth Field System', 'T2 Mobile Bomb', 'T2 Crab Egg (Flak)', 'T3 Main Assault Bot/Tank', 'T3 Assault Bot', 'T3 Sniper Bot', 'T3 Mobile Heavy Artillery', 'T3 Mobile Missile Platform', 'T3 Mobile Anti-Air', 'T3 Mobile Shield Generator', 'T3 Shield Disruptor', 'T3 Crab Egg (Engineer)', 'T3 Crab Egg (Brick)', 'T3 Crab Egg (Artillery)'],
+  'Construction - Buildpower': ['T1 Engineer', 'T2 Engineer', 'T2 Field Engineer', 'T3 Engineer', 'T3 Support Armored Command Unit', 'Armored Command Unit', 'ACU Engineering Drone', 'T1 Engineering Drone', 'T2 Engineering Drone', 'T2 Engineering Station', 'T3 Engineering Station'],
+  'Land': ['T1 Bot/Tank', 'T1 Light Assault Bot', 'T1 Light Assault Vehicle', 'T1 Mobile Light Artillery', 'T1 Tank Destroyer', 'T1 Mobile Anti-Air', 'T1 Land Scout', 'T2 Heavy Tank', 'T2 Hover Tank', 'T2 EMP Tank', 'T2 Amphibious Tank', 'T2 Bot', 'T2 Mobile Missile Launcher', 'T2 Mobile Anti-Air', 'T2 Mobile Shield Generator', 'T2 Mobile Stealth Field System', 'T2 Mobile Bomb', 'T2 Crab Egg (Flak)', 'T3 Main Assault Bot/Tank', 'T3 Assault Bot', 'T3 Sniper Bot', 'T3 Mobile Heavy Artillery', 'T3 Mobile Missile Platform', 'T3 Mobile Anti-Air', 'T3 Mobile Shield Generator', 'T3 Shield Disruptor', 'T3 Crab Egg (Engineer)', 'T3 Crab Egg (Brick)', 'T3 Crab Egg (Artillery)', 'T3 Crab Egg (Bouncer)'],
   'Air': ['T1 Interceptor', 'T1 Attack Bomber', 'T1 Light Gunship', 'T1 Air Scout', 'T1 Light Air Transport', 'T2 Combat Fighter', 'T2 Fighter/Bomber', 'T2 Gunship', 'T2 Torpedo Bomber', 'T2 Guided Missile', 'T2 Air Transport', 'T3 Air Superiority Fighter', 'T3 Strategic Bomber', 'T3 Heavy Gunship', 'T3 Anti-Air Gunship', 'T3 Torpedo Bomber', 'T3 Spy Plane', 'T3 Heavy Air Transport'],
   'Naval': ['T1 Attack Submarine', 'T1 Frigate', 'T1 Anti-Air Boat', 'T2 Submarine', 'T2 Destroyer', 'T2 Cruiser', 'T2 Torpedo Boat', 'T2 Shield Boat', 'T2 Counter-Intelligence Boat', 'T3 Submarine Hunter', 'T3 Battleship', 'T3 Strategic Missile Submarine', 'T3 Tactical Submarine', 'T3 Aircraft Carrier', 'T3 Battlecruiser', 'T3 Missile Ship'],
   'Experimental': ['Direct Fire Experimental', 'Air Experimental', 'Naval Experimental', 'Indirect Fire Experimental', 'Other Experimental'],

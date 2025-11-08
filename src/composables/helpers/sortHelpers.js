@@ -12,6 +12,6 @@ export const sortByUnitNumber = (units, order = 'asc') => {
   const multiplier = order === 'desc' ? -1 : 1
   return units
     .map(unit => ({ unit, num: getUnitNumber(unit.id) }))
-    .sort((a, b) => multiplier * a.num.localeCompare(b.num))
+    .sort((a, b) => multiplier * (a.num - b.num))
     .map(item => item.unit)
 }
