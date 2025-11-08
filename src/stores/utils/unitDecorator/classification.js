@@ -58,6 +58,6 @@ export const getSortOrder = (bp) => {
   const techNumber = getTechNumber(tech)
   const classification = classificationLookup[bp.General?.Classification] || 'Unknown'
   const classOrder = getClassificationOrder(classification)
-  const unitNum = parseInt(getUnitNumber(bp.Id), 10) || 0
+  const unitNum = getUnitNumber(bp.Id) || 0
   return techNumber * 100000 + classOrder * 10000 + unitNum
 }

@@ -6,5 +6,10 @@ src/public/data/index.json
 src/public/data/index.fat.json
 src/public/data/version.json
 
+# Generated sprite sheets
+src/public/img/ui.png
+src/public/img/strategic.png
+src/public/img/units.png
+
 # Generator cache
 tools/generator/cached_blueprints/

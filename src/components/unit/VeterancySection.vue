@@ -2,7 +2,7 @@
   <tbody v-if="veteran">
     <tr v-for="lv in [1, 2, 3, 4, 5]" :key="lv" :class="{ 'unit-details__sec': lv === 1, 'unit-details__sec-end': lv === 5 }">
       <td>{{ lv == 1? 'Veterancy':''}}</td>
-      <td :title="'kills'"><span class="sm">{{ veteran[`Level${lv}`] }}</span></td>
+      <td :title="'lvl'"><span class="sm">{{ lv }}</span></td>
       <td :title="`${roundVal(defense.Health * (1 + lv * 0.1))}hp health`">
         <span class="sm">{{ shorten(roundVal(defense.Health * (1 + lv * 0.1))) }} hp</span>
       </td>
