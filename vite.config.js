@@ -40,7 +40,7 @@ export default defineConfig(({ command }) => ({
       ]
     })
   ],
-  base: process.env.GITHUB_ACTIONS ? '/faf-unit-database/' : '/',
+  base: process.env.GITHUB_ACTIONS ? '/etfreeman-db/' : '/',
   root: './src',
   publicDir: 'public',
   build: {
