@@ -1,26 +1,28 @@
 <template>
   <div class="home">
-    <div class="home__byclass">
-      <div v-for="baseGroup in groupedByBase" :key="baseGroup.baseClass" class="home__byclass-base">
-        <h1 class="home__byclass-base-title">{{ baseGroup.baseClass }}</h1>
-        <section v-for="classGroup in baseGroup.classifications" :key="classGroup.classification" class="home__byclass-section">
-          <div v-for="faction in effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
-            <ThumbComponent
-              v-for="unit in classGroup.unitsByFaction[faction]"
-              :key="unit.id"
-              :item="unit"
-              :mini="true"
-              @unit-click="handleUnitClick"
-            />
-          </div>
-          <h2 class="home__byclass-section-title">
-            <a class="calm" @click="toggleUnitsOfTheSameClass(classGroup.classification)">
-              {{ classGroup.classification }}
-            </a>
-          </h2>
-        </section>
-      </div>
-    </div>
+    <MasonryWall class="home__byclass" :items="groupedByBase" :column-width="320" :gap="10" :padding="10">
+      <template #default="{ item: baseGroup }">
+        <div class="home__byclass-base">
+          <h1 class="home__byclass-base-title">{{ baseGroup.baseClass }}</h1>
+          <section v-for="classGroup in baseGroup.classifications" :key="classGroup.classification" class="home__byclass-section">
+            <div v-for="faction in effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
+              <ThumbComponent
+                v-for="unit in classGroup.unitsByFaction[faction]"
+                :key="unit.id"
+                :item="unit"
+                :mini="true"
+                @unit-click="handleUnitClick"
+              />
+            </div>
+            <h2 class="home__byclass-section-title">
+              <a class="calm" @click="toggleUnitsOfTheSameClass(classGroup.classification)">
+                {{ classGroup.classification }}
+              </a>
+            </h2>
+          </section>
+        </div>
+      </template>
+    </MasonryWall>
     <FiltersComponent class="home__filters" />
   </div>
   <AppFooter />
@@ -32,6 +34,7 @@ import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useUnitGrouping } from '../composables/useUnitGrouping.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
+import MasonryWall from '@yeger/vue-masonry-wall'
 import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 import AppFooter from '../components/AppFooter.vue'
@@ -53,12 +56,9 @@ const toggleUnitsOfTheSameClass = (classification) => {
 <style lang="sass">
 .home
   &__byclass
-    display: flex
-    flex-wrap: wrap
-    gap: 10px
     padding: 10px
-    align-items: flex-start
-
+    flex-grow: 1
+    
   &__byclass-base
     display: block
     background: rgba(0,0,0,.5)
@@ -82,6 +82,7 @@ const toggleUnitsOfTheSameClass = (classification) => {
     font-family: 'Muli', Verdana, Arial, sans-serif
 
   &__byclass-faction
+    flex-shrink: 0
     min-height: 21px
     width: 24px
     display: block
