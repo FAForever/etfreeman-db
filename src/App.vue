@@ -48,9 +48,6 @@ a
   .#{$name}
     background-color: $color
 
-.invisible
-  visibility: hidden
-
 .pe-none
   pointer-events: none
 

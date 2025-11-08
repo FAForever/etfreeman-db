@@ -22,6 +22,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
+import { getUnitNumber } from '../composables/helpers/unitIdParser.js'
 import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 import AppFooter from '../components/AppFooter.vue'
@@ -33,9 +34,9 @@ const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contender
 const classifications = ['Build', 'Base', 'Land', 'Air', 'Naval']
 
 function getUnitsForFactionAndClass(faction, classification) {
-  return visibleUnits.value.filter(unit =>
-    unit.faction === faction && unit.classification === classification
-  )
+  return visibleUnits.value
+    .filter(unit => unit.faction === faction && unit.classification === classification)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
 }
 </script>
 

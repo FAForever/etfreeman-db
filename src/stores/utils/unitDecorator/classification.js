@@ -1,8 +1,10 @@
 import {
   techLookup,
+  classificationLookup,
   detailedClassificationById,
   categoryDefinitions
 } from './lookups.js'
+import { getUnitNumber } from '../../../composables/helpers/unitIdParser.js'
 
 export const getTech = (bp) => {
   if (!bp.Categories) return ''
@@ -41,7 +43,21 @@ export const getCategoryWithOrder = (bp) => {
 
 export const getCategory = (bp) => getCategoryWithOrder(bp)[0]
 
+const getTechNumber = (techString) => {
+  const techMap = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4 }
+  return techMap[techString] || 0
+}
+
+const getClassificationOrder = (classification) => {
+  const classMap = { 'Build': 1, 'Base': 2, 'Land': 3, 'Air': 4, 'Naval': 5 }
+  return classMap[classification] || 99
+}
+
 export const getSortOrder = (bp) => {
-  const [, outerOrder, innerOrder] = getCategoryWithOrder(bp)
-  return outerOrder * 100 + innerOrder
+  const tech = getTech(bp)
+  const techNumber = getTechNumber(tech)
+  const classification = classificationLookup[bp.General?.Classification] || 'Unknown'
+  const classOrder = getClassificationOrder(classification)
+  const unitNum = parseInt(getUnitNumber(bp.Id), 10) || 0
+  return techNumber * 100000 + classOrder * 10000 + unitNum
 }

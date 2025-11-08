@@ -65,7 +65,7 @@ async function generate() {
 
   console.log(`\nParsing ${blueprints.length} blueprints...`);
   const units = [];
-  const exceptions = new Set(['SRL0310']) // Pulsar
+  const exceptions = new Set(['SRL0310', 'XRB2309', 'URB3103', 'UEB5204', 'URB5204', 'UAB5204','UXL0021'])
 
   for (const bp of blueprints) {
     try {
@@ -73,10 +73,9 @@ async function generate() {
       data.Id = bp.id;
 
       const isCampaign = data.Categories?.some(c =>
-        c === 'OPERATION' || c === 'CIVILIAN' || c === 'CIVILLIAN' ||
-        c === 'INSIGNIFICANTUNIT' || c === 'UNTARGETABLE' || c === 'UNSELECTABLE'
+        ['OPERATION', 'CIVILIAN', 'CIVILLIAN', 'INSIGNIFICANTUNIT', 'UNTARGETABLE', 'UNSELECTABLE','TELEPORTBEACON'].includes(c)
       );
-      
+
       if (isCampaign || exceptions.has(data.Id)) continue;
 
       if (!data.General) data.General = {};
