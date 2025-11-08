@@ -66,6 +66,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const clearSelection = () => {
     units.value.forEach(unit => unit.selected = false)
     contenders.value.length = 0
+    textFilter.value = ''
   }
 
   const loadData = () => {
