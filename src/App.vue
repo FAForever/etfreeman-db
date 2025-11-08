@@ -56,4 +56,10 @@ a
 
 .w-fc
   width: fit-content
+
+.ta-c
+  text-align: center
+
+.w-100
+  width: 100%
 </style>

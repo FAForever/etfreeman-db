@@ -102,13 +102,13 @@ const weaponStats = (w) => {
   })
   if (w.TurretPitchRange) stats.push({
     label: 'Turret pitch',
-    value: `${w.TurretPitch}~${w.TurretPitchRange}° @&nbsp;${w.TurretPitchSpeed}°/s`,
-    title: 'min ~ max @ speed'
+    value: `${w.TurretPitch}~${w.TurretPitchRange}° |&nbsp;${w.TurretPitchSpeed}°/s`,
+    title: 'min ~ max | speed'
   })
   if (w.TurretYawRange) stats.push({
     label: 'Turret yaw',
-    value: `${w.TurretYaw}~${w.TurretYawRange}° @&nbsp;${w.TurretYawSpeed}°/s`,
-    title: 'min ~ max @ speed'
+    value: `${w.TurretYaw}~${w.TurretYawRange}° |&nbsp;${w.TurretYawSpeed}°/s`,
+    title: 'min ~ max | speed'
   })
   if (w.FiringTolerance) stats.push({ label: 'Firing Tolerance', value: w.FiringTolerance })
   if (w.FiringRandomness) stats.push({ label: 'Firing Randomness', value: w.FiringRandomness })
