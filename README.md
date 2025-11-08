@@ -1,6 +1,8 @@
 # FAF Unit Database
 
-Web-based unit database for Forged Alliance Forever (FAF). Rewrite of the [original spooky-db](https://github.com/FAForever/spooky-db).
+Web-based unit database for Forged Alliance Forever (FAF).  
+Check it out [here](https://faforever.github.io/etfreeman-db/#/)  
+Rewrite of the [original spooky-db](https://github.com/FAForever/spooky-db).  
 
 ## Tech Stack
 
