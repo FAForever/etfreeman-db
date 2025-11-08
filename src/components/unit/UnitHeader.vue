@@ -4,12 +4,21 @@
       <span :class="['strategic', 'icon_strategic', `icon-${unit.faction}_${unit.strategicIcon}`]"></span>
     </span>
     <h1 class="unit-details__title">{{ unit.fullName }}</h1>
-    <a class="calm sm w-fc" :href="`https://github.com/FAForever/fa/blob/deploy/fafdevelop/units/${unit.id}/${unit.id}_unit.bp`" target="_blank">
+    <a class="calm sm w-fc" :href="blueprintUrl" target="_blank">
       {{ unit.id }}
     </a>
   </header>
 </template>
 
 <script setup>
-defineProps(['unit'])
+import { computed } from 'vue'
+
+const props = defineProps(['unit'])
+
+const blueprintUrl = computed(() => {
+  const isNomads = props.unit.faction?.toLowerCase() === 'nomads'
+  const repo = isNomads ? 'nomads' : 'fa'
+  const branch = isNomads ? 'master' : 'deploy/fafdevelop'
+  return `https://github.com/FAForever/${repo}/blob/${branch}/units/${props.unit.id}/${props.unit.id}_unit.bp`
+})
 </script>
