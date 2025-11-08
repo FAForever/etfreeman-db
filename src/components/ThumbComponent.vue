@@ -35,7 +35,6 @@ function handleClick(event) {
   position: relative
   display: block
   border-radius: 3px
-  margin-bottom: 1px
   width: auto
   height: auto
   aspect-ratio: 1

@@ -57,12 +57,13 @@ function getUnitsForFactionAndClass(faction, classification) {
     display: grid
     grid-template-columns: repeat(calc(var(--factionCount) * 5), 1fr)
     flex-grow: 1
-    max-width: calc(var(--factionCount) * 5 * 64px)
+    gap: 0 1px
+    max-width: calc(var(--factionCount) * 5 * 64px + (var(--factionCount) * 5 - 1) * 1px)
 
   &__faction-header
     order: -1
     grid-column: span 5
-    margin: 0 0 3px
+    margin: 0 0 1px
     padding: 0.67em 0
     background: no-repeat right top
     padding-left: 0.33em
@@ -74,4 +75,5 @@ function getUnitsForFactionAndClass(faction, classification) {
   &__kind
     display: flex
     flex-direction: column
+    gap: 1px
 </style>
