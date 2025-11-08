@@ -145,11 +145,20 @@ function filterProps(obj, props) {
   const filtered = {};
   for (const prop of props) {
     if (obj.hasOwnProperty(prop)) {
-      filtered[prop] = obj[prop];
+      if (prop === 'Weapon' && Array.isArray(obj[prop])) {
+        filtered[prop] = obj[prop].map(cleanWeapon);
+      } else {
+        filtered[prop] = obj[prop];
+      }
     }
   }
   if (obj.Id) filtered.Id = obj.Id;
   return filtered;
+}
+
+function cleanWeapon(weapon) {
+  const { Audio, Effects, WeaponUnpackAnimation, WeaponUnpacks, WeaponRepackTimeout, ...rest } = weapon;
+  return rest;
 }
 
 generate().catch(error => {
