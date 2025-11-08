@@ -1,9 +1,10 @@
 <template>
   <tbody>
-    <tr>
+    <tr class="unit-details__firstline">
       <td :title="`${defense?.Health} hp`">
         <span title="health" class="unit-details__ic icon_ui icon-health"></span>{{ shorten(defense?.Health) }}
-        <span v-if="defense?.RegenRate" class="sm">&nbsp;({{ defense.RegenRate }}hp/s)</span>
+        <br />
+        <div v-if="defense?.RegenRate" class="sm ta-c w-100">(+{{ defense.RegenRate }}hp/s)</div>
       </td>
       <td :title="economy?.BuildCostMass">
         <span title="mass" class="unit-details__ic icon_ui icon-mass"></span>{{ shorten(economy?.BuildCostMass) }}

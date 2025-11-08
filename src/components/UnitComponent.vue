@@ -66,6 +66,9 @@ const hasEconomy = computed(() => {
     grid-row: span 2
     width: 64px
 
+  & &__firstline td
+    padding-bottom: 5px
+
   &__title
     margin: 0 0 2px
     padding: 0
@@ -79,7 +82,9 @@ const hasEconomy = computed(() => {
   &__table
     width: calc(100% + 10px)
     margin: 0 -5px
+    min-width: min-content !important
     td
+      min-width: min-content !important
       padding: 0 5px
 
     tbody:nth-child(even) tr
@@ -101,6 +106,8 @@ const hasEconomy = computed(() => {
     td
       border-top: 1px solid rgba(255, 255, 255, .2)
       padding-top: 7px
+      &:first-child
+        white-space: normal
     &_spaced td
       padding-bottom: 8px
   &__sec-end td

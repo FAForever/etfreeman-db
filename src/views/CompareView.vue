@@ -13,7 +13,7 @@
         </li>
       </ul>
     </aside>
-    <MasonryWall class="compare__unitlist" :items="contenders" :column-width="320" :gap="10" :padding="10">
+    <MasonryWall class="compare__unitlist" :items="contenders" :column-width="345" :gap="10" :padding="10">
       <template #default="{ item: u }">
         <UnitComponent
           :unit="u"
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
