@@ -72,7 +72,7 @@ const hasEconomy = computed(() => {
     font-size: 1.3em
     font-weight: normal
 
-  &__minititle
+  & &__minititle
     font-weight: 600
     padding-bottom: 4px
 
