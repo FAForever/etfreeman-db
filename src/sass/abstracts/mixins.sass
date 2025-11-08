@@ -1,0 +1,69 @@
+@mixin for-tablet()
+  @media (max-width: 1280px)
+    @content
+
+@mixin for-med()
+  @media (max-width: 991.98px)
+    @content
+
+@mixin for-mob()
+  @media (max-width: 767.98px)
+    @content
+
+@mixin for-notmob()
+  @media (min-width: 768px)
+    @content
+
+@mixin for-nano()
+  @media (max-width: 500px)
+    @content    
+
+@mixin from($width)
+  @media (max-width: $width)
+    @content
+    
+@mixin since($width)
+  @media (min-width: $width)
+    @content
+
+@mixin between($w1, $w2)
+  @media (min-width: $w1) and (max-width: $w2)
+    @content
+
+@mixin stroke($color)
+  text-shadow: 1px 1px 0px $color, 1px -1px 0 $color, -1px 1px 0 $color, -1px -1px 0 $color
+
+@mixin color-mask($color)
+  &::after
+    content: ''
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background-color: $color
+
+@mixin smoothFont($res1, $res2, $min, $max)
+  @include between(#{$res1}px, #{$res2}px)
+    font-size: calc(#{$min}px + (100vw - #{$res1}px)  / #{$res2 - $res1} * (#{$max - $min}))
+
+@mixin adaptiveFont($res, $min, $max)
+  @include from(#{$res}px)
+    font-size: calc(#{$min}px + (100vw - 320px)  / #{$res - 320} * (#{$max - $min}))
+
+@mixin adaptiveProperty($property, $res, $min, $max)
+  @include from(#{$res}px)
+    #{$property}: calc(#{$min}px + (100vw - 320px)  / #{$res - 320} * (#{$max - $min}))
+
+
+@mixin mobFont($min, $max)
+  @include from(globalvars.$mob)
+    font-size: calc(#{$min}px + (100vw - 320px)  / #{768 - 320} * (#{$max - $min}))
+
+@mixin limitLines($n) 
+  overflow: hidden
+  text-overflow: ellipsis
+  display: -webkit-box
+  -webkit-line-clamp: $n
+  line-clamp: $n
+  -webkit-box-orient: vertical
