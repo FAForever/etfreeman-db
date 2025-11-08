@@ -1,9 +1,9 @@
 {
-  "name": "faf-unit-database",
+  "name": "etfreeman-db",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
-  "repository": "https://github.com/FAForever/faf-unit-database",
+  "repository": "https://github.com/FAForever/etfreeman-db",
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/ui": "^3.2.4",

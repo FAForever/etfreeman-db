@@ -4,7 +4,7 @@
       <p>&copy; 2025 Forged Alliance Forever</p>
       <p>Unit Database v{{ version || '1.0' }}</p>
       <p>
-        <a class="calm" href="https://github.com/FAForever/faf-unit-database" target="_blank" rel="noopener">
+        <a class="calm" href="https://github.com/FAForever/etfreeman-db" target="_blank" rel="noopener">
           View on GitHub
         </a>
       </p>
