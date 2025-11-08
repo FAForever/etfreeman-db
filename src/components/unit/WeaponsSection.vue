@@ -40,7 +40,7 @@ const DISPLAYED_PROPS = [
   'DisplayName', 'WeaponCategory', 'DamageType', 'dps', 'Damage',
   'MaxRadius', 'MinRadius', 'DamageRadius', 'MuzzleVelocity', 'ProjectileLifetime',
   'NukeInnerRingRadius', 'NukeOuterRingRadius', 'NukeInnerRingDamage', 'NukeOuterRingDamage',
-  'BeamLifetime', 'RackFireTogether', 'ManualFire', 'MuzzleSalvoSize', 'isTML',
+  'BeamLifetime', 'RackFireTogether', 'ManualFire', 'MuzzleSalvoSize', 'ProjectilesPerOnFire', 'isTML',
   'TurretPitchRange', 'TurretPitch', 'TurretPitchSpeed',
   'TurretYawRange', 'TurretYaw', 'TurretYawSpeed',
   'FiringTolerance', 'FiringRandomness'
@@ -82,6 +82,7 @@ const weaponStats = (w) => {
   if (w.DamageRadius) stats.push({ label: 'Damage radius', value: w.DamageRadius, title: 'damage radius' })
   if (w.MuzzleVelocity) stats.push({ label: 'Muzzle velocity', value: w.MuzzleVelocity, title: 'muzzle velocity' })
   if (w.ProjectileLifetime) stats.push({ label: 'Lifetime', value: w.ProjectileLifetime, title: 'muzzle lifetime' })
+  if (w.ProjectilesPerOnFire && w.ProjectilesPerOnFire > 1) stats.push({ label: 'Projectiles/shot', value: w.ProjectilesPerOnFire, title: 'projectiles per shot' })
   if (w.NukeInnerRingRadius && w.NukeOuterRingRadius) stats.push({
     label: 'Ring radius',
     value: `${w.NukeInnerRingRadius} | ${w.NukeOuterRingRadius}`,

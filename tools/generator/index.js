@@ -107,9 +107,9 @@ async function generate() {
   const slimData = { version, units: slimUnits };
   fs.writeFileSync(
     path.join(OUTPUT_DIR, 'index.json'),
-    JSON.stringify(slimData, null, 2)
+    JSON.stringify(slimData)  // Minified (no indentation)
   );
-  console.log(`  ✓ index.json`);
+  console.log(`  ✓ index.json (minified)`);
 
   fs.writeFileSync(
     path.join(OUTPUT_DIR, 'version.json'),
