@@ -13,14 +13,14 @@
         </li>
       </ul>
     </aside>
-    <section class="compare__unitlist">
-      <UnitComponent
-        v-for="u in contenders"
-        :key="u.id"
-        :unit="u"
-        :showedSections="showedSections"
-      />
-    </section>
+    <MasonryWall class="compare__unitlist" :items="contenders" :column-width="320" :gap="10" :padding="10">
+      <template #default="{ item: u }">
+        <UnitComponent
+          :unit="u"
+          :showedSections="showedSections"
+        />
+      </template>
+    </MasonryWall>
   </div>
 </template>
 
@@ -31,6 +31,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useUnitDataStore } from '../stores/unitData.js'
 import UnitComponent from '../components/UnitComponent.vue'
+import MasonryWall from '@yeger/vue-masonry-wall'
 
 const route = useRoute()
 const router = useRouter()
@@ -114,11 +115,9 @@ const contenders = computed(() => ids.value
           background: rgba(255, 255, 255, 0.15)
 
   &__unitlist
-    padding-bottom: 0.67em
-    display: flex
-    align-items: flex-start
-    flex-wrap: wrap
-    padding-top: 5px
-    gap: 5px
+    padding-top: 10px
+    flex-grow: 1
+    >*
+      flex-grow: 0 !important
 
 </style>
