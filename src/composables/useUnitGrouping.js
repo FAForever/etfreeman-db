@@ -1,5 +1,19 @@
 import { sortWithUnknownLast, sortByUnitNumber } from './helpers/sortHelpers'
 
+const categoryOrder = {
+  'Land': 1,
+  'Air': 2,
+  'Naval': 3,
+  'Construction - Buildpower': 4,
+  'Structures - Weapons': 5,
+  'Structures - Support': 6,
+  'Structures - Intelligence': 7,
+  'Structures - Economy': 8,
+  'Structures - Factories': 9,
+  'Experimental': 10,
+  'Unknown': 99
+}
+
 export function useUnitGrouping() {
   const groupByHierarchy = (units) => {
     const baseGroups = {}
@@ -12,7 +26,7 @@ export function useUnitGrouping() {
       if (!baseGroups[baseClass]) {
         baseGroups[baseClass] = {
           baseClass,
-          sortOrder: unit.sortOrder || 0,
+          sortOrder: categoryOrder[baseClass] || 99,
           classifications: {}
         }
       }

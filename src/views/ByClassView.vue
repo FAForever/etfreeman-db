@@ -64,7 +64,6 @@ const toggleUnitsOfTheSameClass = (classification) => {
     background: rgba(0,0,0,.5)
     padding: 10px 5px 5px
     border: 1px solid rgba(255,255,255,.2)
-    margin-bottom: 3em
 
   &__byclass-base-title
     font-size: 1.3em
