@@ -116,5 +116,12 @@ function evaluateBinary(node) {
 
 function parseString(raw) {
   if (!raw) return '';
-  return raw.slice(1, -1).replace(/<LOC[^>]*>/, '');
+  let str = raw.slice(1, -1).replace(/<LOC[^>]*>/, '');
+  str = str.replace(/\\"/g, '"')
+           .replace(/\\'/g, "'")
+           .replace(/\\\\/g, '\\')
+           .replace(/\\n/g, '\n')
+           .replace(/\\r/g, '\r')
+           .replace(/\\t/g, '\t');
+  return str;
 }

@@ -1,7 +1,10 @@
 node_modules
-src/sass/generated
-dist
 .claude
+dist
+src/sass/generated
+src/public/data/index.json
+src/public/data/index.fat.json
+src/public/data/version.json
 
 # Generator cache
 tools/generator/cached_blueprints/
