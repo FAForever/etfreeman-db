@@ -53,11 +53,32 @@ const getClassificationOrder = (classification) => {
   return classMap[classification] || 99
 }
 
+export const getDisplayClassification = (bp) => {
+  const category = getCategory(bp)
+
+  if (category === 'Construction - Buildpower' || category === 'Structures - Factories') {
+    return 'Build'
+  }
+  if (category === 'Structures - Weapons' || category === 'Structures - Intelligence') {
+    return 'Defenses'
+  }
+  if (category === 'Structures - Support' || category === 'Structures - Economy') {
+    return 'Support'
+  }
+  if (category === 'Land') return 'Land'
+  if (category === 'Air') return 'Air'
+  if (category === 'Naval') return 'Naval'
+  if (category === 'Experimental') return 'Experimental'
+
+  return classificationLookup[bp.General?.Classification] || 'Unknown'
+}
+
 export const getSortOrder = (bp) => {
   const tech = getTech(bp)
   const techNumber = getTechNumber(tech)
   const classification = classificationLookup[bp.General?.Classification] || 'Unknown'
   const classOrder = getClassificationOrder(classification)
   const unitNum = getUnitNumber(bp.Id) || 0
-  return techNumber * 100000 + classOrder * 10000 + unitNum
+  const isStructure = getCategory(bp).startsWith('Structures')? 1 : 0
+  return techNumber * 100000 + classOrder * 10000 + unitNum + isStructure * 1e6
 }

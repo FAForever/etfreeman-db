@@ -5,9 +5,9 @@
         <h1 :class="['home__faction-header', `home__faction-header_${faction.toLowerCase()}`]">
           {{ faction }}
         </h1>
-        <div v-for="classification in classifications" :key="`${faction}-${classification}`"
-          :class="['home__kind', `home__kind--${classification.toLowerCase()}`]">
-          <ThumbComponent v-for="unit in getUnitsForFactionAndClass(faction, classification)" :key="unit.id"
+        <div v-for="displayClassification in displayClassifications" :key="`${faction}-${displayClassification}`"
+          :class="['home__kind', `home__kind--${displayClassification.toLowerCase()}`]">
+          <ThumbComponent v-for="unit in getUnitsForFactionAndDisplay(faction, displayClassification)" :key="unit.id"
             :item="unit" @unit-click="handleUnitClick" />
         </div>
       </template>
@@ -29,11 +29,11 @@ const router = useRouter()
 const { visibleUnits, toggleUnitSelection, contenders, effectiveVisibleFactions } = useUnitData()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 
-const classifications = ['Build', 'Base', 'Land', 'Air', 'Naval']
+const displayClassifications = ['Build', 'Support', 'Defenses', 'Land', 'Air', 'Naval']
 
-function getUnitsForFactionAndClass(faction, classification) {
+function getUnitsForFactionAndDisplay(faction, displayClassification) {
   return visibleUnits.value
-    .filter(unit => unit.faction === faction && unit.classification === classification)
+    .filter(unit => unit.faction === faction && unit.displayClassification === displayClassification)
     .sort((a, b) => a.sortOrder - b.sortOrder)
 }
 </script>
@@ -53,14 +53,14 @@ function getUnitsForFactionAndClass(faction, classification) {
 
   &__units
     display: grid
-    grid-template-columns: repeat(calc(var(--factionCount) * 5), 1fr)
+    grid-template-columns: repeat(calc(var(--factionCount) * 6), 1fr)
     flex-grow: 1
     gap: 0 1px
-    max-width: calc(var(--factionCount) * 5 * 64px + (var(--factionCount) * 5 - 1) * 1px)
+    max-width: calc(var(--factionCount) * 6 * 64px + (var(--factionCount) * 6 - 1) * 1px)
 
   &__faction-header
     order: -1
-    grid-column: span 5
+    grid-column: span 6
     margin: 0 0 1px
     padding: 0.67em 0
     background: no-repeat right top
