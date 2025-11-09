@@ -48,19 +48,20 @@ jobs:
       # website. The website is hosted on GitHub Pages and is (at the moment of writing)
       # available at:
       # - https://faforever.github.io/etfreeman-db/
-      - name: Deploy
+      - name: Check for changes
+        id: check_changes
         run: |
-          # Check for any differences between the working directory and the latest commit
-          if git diff --quiet; then
-            echo "No changes to deploy"
-            exit 0
+          git add .
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-          # Configure git
+      - name: Commit and push to gh-pages
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
           git config user.name "FAForever"
           git config user.email "admin@faforever.com"
-
-          # Stage, commit and push the changes
-          git add .
           git commit -m "Deploy etfreeman-db from main branch push"
           git push origin gh-pages
