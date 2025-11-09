@@ -54,11 +54,6 @@
       </div>
     </div>
 
-    <div class="filter-icons view-switcher">
-      <router-link to="/" title="view units by kind" :class="['icon_ui', 'icon-by_kind', { active: route.path === '/' }]"></router-link>
-      <router-link to="/by-class" title="view units by class" :class="['icon_ui', 'icon-by_class', { active: route.path === '/by-class' }]"></router-link>
-    </div>
-
     <div v-if="false" class="v2-link">
       <a href="https://faf-unitdb.web.app">try out V2! <small>(wip)</small></a>
     </div>
@@ -102,20 +97,16 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
 .filters
   flex-shrink: 0
   max-width: 153px
-  margin-left: 3px
   overflow: hidden
   display: grid
   grid-template-columns: 100%
   gap: 3px
 
   header
-    margin: 0 0 3px
-    padding: .67em 0
-    height: 75px
+    margin: 0 0 10px
     font-size: 20px
     text-align: center
     color: colors.$orange
-
     a
       font-size: 28px
       text-decoration: none
@@ -161,12 +152,6 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
     a.active:not(:hover)
       background-color: initial !important
 
-    &.view-switcher
-      grid-template-columns: repeat(3, 1fr)
-      gap: 3px
-      border-top: 1px solid white
-      margin-top: 12px
-      padding-top: 12px
 
   .icon-column
     display: flex

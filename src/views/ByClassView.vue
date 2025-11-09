@@ -1,5 +1,9 @@
 <template>
   <div class="home">
+    <div class="home__left">
+      <Header />
+      <FiltersComponent class="home__filters" />
+    </div>
     <MasonryWall class="home__byclass" :items="groupedByBase" :column-width="320" :gap="10" :padding="10">
       <template #default="{ item: baseGroup }">
         <div class="home__byclass-base">
@@ -23,9 +27,7 @@
         </div>
       </template>
     </MasonryWall>
-    <FiltersComponent class="home__filters" />
   </div>
-  <AppFooter />
 </template>
 
 <script setup>
@@ -35,9 +37,9 @@ import { useUnitData } from '../composables/useUnitData.js'
 import { useUnitGrouping } from '../composables/useUnitGrouping.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
 import MasonryWall from '@yeger/vue-masonry-wall'
+import Header from '../components/Header.vue'
 import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
-import AppFooter from '../components/AppFooter.vue'
 
 const router = useRouter()
 const { visibleUnits, toggleUnitSelection, setUnitSelection, contenders, effectiveVisibleFactions } = useUnitData()
@@ -55,10 +57,18 @@ const toggleUnitsOfTheSameClass = (classification) => {
 
 <style lang="sass">
 .home
+  width: 100%
+  display: flex
+  align-items: flex-start
+  gap: 10px
+
+  &__left
+    flex-shrink: 0
+
   &__byclass
     padding: 10px
     flex-grow: 1
-    
+
   &__byclass-base
     display: block
     background: rgba(0,0,0,.5)
