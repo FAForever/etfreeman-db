@@ -8,7 +8,7 @@ const sassDir = join(__dirname, 'src', 'sass')
 const distDir = join(__dirname, 'dist')
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command }) => ({
+export default defineConfig(() => ({
   plugins: [
     vue(),
     viteSpritesmith({
