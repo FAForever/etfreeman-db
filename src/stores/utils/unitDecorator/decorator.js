@@ -5,6 +5,7 @@ import {
   fullName,
   getDetailedClassification,
   getCategory,
+  getDisplayClassification,
   getSortOrder
 } from './classification.js'
 import { fireCycle, beamCycle, getDps, isTML } from './dps.js'
@@ -17,6 +18,7 @@ export const decorateUnit = (blueprint) => {
     faction: blueprint.General?.FactionName || '',
     factionId: factionIdLookup[blueprint.General?.FactionName] || 0,
     classification: classificationLookup[blueprint.General?.Classification] || 'Unknown',
+    displayClassification: getDisplayClassification(blueprint),
     detailedClassification: getDetailedClassification(blueprint),
     category: getCategory(blueprint),
     sortOrder: getSortOrder(blueprint),
