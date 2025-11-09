@@ -5,12 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch:
-  workflow_call:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: "pages"
@@ -18,46 +15,52 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: FAForever/etfreeman-db
-          ref: main
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate unit data
-        run: npm run generate
-
-      - name: Build
-        run: npm run build
-        env:
-          GITHUB_ACTIONS: true
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
+    uses: ./.github/workflows/build.yaml
 
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    name: Deploy to gh-pages branch
+    needs: [build]
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # https://github.com/actions/checkout/tree/v4/
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      # https://github.com/actions/download-artifact/tree/v4/
+      - name: Download recent build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: etfreeman-db-dist
+          path: ./
+
+      # Each file is given a (random) hash pre-pended to the filename to prevent caching
+      # issues. Because of that we first need to remove all existing hashed files as otherwise
+      # they will keep accumulating forever. As much as this fits the narrative of the community
+      # (Forged Alliance >Forever<) it's not what we want here.
+      - name: Remove hashed files from previous deployment
+        run: |
+          git rm -r --ignore-unmatch assets/
+          git rm -f --ignore-unmatch *.js *.css
+
+      # By pushing the changes to the gh-pages branch, the changes will be deployed to the
+      # website. The website is hosted on GitHub Pages and is (at the moment of writing)
+      # available at:
+      # - https://faforever.github.io/etfreeman-db/
+      - name: Deploy
+        run: |
+          # Check for any differences between the working directory and the latest commit
+          if git diff --quiet; then
+            echo "No changes to deploy"
+            exit 0
+          fi
+
+          # Configure git
+          git config user.name "FAForever"
+          git config user.email "admin@faforever.com"
+
+          # Stage, commit and push the changes
+          git add .
+          git commit -m "Deploy etfreeman-db from main branch push"
+          git push origin gh-pages
