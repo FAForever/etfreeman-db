@@ -55,16 +55,16 @@ const hasEconomy = computed(() => {
   border: 1px solid rgba(255,255,255,.2)
 
   &__header
-    padding: 0
+    padding: 0 0 10px
     color: colors.$orange
     display: grid
     grid-template-columns: auto 1fr
     grid-template-rows: auto 1fr
-    gap: 0 1em
+    gap: 0 8px
 
   &__thumb
     grid-row: span 2
-    width: 64px
+    width: 40px
 
   & &__firstline td
     padding-bottom: 5px
@@ -72,7 +72,7 @@ const hasEconomy = computed(() => {
   &__title
     margin: 0 0 2px
     padding: 0
-    font-size: 1.3em
+    font-size: 16px
     font-weight: normal
 
   & &__minititle
