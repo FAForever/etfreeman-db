@@ -42,9 +42,12 @@ export async function fetchAllBlueprints() {
 async function listBlueprintFiles(owner, repo, branch, dirPath) {
   const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
 
-  const response = await fetch(url, {
-    headers: { 'User-Agent': 'faf-unit-generator' }
-  });
+  const headers = { 'User-Agent': 'faf-unit-generator' };
+  if (process.env.GITHUB_TOKEN) {
+    headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+  }
+
+  const response = await fetch(url, { headers });
 
   if (!response.ok) {
     throw new Error(`GitHub API error: ${response.status}`);

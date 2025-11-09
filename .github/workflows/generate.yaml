@@ -28,6 +28,8 @@ jobs:
 
       - name: Generate unit data from FAF repos
         run: npm run generate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload generated data
         uses: actions/upload-artifact@v4
