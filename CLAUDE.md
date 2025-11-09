@@ -83,12 +83,14 @@ Supreme Commander unit database built with Vue.js 3.
   - `index.js` - Main generator orchestration
 - **Scripts:**
   - `npm run download-blueprints` - Downloads blueprints to local cache
-  - `npm run generate:cached` - Generates from cache (fast)
-  - `npm run generate` - Fetches and generates on-the-fly
-- **Outputs:** `src/public/data/{index.json, index.fat.json, version.json}`
-  - `index.json` - Slim version with essential properties only
-  - `index.fat.json` - Full unit data
-  - `version.json` - FAF version number
+  - `npm run generate` - Fetches and generates on-the-fly (slim only)
+  - `npm run generate:cached` - Generates from cache (fast, slim only)
+  - `npm run generate:fat` - Fetches and generates with fat file
+  - `npm run generate:cached:fat` - Generates from cache with fat file
+- **Outputs:** `src/public/data/{index.json, version.json}` + optional `index.fat.json`
+  - `index.json` - Slim version with essential properties only (always generated)
+  - `index.fat.json` - Full unit data (only generated with `--withfat` flag)
+  - `version.json` - FAF version number (always generated)
 
 ## Key Patterns
 

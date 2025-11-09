@@ -46,6 +46,7 @@ function deriveClassification(categories) {
 }
 
 const useCached = process.argv.includes('--cached');
+const withFat = process.argv.includes('--withfat');
 
 async function generate() {
   console.log('=== FAF Unit Data Generator ===\n');
@@ -97,12 +98,14 @@ async function generate() {
 
   console.log('\nGenerating output files...');
 
-  const fatData = { version, units };
-  fs.writeFileSync(
-    path.join(OUTPUT_DIR, 'index.fat.json'),
-    JSON.stringify(fatData, null, 2)
-  );
-  console.log(`  ✓ index.fat.json`);
+  if (withFat) {
+    const fatData = { version, units };
+    fs.writeFileSync(
+      path.join(OUTPUT_DIR, 'index.fat.json'),
+      JSON.stringify(fatData, null, 2)
+    );
+    console.log(`  ✓ index.fat.json`);
+  }
 
   const slimUnits = units.map(u => filterProps(u, ESSENTIAL_PROPS));
   const slimData = { version, units: slimUnits };
