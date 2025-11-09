@@ -32,6 +32,8 @@
     "lint": "eslint src --ext .js,.vue",
     "generate": "node tools/generator/index.js",
     "generate:cached": "node tools/generator/index.js --cached",
+    "generate:fat": "node tools/generator/index.js --withfat",
+    "generate:cached:fat": "node tools/generator/index.js --cached --withfat",
     "download-blueprints": "node tools/generator/downloader.js"
   },
   "dependencies": {

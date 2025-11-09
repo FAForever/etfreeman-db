@@ -4,6 +4,7 @@ import { resolve, join } from 'path'
 import viteSpritesmith from './vite-plugin-spritesmith.js'
 
 const publicDir = join(__dirname, 'src', 'public')
+const assetsDir = join(__dirname, 'src', 'assets')
 const sassDir = join(__dirname, 'src', 'sass')
 const distDir = join(__dirname, 'dist')
 
@@ -15,7 +16,7 @@ export default defineConfig(() => ({
       sprites: [
         {
           name: 'ui',
-          src: './src/public/img/ui',
+          src: join(assetsDir, 'img', 'ui'),
           imgDest: join(publicDir, 'img', 'ui.png'),
           cssDest: join(sassDir, 'generated', 'ui_sprites.sass'),
           cssImageRef: '/img/ui.png',
@@ -23,7 +24,7 @@ export default defineConfig(() => ({
         },
         {
           name: 'strategic',
-          src: './src/public/img/strategic',
+          src: join(assetsDir, 'img', 'strategic'),
           imgDest: join(publicDir, 'img', 'strategic.png'),
           cssDest: join(sassDir, 'generated', 'strategic_sprites.sass'),
           cssImageRef: '/img/strategic.png',
@@ -31,7 +32,7 @@ export default defineConfig(() => ({
         },
         {
           name: 'units',
-          src: './src/public/img/units',
+          src: join(assetsDir, 'img', 'units'),
           imgDest: join(publicDir, 'img', 'units.png'),
           cssDest: join(sassDir, 'generated', 'units_sprites.sass'),
           cssImageRef: '/img/units.png',
