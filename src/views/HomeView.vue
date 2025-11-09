@@ -1,5 +1,9 @@
 <template>
   <div class="home">
+    <div class="home__left">
+      <Header />
+      <FiltersComponent class="home__filters" />
+    </div>
     <div class="home__units" :style="{ '--factionCount': effectiveVisibleFactions.length }">
       <template v-for="faction in effectiveVisibleFactions" :key="faction">
         <h1 :class="['home__faction-header', `home__faction-header_${faction.toLowerCase()}`]">
@@ -12,18 +16,16 @@
         </div>
       </template>
     </div>
-    <FiltersComponent class="home__filters" />
   </div>
-  <AppFooter />
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
+import Header from '../components/Header.vue'
 import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
-import AppFooter from '../components/AppFooter.vue'
 
 const router = useRouter()
 const { visibleUnits, toggleUnitSelection, contenders, effectiveVisibleFactions } = useUnitData()
@@ -42,14 +44,15 @@ function getUnitsForFactionAndDisplay(faction, displayClassification) {
 .home
   width: 100%
   display: flex
-  justify-content: space-between
   align-items: flex-start
   gap: 10px
+  padding-bottom: 10px
 
-  &__filters
-    position: static
-    max-width: 153px
-    margin-left: 3px
+  &__left
+    flex-shrink: 0
+    display: grid
+    gap: 10px
+    padding-top: 10px
 
   &__units
     display: grid
@@ -65,6 +68,7 @@ function getUnitsForFactionAndDisplay(faction, displayClassification) {
     padding: 0.67em 0
     background: no-repeat right top
     padding-left: 0.33em
+    background-color: black
 
     @each $faction, $bg in vars.$factionBGs
       &_#{$faction}
