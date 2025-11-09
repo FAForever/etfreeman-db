@@ -84,9 +84,21 @@ export default function viteSpritesmith(options = {}) {
 
       if (modifier === 'units') {
         const columnCount = 23
+
+        // Find undefined.png position to use as default
+        const undefinedItem = items.find(item => path.basename(item.file, '.png') === 'undefined')
+        let defaultPosition = '0.0000% 0.0000%'
+
+        if (undefinedItem) {
+          const posXPercent = (undefinedItem.x / (packed.width - undefinedItem.width)) * 100
+          const posYPercent = (undefinedItem.y / (packed.height - undefinedItem.height)) * 100
+          defaultPosition = `${posXPercent.toFixed(4)}% ${posYPercent.toFixed(4)}%`
+        }
+
         cssContent += `${iconClass}\n`
         cssContent += `  background-image: url(${cssImageRef})\n`
-        cssContent += `  background-size: calc(100% * ${columnCount}) auto\n\n`
+        cssContent += `  background-size: calc(100% * ${columnCount}) auto\n`
+        cssContent += `  background-position: ${defaultPosition}\n\n`
 
         items.forEach(item => {
           const iconName = path.basename(item.file, '.png')
