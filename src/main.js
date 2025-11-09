@@ -69,4 +69,11 @@ unitStore.loadData().catch(error => {
   console.error('Failed to load unit data:', error)
 })
 
+router.isReady().then(() => {
+  const savedView = localStorage.getItem('faf-last-view')
+  if (savedView && router.currentRoute.value.path === '/' && savedView !== '/') {
+    router.replace(savedView)
+  }
+})
+
 app.mount('#app')

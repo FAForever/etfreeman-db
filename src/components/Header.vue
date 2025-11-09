@@ -1,12 +1,12 @@
 <template>
   <header class="app-header">
-    <div class="app-header__version ta-c sm" style="color: white; opacity: 0.5;">
-      Game version: {{ version || '1.0' }}
+    <div class="app-header__version ta-c sm">
+      Game version: {{ version || '' }}
     </div>
     <div class="app-header__view-switcher">
-      <router-link to="/" title="view units by kind" :class="['calm',{ active: route.path === '/' }]">View A</router-link>
+      <router-link to="/" title="view units by kind" :class="['calm',{ active: route.path === '/' }]" @click="saveView('/')">View A</router-link>
       |
-      <router-link to="/by-class" title="view units by class" :class="['calm',{ active: route.path === '/by-class' }]">View B</router-link>
+      <router-link to="/by-class" title="view units by class" :class="['calm',{ active: route.path === '/by-class' }]" @click="saveView('/by-class')">View B</router-link>
     </div>
   </header>
 </template>
@@ -17,6 +17,10 @@ import { useUnitData } from '../composables/useUnitData.js'
 
 const route = useRoute()
 const { version } = useUnitData()
+
+const saveView = (path) => {
+  localStorage.setItem('faf-last-view', path)
+}
 </script>
 
 <style lang="sass">
@@ -31,6 +35,7 @@ const { version } = useUnitData()
 
   &__version
     font-size: 10px
+    opacity: .5
 
   &__view-switcher
     display: flex
