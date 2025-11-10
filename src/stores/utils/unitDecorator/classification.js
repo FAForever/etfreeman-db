@@ -50,7 +50,7 @@ const getTechNumber = (techString) => {
 
 const getClassificationOrder = (classification) => {
   const classMap = { 'Build': 1, 'Base': 2, 'Land': 3, 'Air': 4, 'Naval': 5 }
-  return classMap[classification] || 99
+  return classMap[classification] || -console.warn('no classification order for ', classification)
 }
 
 export const getDisplayClassification = (bp) => {
@@ -59,26 +59,27 @@ export const getDisplayClassification = (bp) => {
   if (category === 'Construction - Buildpower' || category === 'Structures - Factories') {
     return 'Build'
   }
-  if (category === 'Structures - Weapons' || category === 'Structures - Intelligence') {
-    return 'Defenses'
-  }
-  if (category === 'Structures - Support' || category === 'Structures - Economy') {
+  if (bp.Categories.includes('LAND')) return 'Land'
+  if (bp.Categories.includes('AIR')) return 'Air'
+  if (bp.Categories.includes('NAVAL')) return 'Naval'
+  if (bp.Categories.includes('STRUCTURE')) {
+    if (bp.Categories.some(el=> ['DIRECTFIRE','INDIRECTFIRE','INTELLIGENCE','ANTIAIR','ANTIMISSILE','ANTINAVY'].includes(el))) 
+      return 'Defenses'
     return 'Support'
   }
-  if (category === 'Land') return 'Land'
-  if (category === 'Air') return 'Air'
-  if (category === 'Naval') return 'Naval'
-  if (category === 'Experimental') return 'Experimental'
-
-  return classificationLookup[bp.General?.Classification] || 'Unknown'
+  console.warn(bp)
+  return 'Unknown'
 }
 
 export const getSortOrder = (bp) => {
   const tech = getTech(bp)
   const techNumber = getTechNumber(tech)
+  if (bp.Id == 'UEB2401') {
+    console.log(tech, techNumber)
+  }
   const classification = classificationLookup[bp.General?.Classification] || 'Unknown'
   const classOrder = getClassificationOrder(classification)
   const unitNum = getUnitNumber(bp.Id) || 0
   const isStructure = getCategory(bp).startsWith('Structures')? 1 : 0
-  return techNumber * 100000 + classOrder * 10000 + unitNum + isStructure * 1e6
+  return techNumber * 10000000 + classOrder * 10000 + unitNum + isStructure * 1e6
 }
