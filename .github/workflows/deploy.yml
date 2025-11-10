@@ -28,13 +28,6 @@ jobs:
         with:
           ref: gh-pages
 
-      # https://github.com/actions/download-artifact/tree/v4/
-      - name: Download recent build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: etfreeman-db-dist
-          path: ./
-
       # Each file is given a (random) hash pre-pended to the filename to prevent caching
       # issues. Because of that we first need to remove all existing hashed files as otherwise
       # they will keep accumulating forever. As much as this fits the narrative of the community
@@ -43,6 +36,13 @@ jobs:
         run: |
           git rm -r --ignore-unmatch assets/
           git rm -f --ignore-unmatch *.js *.css
+
+      # https://github.com/actions/download-artifact/tree/v4/
+      - name: Download recent build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: etfreeman-db-dist
+          path: ./
 
       # By pushing the changes to the gh-pages branch, the changes will be deployed to the
       # website. The website is hosted on GitHub Pages and is (at the moment of writing)
