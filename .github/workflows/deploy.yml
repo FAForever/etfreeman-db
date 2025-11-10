@@ -58,10 +58,16 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
+      - name: Setup SSH key
+        if: steps.check_changes.outputs.has_changes == 'true'
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
       - name: Commit and push to gh-pages
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git config user.name "FAForever"
           git config user.email "admin@faforever.com"
           git commit -m "Deploy etfreeman-db from main branch push"
-          git push origin gh-pages
+          git push git@github.com:faforever/etfreeman-db.git gh-pages
