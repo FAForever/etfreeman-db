@@ -15,7 +15,7 @@ import { RouterView } from 'vue-router'
 
 body
   background: #222 fixed url(/img/background.jpg)
-  background-size: cover !important
+  background-size: 100vw 100vh
   color: #fff
   display: flex
   flex-direction: column
