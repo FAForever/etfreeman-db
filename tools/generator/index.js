@@ -67,7 +67,8 @@ async function generate() {
   console.log(`\nParsing ${blueprints.length} blueprints...`);
   const units = [];
   const exceptions = new Set(['SRL0310', 'XRB2309', 'URB3103', 'UEB5204', 'URB5204', 'UAB5204','UXL0021','UEB5208'])
-
+  const force_include = new Set(['XEA0002'])
+  
   for (const bp of blueprints) {
     try {
       const data = parseBlueprint(bp.content);
@@ -77,7 +78,10 @@ async function generate() {
         ['OPERATION', 'CIVILIAN', 'CIVILLIAN', 'INSIGNIFICANTUNIT', 'UNTARGETABLE', 'UNSELECTABLE','TELEPORTBEACON'].includes(c)
       );
 
-      if (isCampaign || exceptions.has(data.Id)) continue;
+
+      if (!force_include.has(data.Id) && (isCampaign || exceptions.has(data.Id))) {
+        continue;
+      }
 
       if (!data.General) data.General = {};
       if (!data.General.Classification) {
