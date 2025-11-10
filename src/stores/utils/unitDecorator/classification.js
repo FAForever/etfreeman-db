@@ -63,9 +63,9 @@ export const getDisplayClassification = (bp) => {
   if (bp.Categories.includes('AIR')) return 'Air'
   if (bp.Categories.includes('NAVAL')) return 'Naval'
   if (bp.Categories.includes('STRUCTURE')) {
-    if (bp.Categories.some(el=> ['DIRECTFIRE','INDIRECTFIRE','INTELLIGENCE','ANTIAIR','ANTIMISSILE','ANTINAVY'].includes(el))) 
-      return 'Defenses'
-    return 'Support'
+    if (bp.Categories.some(el=> ['ECONOMIC', 'WALL','SHIELD','STEALTHFIELD','AIRSTAGINGPLATFORM'].includes(el))) 
+      return 'Support'
+    return 'Defenses'
   }
   console.warn(bp)
   return 'Unknown'
