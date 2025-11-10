@@ -60,7 +60,8 @@ export const getDisplayClassification = (bp) => {
     return 'Build'
   }
   if (bp.Categories.includes('LAND')) return 'Land'
-  if (bp.Categories.includes('AIR')) return 'Air'
+  if (bp.Categories.includes('AIR') && !bp.Categories.includes('STRUCTURE')) return 'Air'
+  if (bp.Categories.includes('MOBILESONAR')) return 'Defenses'
   if (bp.Categories.includes('NAVAL')) return 'Naval'
   if (bp.Categories.includes('STRUCTURE')) {
     if (bp.Categories.some(el=> ['ECONOMIC', 'WALL','SHIELD','STEALTHFIELD','AIRSTAGINGPLATFORM'].includes(el))) 
