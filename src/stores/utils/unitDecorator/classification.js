@@ -50,7 +50,7 @@ const getTechNumber = (techString) => {
 
 const getClassificationOrder = (classification) => {
   const classMap = { 'Build': 1, 'Base': 2, 'Land': 3, 'Air': 4, 'Naval': 5 }
-  return classMap[classification] || -console.warn('no classification order for ', classification)
+  return classMap[classification] || 99
 }
 
 export const getDisplayClassification = (bp) => {
@@ -74,12 +74,10 @@ export const getDisplayClassification = (bp) => {
 export const getSortOrder = (bp) => {
   const tech = getTech(bp)
   const techNumber = getTechNumber(tech)
-  if (bp.Id == 'UEB2401') {
-    console.log(tech, techNumber)
-  }
   const classification = classificationLookup[bp.General?.Classification] || 'Unknown'
   const classOrder = getClassificationOrder(classification)
   const unitNum = getUnitNumber(bp.Id) || 0
   const isStructure = getCategory(bp).startsWith('Structures')? 1 : 0
-  return techNumber * 10000000 + classOrder * 10000 + unitNum + isStructure * 1e6
+  const isExp = techNumber == 4
+  return techNumber * 100000 + classOrder * 10000 + unitNum + isStructure * 1e6 + isExp * 1e8
 }
