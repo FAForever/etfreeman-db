@@ -14,8 +14,8 @@ import { RouterView } from 'vue-router'
 @use './sass/generated/ui_sprites.sass'
 
 body
-  background: #222 fixed url(/img/background.jpg) no-repeat 0 0 !important
-  background-size: cover
+  background: #222 fixed url(/img/background.jpg)
+  background-size: cover !important
   color: #fff
   display: flex
   flex-direction: column
