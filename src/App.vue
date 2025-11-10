@@ -1,4 +1,5 @@
 <template>
+  <img class="app-bg" src="/img/background.jpg"/>    
   <RouterView />
 </template>
 
@@ -14,8 +15,7 @@ import { RouterView } from 'vue-router'
 @use './sass/generated/ui_sprites.sass'
 
 body
-  background: #222 fixed url(/img/background.jpg)
-  background-size: 100vw 100vh
+  background-color: #222
   color: #fff
   display: flex
   flex-direction: column
@@ -30,6 +30,16 @@ body
 
   & > *:first-child
     flex-grow: 1
+
+.app-bg
+  position: fixed
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100%
+  z-index: -100
+  object-fit: cover
+  object-position: center
 
 h1, h2, h3, h4, h5, h6
   font-family: 'Zeroes Three', 'Muli', Verdana, Arial, sans-serif

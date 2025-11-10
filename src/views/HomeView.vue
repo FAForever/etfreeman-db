@@ -70,6 +70,9 @@ function getUnitsForFactionAndDisplay(faction, displayClassification) {
     padding-left: 0.33em
     background-color: black
 
+    @include from(1200px)
+      font-size: 18px !important
+
     @each $faction, $bg in vars.$factionBGs
       &_#{$faction}
         background-image: url($bg)
