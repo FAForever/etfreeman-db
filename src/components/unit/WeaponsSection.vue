@@ -93,7 +93,10 @@ const weaponStats = (w) => {
     value: `${shorten(w.NukeInnerRingDamage)} | ${shorten(w.NukeOuterRingDamage)}`,
     title: 'inner ring damage | outer ring damage'
   })
-  if (w.BeamLifetime) stats.push({ label: 'Beam cycle', value: props.unit.beamCycle(w) })
+  if (w.BeamLifetime) {
+    stats.push({ label: 'Beam cycle', value: props.unit.beamCycle(w) })
+    stats.push({ label: 'Beam lifetime', value: w.BeamLifetime })
+  }
   if (w.RackFireTogether) stats.push({ label: 'RackFireTogether', value: w.RackFireTogether })
   if ((w.ManualFire || w.MuzzleSalvoSize) && !w.isTML) stats.push({
     label: `Fire cycle${w.ManualFire ? ' ⦿' : ''}`,

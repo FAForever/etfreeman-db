@@ -109,7 +109,7 @@ export const fireCycle = (weapon) => {
   const stats = weaponStats(weapon)
 
   if (weapon.BeamLifetime === 1) {
-    return formatBeamCycle(stats.shots, stats.cycle, (9 * weapon.Damage) * stats.shots)
+    return formatBeamCycle(stats.shots, stats.cycle, (11 * weapon.Damage) * stats.shots)
   }
 
   if (weapon.BeamLifetime === 0) {
@@ -132,7 +132,12 @@ const formatBeamCollisionCycle = (shots, dmg, perShotDelay, totalDmg) => {
 }
 
 const formatStandardBeam = (dmg, totalDmg) =>
-  `9 times / 0.1 sec ${dmg} dmg = ${totalDmg} dmg total, 0.8 sec total`
+  `11 times / 0.1 sec ${dmg} dmg = ${totalDmg} dmg total, 1.1 sec total`
+
+//TODO why we even have "strandard" beam? Whats the diff?
+
+const formatNonStandardBeam = (dmg, lifetime) =>
+  `${lifetime * 10 + 1} times / 0.1 sec ${dmg} dmg = ${(lifetime * 10 + 1) * dmg} dmg total, 1.1 sec total`
 
 const formatDotPulses = (pulses, dmg, timePerPulse, totalDmg, totalTime) =>
   `${pulses} times ${dmg} dmg / ${timePerPulse} sec = ${totalDmg} total ${totalTime} sec total`
@@ -144,8 +149,8 @@ export const beamCycle = (weapon) => {
     return formatBeamCollisionCycle(shots, weapon.Damage, perShotDelay, weapon.Damage * shots)
   }
 
-  if (weapon.BeamLifetime === 1) {
-    return formatStandardBeam(weapon.Damage, 9 * weapon.Damage)
+  if (weapon.BeamLifetime) {
+    return formatNonStandardBeam(weapon.Damage, weapon.BeamLifetime)
   }
 
   if (weapon.DoTPulses) {
