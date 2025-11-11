@@ -45,6 +45,10 @@ export const calculateDps = (weapon, stats, isSpecial) => {
     trueDamage
   )
 
+  if (weapon.BeamLifetime) {
+    trueDamage = weapon.Damage * (weapon.BeamLifetime * 10 + 1)
+  }
+
   const salvoDamage = trueSalvoSize * trueDamage * (isSpecial ? weapon.ProjectilesPerOnFire || 1 : 1)
   const trueDPS = salvoDamage / trueReload
 
@@ -112,6 +116,22 @@ export const fireCycle = (weapon) => {
     return formatBeamCycle(stats.shots, stats.cycle, (11 * weapon.Damage) * stats.shots)
   }
 
+  if (weapon.BeamLifetime) {
+    let cycle = stats.cycle
+    if (weapon.DisplayName == 'Lightning Projector') {
+      //TODO FIX THIS PROPERLY
+      const trueReloadBase = Math.max(0.1 * Math.floor(10 / weapon.RateOfFire), 0.1)
+      cycle = Math.max(
+        (weapon.RackSalvoChargeTime || 0) +
+        (weapon.RackSalvoReloadTime || 0) +
+        (weapon.MuzzleSalvoDelay || 0) * ((weapon.MuzzleSalvoSize || 1) - 1),
+        trueReloadBase
+      )
+    }
+
+    return formatBeamCycle(stats.shots, cycle, ((weapon.BeamLifetime * 10 + 1) * weapon.Damage) * stats.shots)
+  }
+
   if (weapon.BeamLifetime === 0) {
     return formatContinuousBeam(weapon.Damage * stats.shots)
   }
@@ -137,7 +157,7 @@ const formatStandardBeam = (dmg, totalDmg) =>
 //TODO why we even have "strandard" beam? Whats the diff?
 
 const formatNonStandardBeam = (dmg, lifetime) =>
-  `${lifetime * 10 + 1} times / 0.1 sec ${dmg} dmg = ${(lifetime * 10 + 1) * dmg} dmg total, 1.1 sec total`
+  `${lifetime * 10 + 1} times / 0.1 sec ${dmg} dmg = ${(lifetime * 10 + 1) * dmg} dmg total`
 
 const formatDotPulses = (pulses, dmg, timePerPulse, totalDmg, totalTime) =>
   `${pulses} times ${dmg} dmg / ${timePerPulse} sec = ${totalDmg} total ${totalTime} sec total`

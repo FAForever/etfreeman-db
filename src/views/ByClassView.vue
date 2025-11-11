@@ -7,16 +7,12 @@
     <MasonryWall class="home__byclass" :items="groupedByBase" :column-width="320" :gap="10" :padding="10">
       <template #default="{ item: baseGroup }">
         <div class="home__byclass-base">
-          <h1 class="home__byclass-base-title">{{ baseGroup.baseClass }}</h1>
-          <section v-for="classGroup in baseGroup.classifications" :key="classGroup.classification" class="home__byclass-section">
+          <h1 class="home__byclass-base-title" @click="selectAll(baseGroup)">{{ baseGroup.baseClass }}</h1>
+          <section v-for="classGroup in baseGroup.classifications" :key="classGroup.classification"
+            class="home__byclass-section">
             <div v-for="faction in effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
-              <ThumbComponent
-                v-for="unit in classGroup.unitsByFaction[faction]"
-                :key="unit.id"
-                :item="unit"
-                :mini="true"
-                @unit-click="handleUnitClick"
-              />
+              <ThumbComponent v-for="unit in classGroup.unitsByFaction[faction]" :key="unit.id" :item="unit"
+                :mini="true" @unit-click="handleUnitClick" />
             </div>
             <h2 class="home__byclass-section-title">
               <a class="calm" @click="toggleUnitsOfTheSameClass(classGroup.classification)">
@@ -52,6 +48,20 @@ const toggleUnitsOfTheSameClass = (classification) => {
   const classItems = visibleUnits.value.filter(unit => unit.detailedClassification === classification)
   const isAlreadySelected = classItems.some(u => u.selected)
   classItems.forEach(unit => setUnitSelection(unit.id, !isAlreadySelected))
+}
+
+const selectAll = (baseGroup) => {
+  baseGroup.classifications.forEach(classification => {
+    //toggleUnitsOfTheSameClass(classification.classification)
+    const unitsInClass = visibleUnits.value.filter(unit => unit.detailedClassification === classification.classification)
+    const beamedUnits = (unitsInClass.flat().filter(el=>el.Weapon?.some(w=>w.BeamLifetime)))
+    if (beamedUnits?.length) {
+      console.log(beamedUnits.map(u=>u.name))
+      for (const unit of beamedUnits) {
+        setUnitSelection(unit.id, true)
+      }
+    }
+  })
 }
 </script>
 
