@@ -7,7 +7,7 @@
     <MasonryWall class="home__byclass" :items="groupedByBase" :column-width="320" :gap="10" :padding="10">
       <template #default="{ item: baseGroup }">
         <div class="home__byclass-base">
-          <h1 class="home__byclass-base-title" @click="selectAll(baseGroup)">{{ baseGroup.baseClass }}</h1>
+          <h1 class="home__byclass-base-title">{{ baseGroup.baseClass }}</h1>
           <section v-for="classGroup in baseGroup.classifications" :key="classGroup.classification"
             class="home__byclass-section">
             <div v-for="faction in effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
@@ -50,7 +50,7 @@ const toggleUnitsOfTheSameClass = (classification) => {
   classItems.forEach(unit => setUnitSelection(unit.id, !isAlreadySelected))
 }
 
-const selectAll = (baseGroup) => {
+const selectAllBeamed = (baseGroup) => {
   baseGroup.classifications.forEach(classification => {
     //toggleUnitsOfTheSameClass(classification.classification)
     const unitsInClass = visibleUnits.value.filter(unit => unit.detailedClassification === classification.classification)

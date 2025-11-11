@@ -46,7 +46,7 @@ export const calculateDps = (weapon, stats, isSpecial) => {
   )
 
   if (weapon.BeamLifetime) {
-    trueDamage = weapon.Damage * (weapon.BeamLifetime * 10 + 1)
+    trueDamage = weapon.Damage * (weapon.BeamLifetime * 10 + 1 - (Math.floor(weapon.BeamCollisionDelay * 10) || 0))
   }
 
   const salvoDamage = trueSalvoSize * trueDamage * (isSpecial ? weapon.ProjectilesPerOnFire || 1 : 1)
@@ -129,7 +129,7 @@ export const fireCycle = (weapon) => {
       )
     }
 
-    return formatBeamCycle(stats.shots, cycle, ((weapon.BeamLifetime * 10 + 1) * weapon.Damage) * stats.shots)
+    return formatBeamCycle(stats.shots, cycle, ((weapon.BeamLifetime * 10 + 1 - (Math.floor(weapon.BeamCollisionDelay * 10)||0)) * weapon.Damage) * stats.shots)
   }
 
   if (weapon.BeamLifetime === 0) {
@@ -163,7 +163,7 @@ const formatDotPulses = (pulses, dmg, timePerPulse, totalDmg, totalTime) =>
   `${pulses} times ${dmg} dmg / ${timePerPulse} sec = ${totalDmg} total ${totalTime} sec total`
 
 export const beamCycle = (weapon) => {
-  if (weapon.BeamCollisionDelay > 0.1) {
+  if (weapon.BeamCollisionDelay >= 0.1) {
     const shots = Math.round(weapon.BeamLifetime / (0.1 + weapon.BeamCollisionDelay))
     const perShotDelay = weapon.BeamCollisionDelay + 0.1
     return formatBeamCollisionCycle(shots, weapon.Damage, perShotDelay, weapon.Damage * shots)
