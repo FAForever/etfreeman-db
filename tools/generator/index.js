@@ -6,6 +6,7 @@ import { parseBlueprint, parseVersion, parseProjectile } from './parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.join(__dirname, '../../src/public/data');
+const GENERATOR_DATA_DIR = path.join(__dirname, 'data');
 const CACHE_DIR = path.join(__dirname, 'cached_blueprints');
 
 const ESSENTIAL_PROPS = [
@@ -177,6 +178,14 @@ async function generate() {
     JSON.stringify({ version }, null, 2)
   );
   console.log(`  ✓ version.json`);
+
+  // Write projectiles.json to generator data directory for import by dps2.js
+  fs.mkdirSync(GENERATOR_DATA_DIR, { recursive: true });
+  fs.writeFileSync(
+    path.join(GENERATOR_DATA_DIR, 'projectiles.json'),
+    JSON.stringify(projectiles)
+  );
+  console.log(`  ✓ projectiles.json (for DPS calculations)`);
 
   console.log(`\n✓ Generated ${units.length} units with ${weaponsEnhanced} weapons enhanced by ${parsedCount} projectile fragments`);
 }

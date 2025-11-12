@@ -14,8 +14,13 @@ describe('DPS Calculator', () => {
       'MuzzleSalvoSize': 1,
       'ProjectileId': '/projectiles/CDFLaserHeavy01/CDFLaserHeavy01_proj.bp',
       'ProjectilesPerOnFire': 1,
+      'RackBones': [
+        { 'MuzzleBones': ['Turret_Muzzle_01'] },
+        { 'MuzzleBones': ['Turret_Muzzle_02'] }
+      ],
+      'RackFireTogether': false,
       'RackSalvoChargeTime': 0,
-      'RateOfFire': 3,
+      'RateOfFire': 10 / 3,
       'TurretPitch': 0,
       'TurretPitchRange': 45,
       'TurretPitchSpeed': 100,
@@ -162,7 +167,7 @@ describe('DPS Calculator', () => {
       'MuzzleSalvoSize': 4
     }
     const dps = calculateDps2(weapon, false)
-    expect(dps).toBeCloseTo(96.97, 1)
+    expect(dps).toBeCloseTo(96.1, 1)
   })
 
   it('Vesper (XAS0204) - Chrono Torpedo', () => {
@@ -213,6 +218,8 @@ describe('DPS Calculator', () => {
       'MinRadius': 5,
       'MaxRadius': 30,
       'ProjectileId': '/projectiles/TIFFragmentationSensorShell01/TIFFragmentationSensorShell01_proj.bp',
+      'ProjectileFragments': 5,
+      'ProjectileFragmentId': 'tiffragmentationsensorshell02',
       'MuzzleVelocity': 14,
       'RackSalvoReloadTime': 0,
       'RackSalvoChargeTime': 0,
@@ -225,7 +232,7 @@ describe('DPS Calculator', () => {
       'WeaponCategory': 'Artillery'
     }
     const dps = calculateDps2(weapon, false)
-    expect(dps).toBeCloseTo(60.24, 1)
+    expect(dps).toBeCloseTo(60.02, 1)
   })
 
   it('Zthuee (XSL0103) - Thuntho Artillery Cannon', () => {
@@ -246,6 +253,8 @@ describe('DPS Calculator', () => {
       'MinRadius': 8,
       'MaxRadius': 30,
       'ProjectileId': '/projectiles/SIFThunthoArtilleryShell01/SIFThunthoArtilleryShell01_proj.bp',
+      'ProjectileFragments': 5,
+      'ProjectileFragmentId': 'sifthunthoartilleryshell02',
       'MuzzleVelocity': 14,
       'RackFireTogether': false,
       'RackSalvoChargeTime': 0,
@@ -258,7 +267,7 @@ describe('DPS Calculator', () => {
       'WeaponCategory': 'Artillery'
     }
     const dps = calculateDps2(weapon, false)
-    expect(dps).toBeCloseTo(77.58, 1)
+    expect(dps).toBeCloseTo(78.67, 1)
   })
 
   it('Wailer (XRA0305) - Disintegrator Pulse Laser', () => {
@@ -271,6 +280,11 @@ describe('DPS Calculator', () => {
       'MuzzleSalvoSize': 1,
       'ProjectileId': '/projectiles/CDFLaserDisintegrator04/CDFLaserDisintegrator04_proj.bp',
       'ProjectilesPerOnFire': 1,
+      'RackBones': [
+        { 'MuzzleBones': ['Turret_Down_Muzzle_01'] },
+        { 'MuzzleBones': ['Turret_Down_Muzzle_02'] }
+      ],
+      'RackFireTogether': false,
       'RackSalvoChargeTime': 0,
       'RateOfFire': 1.6,
       'TurretPitch': -20,
@@ -282,7 +296,7 @@ describe('DPS Calculator', () => {
       'WeaponCategory': 'Direct Fire'
     }
     const dps = calculateDps2(weapon, false)
-    expect(dps).toBeCloseTo(233.33, 1)
+    expect(dps).toBeCloseTo(222.22, 1)
   })
 
   it('Zeus (URA0103) - Neutron Cluster Bomb', () => {
