@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { fetchAllBlueprints } from './fetcher.js';
-import { parseBlueprint, parseVersion } from './parser.js';
+import { fetchAllBlueprints, fetchAllProjectiles } from './fetcher.js';
+import { parseBlueprint, parseVersion, parseProjectile } from './parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.join(__dirname, '../../src/public/data');
@@ -100,6 +100,59 @@ async function generate() {
   const version = parseVersion(versionContent);
   console.log(`  ✓ Version: ${version}`);
 
+  // Process projectiles
+  console.log('\nProcessing projectiles...');
+  let projectilesRaw;
+
+  if (useCached) {
+    projectilesRaw = loadProjectilesFromCache();
+  } else {
+    projectilesRaw = await fetchAllProjectiles();
+  }
+
+  console.log(`Parsing ${projectilesRaw.length} projectiles...`);
+  const projectiles = {};
+  let parsedCount = 0;
+
+  for (const proj of projectilesRaw) {
+    try {
+      const data = parseProjectile(proj.content);
+      if (data) {
+        projectiles[proj.id.toLowerCase()] = data;
+        parsedCount++;
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  console.log(`  ✓ Parsed ${parsedCount}/${projectilesRaw.length} projectiles with fragment data`);
+
+  // Embed projectile fragment data into weapon objects
+  console.log('\nEmbedding projectile data into weapons...');
+  let weaponsEnhanced = 0;
+
+  for (const unit of units) {
+    if (!unit.Weapon || !Array.isArray(unit.Weapon)) continue;
+
+    for (const weapon of unit.Weapon) {
+      if (!weapon.ProjectileId) continue;
+
+      // Extract projectile ID from path: "/projectiles/Foo/Foo_proj.bp" -> "foo"
+      const match = weapon.ProjectileId.match(/([^/]+)_proj\.bp$/i);
+      if (!match) continue;
+
+      const projId = match[1].toLowerCase();
+      if (projectiles[projId]) {
+        weapon.ProjectileFragments = projectiles[projId].fragments;
+        weapon.ProjectileFragmentId = projectiles[projId].fragmentId;
+        weaponsEnhanced++;
+      }
+    }
+  }
+
+  console.log(`  ✓ Enhanced ${weaponsEnhanced} weapons with projectile fragment data`);
+
   console.log('\nGenerating output files...');
 
   if (withFat) {
@@ -115,7 +168,7 @@ async function generate() {
   const slimData = { version, units: slimUnits };
   fs.writeFileSync(
     path.join(OUTPUT_DIR, 'index.json'),
-    JSON.stringify(slimData)  // Minified (no indentation)
+    JSON.stringify(slimData)
   );
   console.log(`  ✓ index.json (minified)`);
 
@@ -125,7 +178,7 @@ async function generate() {
   );
   console.log(`  ✓ version.json`);
 
-  console.log(`\n✓ Generated ${units.length} units`);
+  console.log(`\n✓ Generated ${units.length} units with ${weaponsEnhanced} weapons enhanced by ${parsedCount} projectile fragments`);
 }
 
 function loadFromCache() {
@@ -147,6 +200,25 @@ function loadFromCache() {
   console.log(`  ✓ Loaded ${blueprints.length} blueprints from cache`);
 
   return { blueprints, versionContent };
+}
+
+function loadProjectilesFromCache() {
+  if (!fs.existsSync(CACHE_DIR)) {
+    throw new Error(`Cache not found at ${CACHE_DIR}. Run downloader.js first.`);
+  }
+
+  const files = fs.readdirSync(CACHE_DIR);
+  const projectileFiles = files.filter(f => f.endsWith('_proj.bp'));
+
+  const projectiles = projectileFiles.map(file => {
+    const content = fs.readFileSync(path.join(CACHE_DIR, file), 'utf8');
+    const id = file.replace('_proj.bp', '');
+    return { id, content };
+  });
+
+  console.log(`  ✓ Loaded ${projectiles.length} projectiles from cache`);
+
+  return projectiles;
 }
 
 function filterProps(obj, props) {

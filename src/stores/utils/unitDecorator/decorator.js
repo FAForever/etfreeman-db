@@ -1,5 +1,4 @@
 import { classificationLookup, factionIdLookup } from './lookups.js'
-import { specialDpsUnits } from './exceptions.js'
 import {
   getTech,
   fullName,
@@ -8,7 +7,8 @@ import {
   getDisplayClassification,
   getSortOrder
 } from './classification.js'
-import { fireCycle, beamCycle, getDps, isTML } from './dps.js'
+import { fireCycle, beamCycle, isTML } from './dps.js'
+import { calculateDps2 } from './dps2.js'
 
 export const decorateUnit = (blueprint) => {
   const self = {
@@ -35,8 +35,12 @@ export const decorateUnit = (blueprint) => {
 
   if (blueprint.Weapon) {
     for (let i = 0; i < blueprint.Weapon.length; i++) {
-      blueprint.Weapon[i].dps = getDps(blueprint.Weapon[i], specialDpsUnits.indexOf(self.id) > -1)
-      blueprint.Weapon[i].isTML = isTML(blueprint.Weapon[i])
+      const weapon = blueprint.Weapon[i]
+      weapon.dps = calculateDps2(weapon, false)
+      if (weapon.DamageToShields) {
+        weapon.dpsShields = calculateDps2(weapon, true)
+      }
+      weapon.isTML = isTML(weapon)
     }
   }
 

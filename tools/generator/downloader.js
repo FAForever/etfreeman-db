@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { fetchAllBlueprints } from './fetcher.js';
+import { fetchAllBlueprints, fetchAllProjectiles } from './fetcher.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, 'cached_blueprints');
@@ -24,6 +24,18 @@ async function download() {
   fs.writeFileSync(path.join(CACHE_DIR, 'version.lua'), versionContent);
 
   console.log(`\n✓ Downloaded ${blueprints.length} blueprints + version.lua`);
+
+  console.log('\nDownloading projectiles...\n');
+  const projectiles = await fetchAllProjectiles();
+
+  console.log(`\nSaving ${projectiles.length} projectiles to ${CACHE_DIR}...`);
+
+  for (const proj of projectiles) {
+    const filePath = path.join(CACHE_DIR, `${proj.id}_proj.bp`);
+    fs.writeFileSync(filePath, proj.content);
+  }
+
+  console.log(`\n✓ Downloaded ${projectiles.length} projectiles`);
 }
 
 download().catch(error => {

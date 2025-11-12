@@ -38,6 +38,57 @@ export function parseVersion(content) {
   throw new Error('Could not parse version');
 }
 
+export function parseProjectile(content) {
+  try {
+    const ast = luaparse.parse(content, { comments: false, scope: true });
+
+    if (!ast || !ast.body || ast.body.length === 0) {
+      return null;
+    }
+
+    const callStatement = ast.body[0];
+    if (callStatement.type !== 'CallStatement') {
+      return null;
+    }
+
+    const callExpr = callStatement.expression;
+    if (callExpr.type !== 'TableCallExpression') {
+      return null;
+    }
+
+    // Parse the projectile blueprint table
+    const projectile = astToObject(callExpr.arguments);
+    if (!projectile) return null;
+
+    const physics = projectile.Physics;
+    if (!physics) return null;
+
+    // Extract only the minimal data needed for DPS calculations
+    const projectileData = {};
+
+    // Only extract Fragments and FragmentId
+    if (physics.Fragments !== undefined) {
+      projectileData.fragments = physics.Fragments;
+    }
+
+    if (physics.FragmentId !== undefined) {
+      // Extract just the projectile ID from the path
+      // e.g., "/projectiles/foo/foo_proj.bp" -> "foo"
+      const match = physics.FragmentId.match(/([^/]+)_proj\.bp$/i);
+      if (match) {
+        projectileData.fragmentId = match[1].toLowerCase();
+      }
+    }
+
+    // Return null if no useful data
+    return Object.keys(projectileData).length > 0 ? projectileData : null;
+  } catch (error) {
+    console.error(error)
+    // Skip projectiles that can't be parsed
+    return null;
+  }
+}
+
 function astToObject(node) {
   if (!node) return null;
 

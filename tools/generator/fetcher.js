@@ -3,13 +3,15 @@ const REPOS = [
     name: 'fa',
     owner: 'FAForever',
     branch: 'deploy/fafdevelop',
-    paths: ['units', 'lua/version.lua']
+    paths: ['units', 'lua/version.lua'],
+    projectilePaths: ['projectiles']
   },
   {
     name: 'nomads',
     owner: 'FAForever',
     branch: 'master',
-    paths: ['units']
+    paths: ['units'],
+    projectilePaths: ['projectiles']
   }
 ];
 
@@ -39,6 +41,29 @@ export async function fetchAllBlueprints() {
   return { blueprints, versionContent };
 }
 
+export async function fetchAllProjectiles() {
+  const projectiles = [];
+
+  for (const repo of REPOS) {
+    if (!repo.projectilePaths) continue;
+
+    console.log(`Fetching projectiles from ${repo.owner}/${repo.name} (${repo.branch})...`);
+
+    for (const repoPath of repo.projectilePaths) {
+      const files = await listProjectileFiles(repo.owner, repo.name, repo.branch, repoPath);
+      console.log(`  ${files.length} projectile files`);
+
+      for (const file of files) {
+        const content = await fetchFile(repo.owner, repo.name, repo.branch, file.path);
+        const projectileId = file.path.match(/([^/]+)_proj\.bp$/)[1];
+        projectiles.push({ id: projectileId, content, faction: repo.name });
+      }
+    }
+  }
+
+  return projectiles;
+}
+
 async function listBlueprintFiles(owner, repo, branch, dirPath) {
   const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
 
@@ -59,6 +84,29 @@ async function listBlueprintFiles(owner, repo, branch, dirPath) {
     item.type === 'blob' &&
     item.path.startsWith(dirPath) &&
     item.path.endsWith('_unit.bp')
+  );
+}
+
+async function listProjectileFiles(owner, repo, branch, dirPath) {
+  const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
+
+  const headers = { 'User-Agent': 'faf-unit-generator' };
+  if (process.env.GITHUB_TOKEN) {
+    headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+  }
+
+  const response = await fetch(url, { headers });
+
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  return data.tree.filter(item =>
+    item.type === 'blob' &&
+    item.path.startsWith(dirPath) &&
+    item.path.endsWith('_proj.bp')
   );
 }
 
