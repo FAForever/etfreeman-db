@@ -1,24 +1,7 @@
 // FA Game-Accurate DPS Calculator
 // Based on: fa\lua\ui\game\unitviewDetail.lua
 
-import projectiles from '@/data/projectiles.json'
-
 const MATH_IRound = (val) => Math.round(val * 10) / 10
-
-const getFragmentMultiplier = (fragmentId) => {
-  let multiplier = 1
-  let currentId = fragmentId
-
-  while (currentId) {
-    const fragment = projectiles[currentId.toLowerCase()]
-    if (!fragment || !fragment.fragments) break
-
-    multiplier *= fragment.fragments
-    currentId = fragment.fragmentId
-  }
-
-  return multiplier
-}
 
 const calculateProjectileDamage = (weapon, toShields = false) => {
   let damage = weapon.Damage || 0
@@ -34,13 +17,9 @@ const calculateProjectileDamage = (weapon, toShields = false) => {
   } else {
     damage = damage * (weapon.DoTPulses || 1) + (weapon.InitialDamage || 0)
 
-    if (weapon.ProjectileFragments) {
-      damage *= weapon.ProjectileFragments
-
-      // Check for nested fragmentation
-      if (weapon.ProjectileFragmentId) {
-        damage *= getFragmentMultiplier(weapon.ProjectileFragmentId)
-      }
+    // Use pre-calculated total fragment multiplier (includes nested fragments)
+    if (weapon.ProjectileFragmentMultiplier) {
+      damage *= weapon.ProjectileFragmentMultiplier
     }
   }
 

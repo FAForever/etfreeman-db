@@ -6,7 +6,6 @@ import { parseBlueprint, parseVersion, parseProjectile } from './parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.join(__dirname, '../../src/public/data');
-const SRC_DATA_DIR = path.join(__dirname, '../../src/data');
 const CACHE_DIR = path.join(__dirname, 'cached_blueprints');
 
 const ESSENTIAL_PROPS = [
@@ -129,6 +128,22 @@ async function generate() {
 
   console.log(`  ✓ Parsed ${parsedCount}/${projectilesRaw.length} projectiles with fragment data`);
 
+  // Calculate total fragment multiplier including nested fragments
+  function getTotalFragmentMultiplier(fragmentId) {
+    let multiplier = 1;
+    let currentId = fragmentId;
+
+    while (currentId) {
+      const fragment = projectiles[currentId.toLowerCase()];
+      if (!fragment || !fragment.fragments) break;
+
+      multiplier *= fragment.fragments;
+      currentId = fragment.fragmentId;
+    }
+
+    return multiplier;
+  }
+
   // Embed projectile fragment data into weapon objects
   console.log('\nEmbedding projectile data into weapons...');
   let weaponsEnhanced = 0;
@@ -145,8 +160,12 @@ async function generate() {
 
       const projId = match[1].toLowerCase();
       if (projectiles[projId]) {
-        weapon.ProjectileFragments = projectiles[projId].fragments;
-        weapon.ProjectileFragmentId = projectiles[projId].fragmentId;
+        const baseFragments = projectiles[projId].fragments;
+        const nestedMultiplier = projectiles[projId].fragmentId
+          ? getTotalFragmentMultiplier(projectiles[projId].fragmentId)
+          : 1;
+
+        weapon.ProjectileFragmentMultiplier = baseFragments * nestedMultiplier;
         weaponsEnhanced++;
       }
     }
@@ -178,14 +197,6 @@ async function generate() {
     JSON.stringify({ version }, null, 2)
   );
   console.log(`  ✓ version.json`);
-
-  // Write projectiles.json to src/data for import by dps2.js
-  fs.mkdirSync(SRC_DATA_DIR, { recursive: true });
-  fs.writeFileSync(
-    path.join(SRC_DATA_DIR, 'projectiles.json'),
-    JSON.stringify(projectiles)
-  );
-  console.log(`  ✓ projectiles.json (for DPS calculations)`);
 
   console.log(`\n✓ Generated ${units.length} units with ${weaponsEnhanced} weapons enhanced by ${parsedCount} projectile fragments`);
 }
