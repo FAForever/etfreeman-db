@@ -1,7 +1,7 @@
 // FA Game-Accurate DPS Calculator
 // Based on: fa\lua\ui\game\unitviewDetail.lua
 
-import projectiles from '../../../data/projectiles.json'
+import projectiles from '@/data/projectiles.json'
 
 const MATH_IRound = (val) => Math.round(val * 10) / 10
 
