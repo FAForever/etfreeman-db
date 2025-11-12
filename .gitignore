@@ -5,6 +5,7 @@ src/sass/generated
 src/public/data/index.json
 src/public/data/index.fat.json
 src/public/data/version.json
+src/data/projectiles.json
 
 # Generated sprite sheets
 src/public/img/ui.png
