@@ -35,7 +35,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: etfreeman-db-generated-data
-          path: |
-            src/public/data/*.json
-            src/data/*.json
+          path: src/public/data/*.json
           retention-days: 1
