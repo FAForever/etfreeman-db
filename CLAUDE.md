@@ -29,7 +29,8 @@ Supreme Commander unit database built with Vue.js 3.
   - `index.js` - Public API exports
   - `decorator.js` - Main decoration orchestration
   - `classification.js` - Classification and categorization logic
-  - `dps.js` - Weapon DPS calculations and cycle formatting
+  - `dps.js` - Weapon cycle formatting functions (fireCycle, beamCycle)
+  - `dps2.js` - FA-accurate DPS calculation (based on fa\lua\ui\game\unitviewDetail.lua)
   - `lookups.js` - Static lookup tables
   - `exceptions.js` - Special case configurations
 
@@ -87,8 +88,9 @@ Supreme Commander unit database built with Vue.js 3.
   - `npm run generate:cached` - Generates from cache (fast, slim only)
   - `npm run generate:fat` - Fetches and generates with fat file
   - `npm run generate:cached:fat` - Generates from cache with fat file
-- **Outputs:** `src/public/data/{index.json, version.json}` + optional `index.fat.json`
+- **Outputs:** `src/public/data/{index.json, projectiles.json, version.json}` + optional `index.fat.json`
   - `index.json` - Slim version with essential properties only (always generated)
+  - `projectiles.json` - Projectile fragment data for nested fragmentation DPS calculations (always generated)
   - `index.fat.json` - Full unit data (only generated with `--withfat` flag)
   - `version.json` - FAF version number (always generated)
 
@@ -102,7 +104,25 @@ Supreme Commander unit database built with Vue.js 3.
 - `tech` - Tech level (T1, T2, T3, EXP)
 - `fullName` - Display name with tech prefix
 - `fireCycle` / `beamCycle` - Functions for weapon cycle formatting
-- Weapon properties: `dps`, `isTML` (added to each weapon in blueprint.Weapon array)
+- Weapon properties (added to each weapon in blueprint.Weapon array):
+  - `dps` - Calculated using FA-accurate algorithm (calculateDps2)
+  - `dpsShields` - DPS including DamageToShields bonus (only present if weapon has DamageToShields)
+  - `isTML` - Boolean indicating if weapon is a Tactical Missile Launcher
+
+**DPS Calculation (dps2.js):**
+- Implements FA game-accurate DPS calculation based on `fa\lua\ui\game\unitviewDetail.lua`
+- Key features:
+  - Full firing cycle simulation with RackBones iteration
+  - Tick-based rounding (MATH_IRound: 0.1s precision)
+  - Beam weapon calculation with BeamLifetime and BeamCollisionDelay
+  - Nested projectile fragmentation support (reads from projectiles.json)
+  - DoTPulses and InitialDamage handling
+  - MuzzleChargeDelay support
+  - Returns 2-decimal rounded values using .toFixed(2)
+- Special cases:
+  - NukeWeapon returns -1
+  - ForceSingleFire returns null
+  - Weapons without RackBones default to MuzzleSalvoSize || 1
 
 **Routing:** Vue Router 4 with hash mode
 - `/` - Home view

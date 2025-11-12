@@ -1,5 +1,5 @@
 export { decorateUnit, decorateUnits } from './decorator.js'
-export { getDps } from './dps.js'
+export { calculateDps2 } from './dps2.js'
 export { calculateDps, weaponStats } from './dps.js'
 export {
   classificationLookup,

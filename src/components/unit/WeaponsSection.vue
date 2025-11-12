@@ -37,7 +37,7 @@ const props = defineProps(['weapons', 'unit'])
 const roundVal = (val, places = 0) => round(val, places)
 
 const DISPLAYED_PROPS = [
-  'DisplayName', 'WeaponCategory', 'DamageType', 'dps', 'Damage',
+  'DisplayName', 'WeaponCategory', 'DamageType', 'dps', 'dpsShields', 'Damage', 'DamageToShields',
   'MaxRadius', 'MinRadius', 'DamageRadius', 'MuzzleVelocity', 'ProjectileLifetime',
   'NukeInnerRingRadius', 'NukeOuterRingRadius', 'NukeInnerRingDamage', 'NukeOuterRingDamage',
   'BeamLifetime', 'RackFireTogether', 'ManualFire', 'MuzzleSalvoSize', 'ProjectilesPerOnFire', 'isTML',
@@ -74,6 +74,20 @@ const groupedWeapons = computed(() => {
 
 const weaponStats = (w) => {
   const stats = []
+  if (w.DamageToShields) {
+    stats.push({
+      label: 'Damage to shields',
+      value: shorten(w.Damage + w.DamageToShields),
+      title: 'damage to shields'
+    })
+    if (w.dpsShields) {
+      stats.push({
+        label: 'DPS to shields',
+        value: w.dpsShields,
+        title: 'dps to shields'
+      })
+    }
+  }
   if (w.MaxRadius) stats.push({
     label: 'Range',
     value: `${w.MinRadius || 0} - ${shorten(w.MaxRadius)}`,

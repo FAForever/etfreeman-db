@@ -1,7 +1,7 @@
-// DPS Calculator Tests - Ported from test/spec/dps.js
+// DPS Calculator Tests - FA-Accurate DPS Calculation
 // Tests critical weapon DPS calculations for accuracy
 import { describe, it, expect } from 'vitest'
-import { getDps } from '../../stores/utils/unitDecorator/index.js'
+import { calculateDps2 } from '../../stores/utils/unitDecorator/index.js'
 
 describe('DPS Calculator', () => {
   it('mantis (URL0107)', () => {
@@ -24,7 +24,7 @@ describe('DPS Calculator', () => {
       'TurretYawSpeed': 100,
       'WeaponCategory': 'Direct Fire'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(26.67, 1)
   })
 
@@ -47,7 +47,7 @@ describe('DPS Calculator', () => {
       'TurretYawSpeed': 100,
       'WeaponCategory': 'Direct Fire Naval'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(212, 1)
   })
 
@@ -71,7 +71,7 @@ describe('DPS Calculator', () => {
       'TurretYawSpeed': 60,
       'WeaponCategory': 'Direct Fire Naval'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(137.5, 1)
   })
 
@@ -95,7 +95,7 @@ describe('DPS Calculator', () => {
       'TurretYawSpeed': 60,
       'WeaponCategory': 'Direct Fire Naval'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(71.5, 1)
   })
 
@@ -130,7 +130,7 @@ describe('DPS Calculator', () => {
       'WeaponCategory': 'Direct Fire Naval',
       'WeaponNumber': 2
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(137.5, 1)
   })
 
@@ -161,7 +161,7 @@ describe('DPS Calculator', () => {
       'WeaponCategory': 'Anti Navy',
       'MuzzleSalvoSize': 4
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(96.97, 1)
   })
 
@@ -192,7 +192,7 @@ describe('DPS Calculator', () => {
       'TurretYawSpeed': 0,
       'WeaponCategory': 'Anti Navy'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(90, 1)
   })
 
@@ -224,7 +224,7 @@ describe('DPS Calculator', () => {
       'RateOfFire': 0.12,
       'WeaponCategory': 'Artillery'
     }
-    const dps = getDps(weapon, true)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(60.24, 1)
   })
 
@@ -257,7 +257,7 @@ describe('DPS Calculator', () => {
       'RackSalvoReloadTime': 0,
       'WeaponCategory': 'Artillery'
     }
-    const dps = getDps(weapon, true)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(77.58, 1)
   })
 
@@ -281,7 +281,7 @@ describe('DPS Calculator', () => {
       'TurretYawSpeed': 180,
       'WeaponCategory': 'Direct Fire'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(233.33, 1)
   })
 
@@ -312,7 +312,7 @@ describe('DPS Calculator', () => {
       'TurretYawSpeed': 0,
       'WeaponCategory': 'Bomb'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(60, 1)
   })
 
@@ -340,7 +340,7 @@ describe('DPS Calculator', () => {
       'Buffs': [{}],
       'WeaponCategory': 'Bomb'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(40, 1)
   })
 
@@ -367,7 +367,7 @@ describe('DPS Calculator', () => {
       'FiringRandomness': 0,
       'WeaponCategory': 'Bomb'
     }
-    const dps = getDps(weapon, false)
+    const dps = calculateDps2(weapon, false)
     expect(dps).toBeCloseTo(50, 1)
   })
 })
