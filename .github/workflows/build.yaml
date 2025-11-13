@@ -24,9 +24,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: etfreeman-db-generated-data
-
-      - name: Move generated data to source
-        run: mkdir -p src/public/data && mv etfreeman-db-generated-data/* src/public/data/
+          path: src/public/data
 
       - name: Setup Node
         uses: actions/setup-node@v4
