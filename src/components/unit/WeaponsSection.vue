@@ -74,6 +74,7 @@ const groupedWeapons = computed(() => {
 
 const weaponStats = (w) => {
   const stats = []
+  console.log(w)
   if (w.DamageToShields) {
     stats.push({
       label: 'Damage to shields',

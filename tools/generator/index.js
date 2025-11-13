@@ -166,6 +166,7 @@ async function generate() {
           : 1;
 
         weapon.ProjectileFragmentMultiplier = baseFragments * nestedMultiplier;
+        console.log(weapon.DisplayName + ' for ' + unit.General.UnitName + ': ' + weapon.ProjectileFragmentMultiplier);
         weaponsEnhanced++;
       }
     }
