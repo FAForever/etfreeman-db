@@ -2,7 +2,7 @@ const REPOS = [
   {
     name: 'fa',
     owner: 'FAForever',
-    branch: 'deploy/fafdevelop',
+    branch: 'deploy/faf',
     paths: ['units', 'lua/version.lua'],
     projectilePaths: ['projectiles']
   },
