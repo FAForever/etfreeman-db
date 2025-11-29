@@ -2,6 +2,7 @@ node_modules
 .claude
 dist
 src/sass/generated
+src/public/data/version.json
 src/public/data/index.json
 src/public/data/index.fat.json
 src/public/data/version.json
