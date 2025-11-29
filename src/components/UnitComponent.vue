@@ -11,7 +11,7 @@
         <AirPhysicsSection v-if="showedSections.AirPhysics && unit.Air?.MaxAirspeed" :air="unit.Air"
           :physics="unit.Physics" />
         <WreckageSection v-if="showedSections.Wreckage && unit.Wreckage?.HealthMult" :wreckage="unit.Wreckage"
-          :defense="unit.Defense" :economy="unit.Economy" />
+          :defense="unit.Defense" :economy="unit.Economy" :tech="unit.tech" />
         <VeterancySection v-if="showedSections.Veterancy && unit.Veteran" :veteran="unit.Veteran"
           :defense="unit.Defense" :categories="unit.Categories" :tech="unit.tech" />
         <WeaponsSection v-if="showedSections.Weapons && unit.Weapon" :weapons="unit.Weapon" :unit="unit" />

@@ -68,7 +68,7 @@ async function generate() {
   const units = [];
   const exceptions = new Set(['SRL0310', 'XRB2309', 'URB3103', 'UEB5204', 'URB5204', 'UAB5204','UXL0021','UEB5208'])
   const force_include = new Set(['XEA0002'])
-  
+
   for (const bp of blueprints) {
     try {
       const data = parseBlueprint(bp.content);
@@ -87,6 +87,25 @@ async function generate() {
       if (!data.General.Classification) {
         data.General.Classification = deriveClassification(data.Categories);
       }
+
+      // Hotfix for naval wrecks
+      if (data.Categories && data.Categories.includes('NAVAL') && !data.Wreckage) {
+        data.Wreckage = {
+          Blueprint: '/props/DefaultWreckage/DefaultWreckage_prop.bp',
+          EnergyMult: 0,
+          HealthMult: 0.9,
+          MassMult: 0.9,
+          ReclaimTimeMultiplier: 1,
+          WreckageLayers: {
+            Air: false,
+            Land: false,
+            Seabed: true,
+            Sub: true,
+            Water: true,
+          },
+        };
+      }
+
       units.push(data);
 
     } catch (error) {
