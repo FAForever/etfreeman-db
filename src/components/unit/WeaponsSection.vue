@@ -43,7 +43,7 @@ const DISPLAYED_PROPS = [
   'BeamLifetime', 'RackFireTogether', 'ManualFire', 'MuzzleSalvoSize', 'ProjectilesPerOnFire', 'isTML',
   'TurretPitchRange', 'TurretPitch', 'TurretPitchSpeed',
   'TurretYawRange', 'TurretYaw', 'TurretYawSpeed',
-  'FiringTolerance', 'FiringRandomness'
+  'FiringTolerance', 'FiringRandomness', 'FiringRandomnessWhileMoving',
 ]
 
 const weaponKey = (w) => {
@@ -129,6 +129,7 @@ const weaponStats = (w) => {
   })
   if (w.FiringTolerance) stats.push({ label: 'Firing Tolerance', value: w.FiringTolerance })
   if (w.FiringRandomness) stats.push({ label: 'Firing Randomness', value: w.FiringRandomness })
+  if (w.FiringRandomnessWhileMoving) stats.push({ label: 'Firing Randomness while moving', value: w.FiringRandomnessWhileMoving })
   return stats
 }
 </script>
