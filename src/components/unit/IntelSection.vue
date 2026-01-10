@@ -18,7 +18,10 @@ const intelConfig = [
   { key: 'VisionRadius', label: 'Vision radius' },
   { key: 'WaterVisionRadius', label: 'Water vision radius' },
   { key: 'RadarRadius', label: 'Radar radius' },
-  { key: 'SonarRadius', label: 'Sonar radius' }
+  { key: 'SonarRadius', label: 'Sonar radius' },
+  { key: 'RadarStealthFieldRadius', label: 'Radar Stealth Radius' },
+  { key: 'SonarStealthFieldRadius', label: 'Sonar Stealth radius' },
+  { key: 'ReactivateTime', label: 'Reactivate Time' },
 ]
 
 const intelRows = useStatRows(computed(() => props.intel), intelConfig)
