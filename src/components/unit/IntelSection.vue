@@ -19,7 +19,7 @@ const intelConfig = [
   { key: 'WaterVisionRadius', label: 'Water vision radius' },
   { key: 'RadarRadius', label: 'Radar radius' },
   { key: 'SonarRadius', label: 'Sonar radius' },
-  { key: 'RadarStealthFieldRadius', label: 'Radar Stealth Radius' },
+  { key: 'RadarStealthFieldRadius', label: 'Radar Stealth radius' },
   { key: 'SonarStealthFieldRadius', label: 'Sonar Stealth radius' },
   { key: 'ReactivateTime', label: 'Reactivate Time' },
 ]
