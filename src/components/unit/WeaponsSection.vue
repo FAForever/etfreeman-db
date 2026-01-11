@@ -40,7 +40,7 @@
       <tr v-if="w.dps && unit.Economy?.BuildCostMass">
         <td></td>
         <td colspan="2"><span class="sm">DPS per mass</span></td>
-        <td><span class="sm">{{ roundVal(w.dps / unit.Economy.BuildCostMass, 2) }}</span></td>
+        <td><span class="sm">{{ roundVal(w.dps / unit.Economy.BuildCostMass, 3) }}</span></td>
       </tr>
       <tr v-for="stat, wsIdx in weaponStats(w)" :key="stat.label"
         :class="{ 'unit-details__sec-end': wsIdx === weaponStats(w).length - 1 }">
