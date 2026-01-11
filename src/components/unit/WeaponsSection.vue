@@ -19,6 +19,15 @@
           <span title="DoT damage" class="sm" v-if="w.projectileDotText">{{ w.projectileDotText }}</span>
         </td>
       </tr>
+      <tr v-if="w.Damage + (w.InitialDamage || 0) != w.fullDamage">
+        <td></td>
+        <td colspan="2">
+          <span class="sm">Full damage per {{ w.BeamLifetime? 'beam' : 'projectile'}}</span>
+        </td>
+        <td>
+          <span class="sm">{{ w.fullDamage }}</span>
+        </td>
+      </tr>
       <tr v-if="w.ProjectileFragmentMultiplier">
         <td></td>
         <td colspan="2">

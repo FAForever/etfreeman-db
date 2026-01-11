@@ -138,13 +138,17 @@ export const beamCycle = (weapon) => {
 }
 
 export const fireCycle = (weapon) => {
-  if (weapon.BeamLifetime !== undefined) {
-    return beamCycle(weapon)
-  }
-
   const perProjDamage = calculateProjectileDamage(weapon)
   const { cycleProjs, cycleTime } = simulateFiringCycle(weapon)
   const totalDamage = perProjDamage * cycleProjs
+
+  if (weapon.BeamLifetime === 0) {
+    return `continuous beam: ${Math.round(totalDamage)}`
+  }
+
+  if (weapon.BeamLifetime) {
+    return `${cycleProjs} beam${cycleProjs > 1? 's': ''} / ${cycleTime}s, ${Math.round(totalDamage)} dmg total`
+  }
 
   const hasMuzzleSalvo = (weapon.MuzzleSalvoDelay || 0) > 0
   const hasMultiRackSequential = (weapon.RackBones?.length > 1) && !weapon.RackFireTogether
