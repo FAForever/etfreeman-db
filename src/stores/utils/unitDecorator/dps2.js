@@ -3,7 +3,7 @@
 
 const MATH_IRound = (val) => Math.round(val * 10) / 10
 
-const calculateProjectileDamage = (weapon, toShields = false) => {
+export const calculateProjectileDamage = (weapon, toShields = false) => {
   let damage = weapon.Damage || 0
 
   if (toShields && weapon.DamageToShields) {
@@ -26,7 +26,7 @@ const calculateProjectileDamage = (weapon, toShields = false) => {
   return damage
 }
 
-const simulateFiringCycle = (weapon) => {
+export const simulateFiringCycle = (weapon) => {
   let cycleProjs = 0
   let cycleTime = 0
 
@@ -101,3 +101,85 @@ export const calculateDps2 = (weapon, toShields = false) => {
 
   return Number(((damage * cycleProjs) / cycleTime).toFixed(2))
 }
+
+const formatBeamCollisionCycle = (shots, dmg, perShotDelay, totalDmg) => {
+  const delayText = shots > 1 ? `/ ${perShotDelay} sec ` : ''
+  return `${shots} times ${dmg} dmg ${delayText}${totalDmg} dmg total`
+}
+
+const formatStandardBeam = (dmg, totalDmg) =>
+  `11 times / 0.1 sec ${dmg} dmg = ${totalDmg} dmg total, 1.1 sec total`
+
+const formatNonStandardBeam = (dmg, lifetime) =>
+  `${lifetime * 10 + 1} times / 0.1 sec ${dmg} dmg = ${(lifetime * 10 + 1) * dmg} dmg total`
+
+const formatDotPulses = (pulses, dmg, timePerPulse, totalDmg, totalTime) =>
+  `${pulses} times ${dmg} dmg / ${timePerPulse} sec = ${totalDmg} total ${totalTime} sec total`
+
+export const beamCycle = (weapon) => {
+  if (weapon.BeamCollisionDelay >= 0.1) {
+    const shots = Math.round(weapon.BeamLifetime / (0.1 + weapon.BeamCollisionDelay))
+    const perShotDelay = weapon.BeamCollisionDelay + 0.1
+    return formatBeamCollisionCycle(shots, weapon.Damage, perShotDelay, weapon.Damage * shots)
+  }
+
+  if (weapon.BeamLifetime) {
+    return formatNonStandardBeam(weapon.Damage, weapon.BeamLifetime)
+  }
+
+  if (weapon.DoTPulses) {
+    const timePerPulse = weapon.DoTTime / 10
+    const totalDmg = weapon.damage * weapon.DoTPulses
+    const totalTime = weapon.DoTTime / 10 * weapon.DoTPulses - 0.1
+    return formatDotPulses(weapon.DoTPulses, weapon.Damage, timePerPulse, totalDmg, totalTime)
+  }
+
+  return `${weapon.Damage} dmg`
+}
+
+export const fireCycle = (weapon) => {
+  if (weapon.BeamLifetime !== undefined) {
+    return beamCycle(weapon)
+  }
+
+  const perProjDamage = calculateProjectileDamage(weapon)
+  const { cycleProjs, cycleTime } = simulateFiringCycle(weapon)
+  const totalDamage = perProjDamage * cycleProjs
+
+  const hasMuzzleSalvo = (weapon.MuzzleSalvoDelay || 0) > 0
+  const hasMultiRackSequential = (weapon.RackBones?.length > 1) && !weapon.RackFireTogether
+  const isSalvo = hasMuzzleSalvo || hasMultiRackSequential
+
+  if (isSalvo && cycleProjs > 1) {
+    const reloadTime = weapon.RackSalvoReloadTime || 0
+    const firingTime = cycleTime - reloadTime
+
+    if (hasMuzzleSalvo) {
+      const muzzleDelay = weapon.MuzzleSalvoDelay || 0
+      const salvoTime = muzzleDelay * (cycleProjs - 1)
+      const actualReload = cycleTime - salvoTime
+      return `${cycleProjs} times 1 projectile in ${salvoTime.toFixed(1)} sec + ${actualReload.toFixed(1)} sec reload = ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
+    }
+
+    const rackCount = weapon.RackBones?.length || 1
+    const shots = hasMuzzleSalvo ? cycleProjs : rackCount
+    const projsPerShot = cycleProjs / shots
+    return `${shots} times ${projsPerShot} projectiles in ${firingTime.toFixed(1)} sec + ${reloadTime.toFixed(1)} sec reload = ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
+  }
+
+  const plural = cycleProjs > 1 ? 's' : ''
+  const cycleTimeText = cycleTime === 1 ? '' : cycleTime.toFixed(1)
+  return `${cycleProjs} shot${plural} / ${cycleTimeText} sec<br/>${Math.round(totalDamage)} total dmg`
+}
+
+export const formatDotText = (weapon) => {
+  if (!weapon.DoTPulses || !weapon.DoTTime) return null
+
+  const interval = weapon.DoTTime / (weapon.DoTPulses - 1)
+  const nonInitialPulses = weapon.DoTPulses - 1
+  const damagePerTick = weapon.Damage
+
+  return `+ after ${interval.toFixed(1)} sec, ${nonInitialPulses} tick${nonInitialPulses > 1?'s':''} of ${damagePerTick}dmg${nonInitialPulses > 1?` / ${interval.toFixed(1)} sec`:''}`
+}
+
+export const isTML = (weapon) => !!weapon.ForceSingleFire

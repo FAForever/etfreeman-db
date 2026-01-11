@@ -69,6 +69,12 @@ a
 
 .ta-c
   text-align: center
+.ta-r
+  text-align: right
+
+.indented
+  padding-left: 5px
+  box-sizing: border-box
 
 .w-100
   width: 100%

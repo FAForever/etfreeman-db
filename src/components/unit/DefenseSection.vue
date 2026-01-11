@@ -3,8 +3,9 @@
     <tr class="unit-details__firstline">
       <td :title="`${defense?.Health} hp`">
         <span title="health" class="unit-details__ic icon_ui icon-health"></span>{{ shorten(defense?.Health) }}
-        <br />
-        <div v-if="defense?.RegenRate" class="sm ta-c w-100">(+{{ defense.RegenRate }}hp/s)</div>
+        <br>
+        <div v-if="defense?.RegenRate" class="sm indented w-100">(+{{ defense.RegenRate }}hp/s)</div>
+        <div v-if="economy?.BuildCostMass" class="sm indented w-100">({{ round(defense?.Health / economy?.BuildCostMass, 2) }}hp/mass)</div>
       </td>
       <td :title="economy?.BuildCostMass">
         <span title="mass" class="unit-details__ic icon_ui icon-mass"></span>{{ shorten(economy?.BuildCostMass) }}
@@ -23,7 +24,7 @@
         <td v-if="idx === 0">Shield</td>
         <td v-else></td>
         <td colspan="2">{{ row.label }}</td>
-        <td>{{ row.value }}</td>
+        <td>{{ row.value }} <span class="sm" v-if="row.label == 'Health'"> ({{ round(defense.Shield?.ShieldMaxHealth / economy?.BuildCostMass, 2) }} hp/mass)</span></td>
       </tr>
     </template>
   </tbody>
@@ -31,7 +32,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { shorten } from '../../composables/helpers/common.js'
+import { round, shorten } from '../../composables/helpers/common.js'
 import { useStatRows } from '../../composables/useStatRows.js'
 
 const props = defineProps(['defense', 'economy'])

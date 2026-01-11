@@ -2,7 +2,7 @@
   <tbody v-if="weapons">
     <template v-for="(w, wIdx) in groupedWeapons" :key="wIdx">
       <tr class="unit-details__sec">
-        <td>{{!wIdx?'Weapons':''}}</td>
+        <td>{{ !wIdx ? 'Weapons' : '' }}</td>
         <td colspan="3" class="unit-details__minititle">
           {{ w.DisplayName }}
           <span v-if="w.count > 1" class="sm">(&times;{{ w.count }})</span>
@@ -15,8 +15,23 @@
         </td>
         <td>
           <span v-if="w.dps" title="damage per second" class="sm">{{ roundVal(w.dps, 2) }}dps<br /></span>
-          <span title="damage per shot" class="sm">{{ roundVal(w.Damage) }}dmg</span>
+          <span title="initial damage per shot" class="sm">{{ roundVal(w.Damage + (w.InitialDamage || 0)) }}dmg</span><br />
+          <span title="DoT damage" class="sm" v-if="w.projectileDotText">{{ w.projectileDotText }}</span>
         </td>
+      </tr>
+      <tr v-if="w.ProjectileFragmentMultiplier">
+        <td></td>
+        <td colspan="2">
+          <span class="sm">Fragments count</span>
+        </td>
+        <td>
+          <span class="sm">{{ w.ProjectileFragmentMultiplier }}</span>
+        </td>
+      </tr>
+      <tr v-if="w.dps && unit.Economy?.BuildCostMass">
+        <td></td>
+        <td colspan="2"><span class="sm">DPS per mass</span></td>
+        <td><span class="sm">{{ roundVal(w.dps / unit.Economy.BuildCostMass, 2) }}</span></td>
       </tr>
       <tr v-for="stat, wsIdx in weaponStats(w)" :key="stat.label"
         :class="{ 'unit-details__sec-end': wsIdx === weaponStats(w).length - 1 }">
@@ -74,7 +89,6 @@ const groupedWeapons = computed(() => {
 
 const weaponStats = (w) => {
   const stats = []
-  console.log(w)
   if (w.DamageToShields) {
     stats.push({
       label: 'Damage to shields',
@@ -97,7 +111,7 @@ const weaponStats = (w) => {
   if (w.DamageRadius) stats.push({ label: 'Damage radius', value: w.DamageRadius, title: 'damage radius' })
   if (w.MuzzleVelocity) stats.push({ label: 'Muzzle velocity', value: w.MuzzleVelocity, title: 'muzzle velocity' })
   if (w.ProjectileLifetime) stats.push({ label: 'Lifetime', value: w.ProjectileLifetime, title: 'muzzle lifetime' })
-  if (w.ProjectilesPerOnFire && w.ProjectilesPerOnFire > 1) stats.push({ label: 'Projectiles/shot', value: w.ProjectilesPerOnFire, title: 'projectiles per shot' })
+  //if (w.ProjectilesPerOnFire && w.ProjectilesPerOnFire > 1) stats.push({ label: 'Projectiles/shot', value: w.ProjectilesPerOnFire, title: 'projectiles per shot' })
   if (w.NukeInnerRingRadius && w.NukeOuterRingRadius) stats.push({
     label: 'Ring radius',
     value: `${w.NukeInnerRingRadius} | ${w.NukeOuterRingRadius}`,
@@ -112,7 +126,7 @@ const weaponStats = (w) => {
     stats.push({ label: 'Beam cycle', value: props.unit.beamCycle(w) })
   }
   if (w.RackFireTogether) stats.push({ label: 'RackFireTogether', value: w.RackFireTogether })
-  if ((w.ManualFire || w.MuzzleSalvoSize) && !w.isTML) stats.push({
+  if ((w.ManualFire || w.MuzzleSalvoSize) && !w.isTML && w.fullDamage) stats.push({
     label: `Fire cycle${w.ManualFire ? ' ⦿' : ''}`,
     value: props.unit.fireCycle(w),
     title: w.ManualFire ? 'manual fire' : ''

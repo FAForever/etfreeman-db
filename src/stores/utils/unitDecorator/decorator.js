@@ -7,8 +7,7 @@ import {
   getDisplayClassification,
   getSortOrder
 } from './classification.js'
-import { fireCycle, beamCycle, isTML } from './dps.js'
-import { calculateDps2 } from './dps2.js'
+import { calculateDps2, calculateProjectileDamage, simulateFiringCycle, fireCycle, beamCycle, isTML, formatDotText } from './dps2.js'
 
 export const decorateUnit = (blueprint) => {
   const self = {
@@ -37,6 +36,9 @@ export const decorateUnit = (blueprint) => {
     for (let i = 0; i < blueprint.Weapon.length; i++) {
       const weapon = blueprint.Weapon[i]
       weapon.dps = calculateDps2(weapon, false)
+      weapon.fullDamage = calculateProjectileDamage(weapon, false)
+      weapon.fullSalvoDamage = weapon.fullDamage * simulateFiringCycle(weapon).cycleProjs
+      weapon.projectileDotText = formatDotText(weapon)
       if (weapon.DamageToShields) {
         weapon.dpsShields = calculateDps2(weapon, true)
       }
