@@ -54,7 +54,14 @@ export function useUnitGrouping() {
         'classification'
       ).map(classGroup => {
         Object.keys(classGroup.unitsByFaction).forEach(faction => {
-          classGroup.unitsByFaction[faction] = sortByUnitNumber(classGroup.unitsByFaction[faction])
+          classGroup.unitsByFaction[faction].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+          if (faction === 'UEF' || faction === 'Seraphim') {
+            const hasXEB = classGroup.unitsByFaction[faction].find(u => u.id === 'XEB0204')
+            const hasUEL = classGroup.unitsByFaction[faction].find(u => u.id === 'UEL0301')
+            if (hasXEB || hasUEL) {
+              console.log('After sort:', faction, classGroup.classification, classGroup.unitsByFaction[faction].map(u => u.id + ':' + u.sortOrder))
+            }
+          }
         })
         return classGroup
       })

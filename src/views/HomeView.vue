@@ -57,6 +57,12 @@ const sectionsWithTiers = computed(() => {
       Object.entries(classGroup.unitsByFaction).forEach(([faction, units]) => {
         units.forEach(unit => {
           const tier = unit.tech || 'T1'
+          if (unit.Id == 'XEB0204') {
+            console.log(unit)
+            console.log("TIER")
+            console.log(tier)
+          }
+
 
           if (!tierGroups[tier]) {
             tierGroups[tier] = {
@@ -68,6 +74,16 @@ const sectionsWithTiers = computed(() => {
 
           tierGroups[tier].unitsByFaction[faction].push(unit)
         })
+      })
+    })
+
+    // Sort units in each tier->faction by sortOrder (only if has customOrder > 1e20)
+    Object.values(tierGroups).forEach(tier => {
+      Object.keys(tier.unitsByFaction).forEach(faction => {
+        const needsSort = tier.unitsByFaction[faction].some(u => u.sortOrder > 1e20)
+        if (needsSort) {
+          tier.unitsByFaction[faction].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+        }
       })
     })
 

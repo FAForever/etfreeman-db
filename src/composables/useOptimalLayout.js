@@ -129,6 +129,18 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
       [...row].sort((a, b) => widths[b] - widths[a])
     )
 
+    // Log before post-sort
+    const flatBefore = sortedRows.flat()
+    const hasXEBBefore = flatBefore.find(idx => sections.value[idx]?.baseClass === 'Land')
+    if (hasXEBBefore !== undefined) {
+      const rowUnits = sortedRows[hasXEBBefore].map(idx => sections.value[idx])
+      const hasXEB = rowUnits.find(u => u && u.id === 'XEB0204')
+      const hasUEL = rowUnits.find(u => u && u.id === 'UEL0301')
+      if (hasXEB || hasUEL) {
+        console.log('Before post-sort:', rowUnits.map(u => u?.id).filter(id => id === 'XEB0204' || id === 'UEL0301'))
+      }
+    }
+
     // Post-sort by rowSortScore
     sortedRows.sort((rowA, rowB) => {
       const scoreA = rowA.reduce((sum, idx) => sum + getSectionScore(sections.value[idx]), 0)
@@ -144,6 +156,17 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
         return scoreB - scoreA
       })
     })
+
+    // Log after post-sort
+    const hasXEBAfter = flatBefore.find(idx => sections.value[idx]?.baseClass === 'Land')
+    if (hasXEBAfter !== undefined) {
+      const rowUnits = sortedRows[hasXEBAfter].map(idx => sections.value[idx])
+      const hasXEB = rowUnits.find(u => u && u.id === 'XEB0204')
+      const hasUEL = rowUnits.find(u => u && u.id === 'UEL0301')
+      if (hasXEB || hasUEL) {
+        console.log('After post-sort:', rowUnits.map(u => u?.id).filter(id => id === 'XEB0204' || id === 'UEL0301'))
+      }
+    }
 
     const rowW = r => r.reduce((s, i) => s + widths[i], -sectionGap)
     const rowWidths = sortedRows.map(rowW)
