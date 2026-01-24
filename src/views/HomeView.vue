@@ -146,7 +146,7 @@ onUnmounted(() => {
     border: 2px solid rgba(255, 255, 255, .6)
     border-bottom: none
     border-radius: 5px
-    padding: 0 6px
+    padding: 0 6px 6px
     &-title
       padding: 3px 0 3px
       font-weight: 700
@@ -159,7 +159,6 @@ onUnmounted(() => {
     display: flex
     flex-direction: column
     gap: 6px
-    margin-bottom: 10px
     &:not(:first-child)
       padding-left: 6px
     &:not(:last-child)
