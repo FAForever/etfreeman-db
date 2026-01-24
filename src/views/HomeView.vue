@@ -1,5 +1,5 @@
 <template>
-  <div class="home home_A">
+  <div class="home">
     <div class="home__top">
       <Header />
       <FiltersComponent class="home__filters" :row="true" />
@@ -40,14 +40,16 @@ const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contender
 const groupedByBase = computed(() => groupByHierarchy(visibleUnits.value))
 
 const containerRef = ref(null)
-const containerWidth = ref(1000)
+const scrollbarGap = 10
+const rawWidth = ref(document.body.offsetWidth)
+const containerWidth = computed(() => rawWidth.value - scrollbarGap)
 
 const { optimalOrder } = useOptimalLayout(groupedByBase, containerWidth)
 const optimalSections = computed(() => optimalOrder.value)
 
 const updateWidth = () => {
   if (containerRef.value) {
-    containerWidth.value = containerRef.value.clientWidth
+    rawWidth.value = containerRef.value.clientWidth
   }
 }
 
@@ -64,18 +66,10 @@ onUnmounted(() => {
 <style lang="sass">
 .home
   width: 100%
-  &_A
-    display: flex
-    flex-direction: column
-    align-items: flex-start
-    gap: 10px
-    padding-bottom: 10px
-
-  &_B
-    display: flex
-    align-items: flex-start
-    gap: 10px
-    padding-bottom: 10px
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+  gap: 10px
 
   &__left
     flex-shrink: 0
@@ -84,8 +78,10 @@ onUnmounted(() => {
     padding-top: 10px
 
   &__top
+    padding-top: 5px
     display: flex
     align-items: center
+    gap: 10px
 
   &__units
     display: flex

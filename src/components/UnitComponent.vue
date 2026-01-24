@@ -64,7 +64,7 @@ const hasEconomy = computed(() => {
 
   &__thumb
     grid-row: span 2
-    width: 40px
+    --thumbwidth: 40px
 
   & &__firstline td
     padding-bottom: 5px

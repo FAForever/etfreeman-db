@@ -23,6 +23,23 @@ body
   min-height: 100dvh
   font-family: 'Muli', Verdana, Arial, sans-serif
 
+  &::-webkit-scrollbar
+    width: 8px
+    height: 8px
+  &::-webkit-scrollbar-track
+    background: #050505
+  &::-webkit-scrollbar-thumb
+    background: #BBB
+    cursor: pointer
+    width: 6px
+    height: 6px
+    border: 2px solid #050505
+    border-radius: 8px
+    &:hover, &:active
+      background: #FFF
+  @supports not selector(::-webkit-scrollbar)
+    scrollbar-width: thin
+
 #app
   flex-grow: 1
   display: flex

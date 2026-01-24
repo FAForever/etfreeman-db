@@ -20,7 +20,7 @@ export default defineConfig(() => ({
           imgDest: join(publicDir, 'img', 'ui.png'),
           cssDest: join(sassDir, 'generated', 'ui_sprites.sass'),
           cssImageRef: '/img/ui.png',
-          modifier: 'ui'
+          modifier: 'ui-scalable'
         },
         {
           name: 'strategic',

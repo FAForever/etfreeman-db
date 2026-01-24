@@ -1,8 +1,8 @@
 <template>
-  <div class="home home_B">
-    <div class="home__left">
+  <div class="home">
+    <div class="home__top">
       <Header />
-      <FiltersComponent class="home__filters" />
+      <FiltersComponent class="home__filters" :row="true" />
     </div>
     <MasonryWall class="home__byclass" :items="groupedByBase" :column-width="320" :gap="10" :padding="10">
       <template #default="{ item: baseGroup }">
@@ -72,12 +72,9 @@ const selectAllBeamed = (baseGroup) => {
   align-items: flex-start
   gap: 10px
 
-  &__left
-    flex-shrink: 0
-
   &__byclass
-    padding: 10px
-    flex-grow: 1
+    width: 100%
+    padding: 5px
 
   &__byclass-base
     display: block

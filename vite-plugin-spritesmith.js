@@ -112,6 +112,33 @@ export default function viteSpritesmith(options = {}) {
 
           cssContent += `.icon-${iconName}\n  background-position: ${posXPercent.toFixed(4)}% ${posYPercent.toFixed(4)}%\n`
         })
+      } else if (modifier === 'ui-scalable') {
+        const columnCount = Math.round(packed.width / 48)
+
+        const undefinedItem = items.find(i => path.basename(i.file, '.png') === 'undefined')
+        let defaultPosition = '0.0000% 0.0000%'
+
+        if (undefinedItem) {
+          const posX = packed.width === undefinedItem.width
+            ? 0
+            : (undefinedItem.x / (packed.width - undefinedItem.width)) * 100
+          const posY = packed.height === undefinedItem.height
+            ? 0
+            : (undefinedItem.y / (packed.height - undefinedItem.height)) * 100
+          defaultPosition = `${posX.toFixed(4)}% ${posY.toFixed(4)}%`
+        }
+
+        cssContent += `${iconClass}\n`
+        cssContent += `  background-image: url(${cssImageRef})\n`
+        cssContent += `  background-size: calc(100% * ${columnCount}) auto\n`
+        cssContent += `  background-position: ${defaultPosition}\n\n`
+
+        items.forEach(item => {
+          const iconName = path.basename(item.file, '.png')
+          const posX = packed.width === item.width ? 0 : (item.x / (packed.width - item.width)) * 100
+          const posY = packed.height === item.height ? 0 : (item.y / (packed.height - item.height)) * 100
+          cssContent += `.icon-${iconName}\n  background-position: ${posX.toFixed(4)}% ${posY.toFixed(4)}%\n`
+        })
       } else {
         cssContent += `${iconClass}\n`
         cssContent += `  background-image: url(${cssImageRef})\n`

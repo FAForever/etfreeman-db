@@ -68,13 +68,10 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
   const optimalOrder = computed(() => {
     if (!sections.value?.length) return []
 
-    const start = performance.now()
-
     const widths = sections.value.map(getSectionWidth)
     const n = sections.value.length
     const allIndices = Array.from({ length: n }, (_, i) => i)
     const maxWidth = containerWidth.value
-
     let bestSolution = null
     let bestScore = { rows: Infinity, waste: Infinity }
 
@@ -107,8 +104,15 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
       [...row].sort((a, b) => widths[b] - widths[a])
     )
 
-    const end = performance.now()
-    console.log(`Optimal layout: ${(end - start).toFixed(2)}ms, ${bestScore.rows} rows, ${row1Subsets.length} row1 subsets`)
+    const landIdx = sections.value.findIndex(s => s.baseClass === 'Land')
+    const rowW = r => r.reduce((s, i) => s + widths[i] + sectionGap, -sectionGap)
+    const wastes = sortedRows.map(rowW).map(w => maxWidth - w)
+    const landRowIdx = sortedRows.findIndex(r => r.includes(landIdx))
+
+    if (landRowIdx > 0 && wastes[landRowIdx] !== Math.max(...wastes)) {
+      const [landRow] = sortedRows.splice(landRowIdx, 1)
+      sortedRows.unshift(landRow)
+    }
 
     return sortedRows.flat().map(i => sections.value[i])
   })

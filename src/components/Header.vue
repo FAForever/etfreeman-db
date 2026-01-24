@@ -28,10 +28,13 @@ const saveView = (path) => {
   display: flex
   flex-direction: column
   align-items: center
+  justify-content: center
   text-align: center
   gap: 5px
-  padding-bottom: 10px
-  border-bottom: 1px dashed rgba(255,255,255,.1)
+  padding-right: 10px
+  padding-left: 5px
+  align-self: stretch
+  border-right: 1px dashed rgba(255,255,255,.1)
 
   &__version
     font-size: 10px
