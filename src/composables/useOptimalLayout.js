@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitGap = 10, sectionGap = 6) {
+export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitGap = 6, sectionGap = 10) {
   const getSectionWidth = (section) => {
     const factionTotals = { UEF: 0, Cybran: 0, Aeon: 0, Seraphim: 0, Nomads: 0 }
 
@@ -25,11 +25,11 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
       for (let i = 0; i < n; i++) {
         if (mask & (1 << i)) {
           const w = widths[indices[i]]
-          if (totalWidth + w + (subset.length > 0 ? sectionGap : 0) > maxWidth) {
+          if (totalWidth + w > maxWidth) {
             totalWidth = Infinity
             break
           }
-          totalWidth += w + (subset.length > 0 ? sectionGap : 0)
+          totalWidth += w
           subset.push(indices[i])
         }
       }
@@ -49,7 +49,7 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
     for (const idx of sorted) {
       let placed = false
       for (const row of rows) {
-        const newWidth = row.width + widths[idx] + sectionGap
+        const newWidth = row.width + widths[idx]
         if (newWidth <= maxWidth) {
           row.items.push(idx)
           row.width = newWidth
@@ -68,17 +68,27 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
   const optimalOrder = computed(() => {
     if (!sections.value?.length) return []
 
-    const widths = sections.value.map(getSectionWidth)
+    const maxWidth = containerWidth.value + sectionGap
+    const widths = sections.value.map(s => Math.min(getSectionWidth(s) + sectionGap, maxWidth))
     const n = sections.value.length
     const allIndices = Array.from({ length: n }, (_, i) => i)
-    const maxWidth = containerWidth.value
     let bestSolution = null
     let bestScore = { rows: Infinity, waste: Infinity }
 
+    const landIdx = sections.value.findIndex(s => s.baseClass === 'Land')
+
     const row1Subsets = enumerateSubsets(allIndices, widths, maxWidth)
+      .filter(subset => landIdx === -1 || subset.items.includes(landIdx))
 
     for (const row1 of row1Subsets) {
       const remaining1 = allIndices.filter(i => !row1.items.includes(i))
+
+      // If no remaining items, row1 is the complete solution
+      if (remaining1.length === 0) {
+        bestSolution = [row1.items]
+        break
+      }
+
       const row2Subsets = enumerateSubsets(remaining1, widths, maxWidth)
 
       for (const row2 of row2Subsets) {
@@ -104,15 +114,10 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
       [...row].sort((a, b) => widths[b] - widths[a])
     )
 
-    const landIdx = sections.value.findIndex(s => s.baseClass === 'Land')
-    const rowW = r => r.reduce((s, i) => s + widths[i] + sectionGap, -sectionGap)
-    const wastes = sortedRows.map(rowW).map(w => maxWidth - w)
-    const landRowIdx = sortedRows.findIndex(r => r.includes(landIdx))
-
-    if (landRowIdx > 0 && wastes[landRowIdx] !== Math.max(...wastes)) {
-      const [landRow] = sortedRows.splice(landRowIdx, 1)
-      sortedRows.unshift(landRow)
-    }
+    const rowW = r => r.reduce((s, i) => s + widths[i], -sectionGap)
+    const rowWidths = sortedRows.map(rowW)
+    const longestRowWidth = Math.max(...rowWidths)
+    const totalWaste = maxWidth * sortedRows.length - widths.reduce((a, b) => a + b, 0)
 
     return sortedRows.flat().map(i => sections.value[i])
   })
