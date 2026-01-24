@@ -1,54 +1,81 @@
 <template>
-  <div class="home">
-    <div class="home__left">
+  <div class="home home_A">
+    <div class="home__top">
       <Header />
-      <FiltersComponent class="home__filters" />
+      <FiltersComponent class="home__filters" :row="true" />
     </div>
-    <div class="home__units" :style="{ '--factionCount': effectiveVisibleFactions.length }">
-      <template v-for="faction in effectiveVisibleFactions" :key="faction">
-        <h1 :class="['home__faction-header', `home__faction-header_${faction.toLowerCase()}`]">
-          {{ faction }}
-        </h1>
-        <div v-for="displayClassification in displayClassifications" :key="`${faction}-${displayClassification}`"
-          :class="['home__kind', `home__kind--${displayClassification.toLowerCase()}`]">
-          <div v-for="unit in getUnitsForFactionAndDisplay(faction, displayClassification)" :key="unit.id"
-             :class="`${faction.toLowerCase()}-thumb-a-wrap`" >
-            <ThumbComponent @unit-click="handleUnitClick" :item="unit" :class="`${faction.toLowerCase()}-thumb-a`" />
+    <div class="home__units" ref="containerRef">
+      <div v-for="section in optimalSections" :key="section.baseClass" class="home__section">
+        <div class="home__section-title">{{ section.baseClass }}</div>
+        <div class="home__faction-rows">
+          <div v-for="faction in effectiveVisibleFactions" :key="faction"
+            :class="['home__faction-row', `home__faction-row--${faction.toLowerCase()}`]">
+            <template v-for="classGroup in section.classifications" :key="classGroup.classification">
+              <ThumbComponent v-for="unit in classGroup.unitsByFaction[faction]" :key="unit.id"
+                :item="unit" @unit-click="handleUnitClick" />
+            </template>
           </div>
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
+import { useUnitGrouping } from '../composables/useUnitGrouping.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
+import { useOptimalLayout } from '../composables/useOptimalLayout.js'
 import Header from '../components/Header.vue'
 import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 
 const router = useRouter()
 const { visibleUnits, toggleUnitSelection, contenders, effectiveVisibleFactions } = useUnitData()
+const { groupByHierarchy } = useUnitGrouping()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 
-const displayClassifications = ['Build', 'Support', 'Defenses', 'Land', 'Air', 'Naval']
+const groupedByBase = computed(() => groupByHierarchy(visibleUnits.value))
 
-function getUnitsForFactionAndDisplay(faction, displayClassification) {
-  return visibleUnits.value
-    .filter(unit => unit.faction === faction && unit.displayClassification === displayClassification)
-    .sort((a, b) => a.sortOrder - b.sortOrder)
+const containerRef = ref(null)
+const containerWidth = ref(1000)
+
+const { optimalOrder } = useOptimalLayout(groupedByBase, containerWidth)
+const optimalSections = computed(() => optimalOrder.value)
+
+const updateWidth = () => {
+  if (containerRef.value) {
+    containerWidth.value = containerRef.value.clientWidth
+  }
 }
+
+onMounted(() => {
+  updateWidth()
+  window.addEventListener('resize', updateWidth)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidth)
+})
 </script>
 
 <style lang="sass">
 .home
   width: 100%
-  display: flex
-  align-items: flex-start
-  gap: 10px
-  padding-bottom: 10px
+  &_A
+    display: flex
+    flex-direction: column
+    align-items: flex-start
+    gap: 10px
+    padding-bottom: 10px
+
+  &_B
+    display: flex
+    align-items: flex-start
+    gap: 10px
+    padding-bottom: 10px
 
   &__left
     flex-shrink: 0
@@ -56,31 +83,37 @@ function getUnitsForFactionAndDisplay(faction, displayClassification) {
     gap: 10px
     padding-top: 10px
 
+  &__top
+    display: flex
+    align-items: center
+
   &__units
-    display: grid
-    grid-template-columns: repeat(calc(var(--factionCount) * 6), 1fr)
+    display: flex
+    flex-wrap: wrap
+    gap: 10px
+    align-content: flex-start
     flex-grow: 1
-    gap: 0 6px
-    max-width: calc(var(--factionCount) * 6 * 60px + (var(--factionCount) * 6 - 1) * 1px)
+    width: 100%
 
-  &__faction-header
-    order: -1
-    grid-column: span 6
-    margin: 0 0 6px
-    padding: 0.67em 0
-    background: no-repeat right top
-    padding-left: 0.33em
-    background-color: black
+  &__section
+    background: rgba(0,0,0,.1)
+    &-title
+      border: 1px dashed rgba(255, 255, 255, .2)
+      border-bottom: none
+      border-radius: 5px
+      padding: 3px 0 3px
+      font-weight: 700
+      font-size: 12px
+      text-align: center
+      width: 100%
 
-    @include from(1200px)
-      font-size: 18px !important
-
-    @each $faction, $bg in vars.$factionBGs
-      &_#{$faction}
-        background-image: url($bg)
-
-  &__kind
+  &__faction-rows
     display: flex
     flex-direction: column
+    gap: 6px
+
+  &__faction-row
+    display: flex
+    flex-wrap: wrap
     gap: 6px
 </style>

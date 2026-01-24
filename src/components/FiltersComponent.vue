@@ -1,5 +1,5 @@
 <template>
-  <aside class="filters">
+  <aside class="filters" :class="{ 'filters_row': row }">
     <header>
       <span class="count" :title="`${contenders.length} selected`">{{ contenders.length }} selected</span>
       <a href="" title="clear selection" class="clear" @click.prevent="clearSelection">x</a>
@@ -65,6 +65,8 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 
+const  { row } = defineProps(['row'])
+
 const route = useRoute()
 
 const {
@@ -101,6 +103,26 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
   display: grid
   grid-template-columns: 100%
   gap: 3px
+
+  &_row
+    display: flex
+    max-width: initial
+    align-items: center
+    gap: 10px
+
+    .filter-icons
+      display: flex !important
+      flex-direction: row
+      align-items: center
+      margin-top: 0 !important
+      gap: 25px !important
+      a
+        transform: scale(0.8)
+        transform-origin: center center
+      &, .icon-column
+        gap: 0px
+        display: flex
+        flex-direction: row
 
   header
     margin: 0 0 10px

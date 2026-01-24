@@ -1,22 +1,21 @@
 <template>
-  <a
-    :class="[
-      'thumb',
-      'icon_units',
-      item.faction?.toLowerCase(),
-      `icon-${item.id}`,
-      { selected: item.selected, 'thumb_mini': mini }
-    ]"
-    :title="`${item.fullName} [${item.id}]`"
-    @click="handleClick"
-  >
-    <span
-      :class="[
+  <a :class="[
+    'thumb',
+    `thumb_${item.faction.toLowerCase()}`,
+    { selected: item.selected, 'thumb_mini': mini }
+  ]" :title="`${item.fullName} [${item.id}]`" @click="handleClick">
+    <div class="thumb__inner icon_units" :class="`icon-${item.id}`" v-if="!mini">
+      <span :class="[
         'strategic',
         'icon_strategic',
         `icon-${item.faction}_${item.strategicIcon}`
-      ]"
-    ></span>
+      ]" />
+    </div>
+    <span v-else :class="[
+      'strategic',
+      'icon_strategic',
+      `icon-${item.faction}_${item.strategicIcon}`
+    ]"/>
   </a>
 </template>
 
@@ -45,6 +44,19 @@ function handleClick(event) {
     top: 0
     left: 0
 
+  &:not(&_mini)
+    width: 48px
+    height: 48px
+    @each $name, $color in colors.$factions2
+      &.thumb_#{$name}
+        background-color: color.adjust($color, $alpha: -0.15)
+        border: 1px solid color.adjust($color, $alpha: .1, $lightness: 30%) !important
+        box-shadow: inset 0 0 4px 0px color.adjust($color, $alpha: .2, $saturation: 700%, $lightness: 20%)
+        padding: 3px
+        filter: contrast(120%)
+  &__inner
+    width: 100%
+    height: 100%
   &_mini
     background: none
     width: 21px

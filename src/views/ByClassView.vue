@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home home_B">
     <div class="home__left">
       <Header />
       <FiltersComponent class="home__filters" />

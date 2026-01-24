@@ -12,15 +12,16 @@ Supreme Commander unit database built with Vue.js 3.
 - `index.html` - Main HTML file
 
 **Components:** `src/components/`
-- `ThumbComponent.vue` - Unit thumbnail tile
-- `FiltersComponent.vue` - Faction/kind/tech filters (uses `route.path` for view mode active state)
+- `ThumbComponent.vue` - Unit thumbnail tile (accepts `mini` prop for compact display)
+- `FiltersComponent.vue` - Faction/kind/tech filters (uses `route.path` for view mode active state, `row` prop for horizontal layout)
+- `Header.vue` - Version display + view switcher buttons
 - `AppFooter.vue` - Footer
 - `UnitComponent.vue` - Full unit details for compare view (accepts `unit` and `showedSections` props)
   - `unit/` - Sub-components for unit sections (DefenseSection, EconomySection, etc.)
 
 **Views:** `src/views/`
-- `HomeView.vue` - Main unit grid by faction (dynamic grid columns via CSS var `--factionCount`)
-- `ByClassView.vue` - Units grouped by category and detailed classification (filtered factions hidden completely)
+- `HomeView.vue` - **View A**: Faction grid layout with horizontal filters (uses `home_A` modifier)
+- `ByClassView.vue` - **View B**: Category masonry layout with vertical sidebar (uses `home_B` modifier)
 - `CompareView.vue` - Unit comparison screen with section toggles (saved to localStorage)
 
 **State:** `src/stores/`
@@ -35,8 +36,8 @@ Supreme Commander unit database built with Vue.js 3.
   - `exceptions.js` - Special case configurations
 
 **Utilities:** `src/composables/`
-- `useUnitData.js` - Composable wrapping store
-- `useUnitGrouping.js` - Unit hierarchy grouping for ByClassView
+- `useUnitData.js` - Composable wrapping store, adds `effectiveVisibleFactions` computed
+- `useUnitGrouping.js` - Unit hierarchy grouping for ByClassView (exports `groupByHierarchy()`)
 - `useStatRows.js` - Stat row formatting for unit details
 - `useDoubleClickHandler.js` - Double-click event handling
 - `helpers/` - Utility functions (sorting, unit ID parsing, common helpers)
@@ -96,17 +97,30 @@ Supreme Commander unit database built with Vue.js 3.
 
 ## Key Patterns
 
+**View Layout System:**
+- Both main views use `.home` base class with modifiers:
+  - `home_A` - Horizontal layout with top filters (HomeView)
+  - `home_B` - Vertical layout with sidebar filters (ByClassView)
+- `--factionCount` CSS variable controls grid column count
+- View preference persisted to localStorage as `faf-last-view`
+- `lastListViewRoute` in store tracks user's last list view for "back" button
+
 **Unit Properties (added by decorator):**
+- `displayName` - Unit name without tech prefix
 - `classification` - Basic type (Build, Land, Air, Naval, Base)
+- `displayClassification` - UI grouping (Build, Support, Defenses, Land, Air, Naval)
 - `detailedClassification` - Specific classification (e.g., "T2 Engineering Station", "T3 Assault Bot")
-- `category` - Grouping category (e.g., "Land", "Construction - Buildpower", "Structures - Weapons")
+- `category` - High-level grouping for ByClassView (11 categories: "Land", "Structures - Weapons", "Construction - Buildpower", etc.)
 - `sortOrder` - Numeric value for sorting units by category and detail
 - `tech` - Tech level (T1, T2, T3, EXP)
-- `fullName` - Display name with tech prefix
+- `fullName` - Display name with tech prefix (e.g., "T3 Percival: T3 Assault Bot")
 - `fireCycle` / `beamCycle` - Functions for weapon cycle formatting
 - Weapon properties (added to each weapon in blueprint.Weapon array):
   - `dps` - Calculated using FA-accurate algorithm (calculateDps2)
   - `dpsShields` - DPS including DamageToShields bonus (only present if weapon has DamageToShields)
+  - `fullDamage` - Total damage per projectile including fragments
+  - `fullSalvoDamage` - `fullDamage * cycleProjs`
+  - `projectileDotText` - Formatted DoT info
   - `isTML` - Boolean indicating if weapon is a Tactical Missile Launcher
 
 **DPS Calculation (dps2.js):**
@@ -125,8 +139,8 @@ Supreme Commander unit database built with Vue.js 3.
   - Weapons without RackBones default to MuzzleSalvoSize || 1
 
 **Routing:** Vue Router 4 with hash mode
-- `/` - Home view
-- `/by-class` - Classification view
+- `/` - View A (HomeView)
+- `/by-class` - View B (ByClassView)
 - `/:ids` - Compare view (comma-separated unit IDs)
 - Catch-all redirects to `/`
 
@@ -139,6 +153,8 @@ Supreme Commander unit database built with Vue.js 3.
 - Inactive filters styled with `filter: grayscale(1); opacity: 0.4`
 
 **Data Loading:** `stores/unitData.js` → `loadData()` on app startup
+- Fat data loads when URL has `?fat` query parameter
+- Units are decorated via `decorateUnits()` after loading
 
 **Compare View Section Toggles:**
 - Section visibility stored in `ref()` object (Defense, Economy, Abilities, etc.)
@@ -156,6 +172,19 @@ Supreme Commander unit database built with Vue.js 3.
 - `sass:color`
 - `sass:math`
 
-## Token Efficiency
-- Use Grep/Glob instead of reading files when searching
-- Be specific about file/line when reporting bugs
+**groupByHierarchy() return structure (from useUnitGrouping.js):**
+```javascript
+{
+  baseClass: "Land",           // Category level
+  classifications: [
+    {
+      classification: "T3 Assault Bot",
+      unitsByFaction: {
+        UEF: [unit1, unit2],
+        Cybran: [unit3],
+        // ... all factions always present
+      }
+    }
+  ]
+}
+```
