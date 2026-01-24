@@ -3,7 +3,7 @@ import { ref } from 'vue'
 export function useDoubleClickHandler(toggleUnitSelection, contenders, router) {
   const lastClickTime = ref(0)
   const lastClickUnit = ref(null)
-  const maxDoubleClickDelay = 500
+  const maxDoubleClickDelay = 200
 
   const handleUnitClick = (unit, event) => {
     if (event.ctrlKey) {
