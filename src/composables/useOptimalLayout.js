@@ -1,17 +1,32 @@
 import { computed } from 'vue'
 
-export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitGap = 6, sectionGap = 10) {
+export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitGap = 6, sectionGap = 10, tierGap = 14, sectionPadding = 16) {
+  const sectionScores = {
+    'Land': 1e6,
+    'Air': 1e4,
+    'Naval': 1e3,
+    'Structures - Intelligence': -10,
+    'Structures - Support': -1
+  }
+
+  const getSectionScore = (section) => sectionScores[section.baseClass] || 0
+
   const getSectionWidth = (section) => {
-    const factionTotals = { UEF: 0, Cybran: 0, Aeon: 0, Seraphim: 0, Nomads: 0 }
+    let totalWidth = 0
 
-    for (const classGroup of section.classifications) {
-      for (const faction of ['UEF', 'Cybran', 'Aeon', 'Seraphim', 'Nomads']) {
-        factionTotals[faction] += classGroup.unitsByFaction[faction]?.length || 0
+    section.tierGroups.forEach((tier) => {
+      const factionTotals = { UEF: 0, Cybran: 0, Aeon: 0, Seraphim: 0, Nomads: 0 }
+
+      for (const faction in tier.unitsByFaction) {
+        factionTotals[faction] += tier.unitsByFaction[faction]?.length || 0
       }
-    }
 
-    const maxUnits = Math.max(...Object.values(factionTotals))
-    return maxUnits * (itemWidth + unitGap) - unitGap
+      const maxUnits = Math.max(...Object.values(factionTotals))
+      const tierWidth = maxUnits * (itemWidth + unitGap) - unitGap + tierGap
+      totalWidth += tierWidth
+    })
+
+    return totalWidth - tierGap + sectionPadding
   }
 
   const enumerateSubsets = (indices, widths, maxWidth) => {
@@ -114,10 +129,28 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
       [...row].sort((a, b) => widths[b] - widths[a])
     )
 
+    // Post-sort by rowSortScore
+    sortedRows.sort((rowA, rowB) => {
+      const scoreA = rowA.reduce((sum, idx) => sum + getSectionScore(sections.value[idx]), 0)
+      const scoreB = rowB.reduce((sum, idx) => sum + getSectionScore(sections.value[idx]), 0)
+      return scoreB - scoreA
+    })
+
+    // Sort sections within each row by score
+    sortedRows.forEach(row => {
+      row.sort((a, b) => {
+        const scoreA = getSectionScore(sections.value[a])
+        const scoreB = getSectionScore(sections.value[b])
+        return scoreB - scoreA
+      })
+    })
+
     const rowW = r => r.reduce((s, i) => s + widths[i], -sectionGap)
     const rowWidths = sortedRows.map(rowW)
     const longestRowWidth = Math.max(...rowWidths)
     const totalWaste = maxWidth * sortedRows.length - widths.reduce((a, b) => a + b, 0)
+
+    console.log('rows:', sortedRows.length)
 
     return sortedRows.flat().map(i => sections.value[i])
   })

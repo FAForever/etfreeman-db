@@ -5,15 +5,17 @@
       <FiltersComponent class="home__filters" :row="true" />
     </div>
     <div class="home__units" ref="containerRef">
-      <div v-for="section in optimalSections" :key="section.baseClass" class="home__section">
+      <div v-for="section in groupSectionsByTier" :key="section.baseClass" class="home__section">
         <div class="home__section-title">{{ section.baseClass }}</div>
-        <div class="home__faction-rows">
-          <div v-for="faction in effectiveVisibleFactions" :key="faction"
-            :class="['home__faction-row', `home__faction-row--${faction.toLowerCase()}`]">
-            <template v-for="classGroup in section.classifications" :key="classGroup.classification">
-              <ThumbComponent v-for="unit in classGroup.unitsByFaction[faction]" :key="unit.id"
-                :item="unit" @unit-click="handleUnitClick" />
-            </template>
+        <div class="home__section-content">
+          <div v-for="tierGroup in section.tierGroups" :key="tierGroup.tier" class="home__section-tier">
+            <div class="home__faction-rows">
+              <div v-for="faction in effectiveVisibleFactions" :key="faction"
+                :class="['home__faction-row', `home__faction-row--${faction.toLowerCase()}`]">
+                <ThumbComponent v-for="unit in tierGroup.unitsByFaction[faction]" :key="unit.id" :item="unit"
+                  @unit-click="handleUnitClick" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -44,8 +46,40 @@ const scrollbarGap = 10
 const rawWidth = ref(document.body.offsetWidth)
 const containerWidth = computed(() => rawWidth.value - scrollbarGap)
 
-const { optimalOrder } = useOptimalLayout(groupedByBase, containerWidth)
-const optimalSections = computed(() => optimalOrder.value)
+// Transform sections to have tierGroups before optimal layout
+const tierOrder = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4 }
+
+const sectionsWithTiers = computed(() => {
+  return groupedByBase.value.map(section => {
+    const tierGroups = {}
+
+    section.classifications.forEach(classGroup => {
+      Object.entries(classGroup.unitsByFaction).forEach(([faction, units]) => {
+        units.forEach(unit => {
+          const tier = unit.tech || 'T1'
+
+          if (!tierGroups[tier]) {
+            tierGroups[tier] = {
+              tier,
+              sortOrder: tierOrder[tier] || 99,
+              unitsByFaction: { UEF: [], Cybran: [], Aeon: [], Seraphim: [], Nomads: [] }
+            }
+          }
+
+          tierGroups[tier].unitsByFaction[faction].push(unit)
+        })
+      })
+    })
+
+    return {
+      baseClass: section.baseClass,
+      tierGroups: Object.values(tierGroups).sort((a, b) => a.sortOrder - b.sortOrder)
+    }
+  })
+})
+
+const { optimalOrder } = useOptimalLayout(sectionsWithTiers, containerWidth)
+const groupSectionsByTier = computed(() => optimalOrder.value)
 
 const updateWidth = () => {
   if (containerRef.value) {
@@ -93,15 +127,28 @@ onUnmounted(() => {
 
   &__section
     background: rgba(0,0,0,.1)
+    border: 2px solid rgba(255, 255, 255, .6)
+    border-bottom: none
+    border-radius: 5px
+    padding: 0 6px
     &-title
-      border: 1px dashed rgba(255, 255, 255, .2)
-      border-bottom: none
-      border-radius: 5px
       padding: 3px 0 3px
       font-weight: 700
       font-size: 12px
       text-align: center
       width: 100%
+    &-content
+      display: flex
+  &__section-tier
+    display: flex
+    flex-direction: column
+    gap: 6px
+    margin-bottom: 10px
+    &:not(:first-child)
+      padding-left: 6px
+    &:not(:last-child)
+      padding-right: 6px
+      border-right: 2px dashed rgba(255, 255, 255, .6)
 
   &__faction-rows
     display: flex
