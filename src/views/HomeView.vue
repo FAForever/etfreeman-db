@@ -11,8 +11,10 @@
         </h1>
         <div v-for="displayClassification in displayClassifications" :key="`${faction}-${displayClassification}`"
           :class="['home__kind', `home__kind--${displayClassification.toLowerCase()}`]">
-          <ThumbComponent v-for="unit in getUnitsForFactionAndDisplay(faction, displayClassification)" :key="unit.id"
-            :item="unit" @unit-click="handleUnitClick" />
+          <div v-for="unit in getUnitsForFactionAndDisplay(faction, displayClassification)" :key="unit.id"
+             :class="`${faction.toLowerCase()}-thumb-a-wrap`" >
+            <ThumbComponent @unit-click="handleUnitClick" :item="unit" :class="`${faction.toLowerCase()}-thumb-a`" />
+          </div>
         </div>
       </template>
     </div>
@@ -58,13 +60,13 @@ function getUnitsForFactionAndDisplay(faction, displayClassification) {
     display: grid
     grid-template-columns: repeat(calc(var(--factionCount) * 6), 1fr)
     flex-grow: 1
-    gap: 0 1px
-    max-width: calc(var(--factionCount) * 6 * 64px + (var(--factionCount) * 6 - 1) * 1px)
+    gap: 0 6px
+    max-width: calc(var(--factionCount) * 6 * 60px + (var(--factionCount) * 6 - 1) * 1px)
 
   &__faction-header
     order: -1
     grid-column: span 6
-    margin: 0 0 1px
+    margin: 0 0 6px
     padding: 0.67em 0
     background: no-repeat right top
     padding-left: 0.33em
@@ -80,5 +82,5 @@ function getUnitsForFactionAndDisplay(faction, displayClassification) {
   &__kind
     display: flex
     flex-direction: column
-    gap: 1px
+    gap: 6px
 </style>

@@ -38,7 +38,7 @@ function handleClick(event) {
   width: auto
   height: auto
   aspect-ratio: 1
-  max-width: 64px
+  max-width: var(--thumbwidth, 64px)
 
   .strategic
     position: absolute

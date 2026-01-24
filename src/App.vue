@@ -15,7 +15,7 @@ import { RouterView } from 'vue-router'
 @use './sass/generated/ui_sprites.sass'
 
 body
-  background-color: #222
+  background-color: #000
   color: #fff
   display: flex
   flex-direction: column
@@ -34,6 +34,7 @@ body
 .app-bg
   position: fixed
   top: 0
+  opacity: 0.4
   left: 0
   width: 100vw
   height: 100%
@@ -57,6 +58,23 @@ a
 @each $name, $color in colors.$factions
   .#{$name}
     background-color: $color
+
+@each $name, $color in colors.$factions2
+  .#{$name}-thumb-a
+    background-color: transparent !important
+    border: 0px solid color.adjust($color, $alpha: .5, $lightness: 30%) !important
+    filter: contrast(120%)
+  .#{$name}-thumb-a-wrap
+    background-color: color.adjust($color, $alpha: -0.15) !important
+    padding: 2px !important
+    border: 0px solid color.adjust($color, $alpha: .5, $lightness: 30%) !important
+    box-shadow: inset 0 0 4px 0px color.adjust($color, $alpha: +500%, $saturation: 700%, $lightness: 20%)
+    border-radius: 4px !important
+    --thumbwidth: 60px
+    &:has(.selected)
+      background-color: rgba(255,255,255,.2) !important
+      .selected
+        background-color: transparent !important
 
 .pe-none
   pointer-events: none
