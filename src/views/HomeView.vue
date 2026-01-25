@@ -6,8 +6,14 @@
     </div>
     <div class="home__units" ref="containerRef">
       <div v-for="section in groupSectionsByTier" :key="section.baseClass" class="home__section">
-        <div class="home__section-title">{{ section.baseClass }}</div>
-        <div class="home__section-content">
+        <div class="home__section-title-wrap">
+          <div class="home__section-title">
+            <template v-for="(chunk, idx) in section.baseClass.split(' - ')" :key="idx">
+              <span>{{ chunk }}</span><span v-if="idx < section.baseClass.split(' - ').length - 1"> - </span>
+            </template>
+          </div>
+        </div>
+        <div class="home__section-content" :style="sectionMinWidths[section.baseClass] ? { minWidth: `${sectionMinWidths[section.baseClass]}px` } : undefined">
           <div v-for="(tierGroup, tierIndex) in section.tierGroups" :key="tierGroup.tier" class="home__section-tier">
             <div class="home__faction-rows">
               <div class="home__faction-row home__faction-row--buttons">
@@ -66,6 +72,12 @@ const tierButtons = {
   'Structures - Support': [2, 1, 1],
   'Structures - Factories': [3, 6, 7],
   'Experimental': [1]
+}
+
+const sectionMinWidths = {
+  'Structures - Intelligence': 60,
+  'Construction - Buildpower': 60,
+  'Experimental': 70
 }
 
 const sectionsWithTiers = computed(() => {
@@ -179,15 +191,27 @@ onUnmounted(() => {
   &__section
     background: rgba(0,0,0,.1)
     border: 2px solid rgba(255, 255, 255, .6)
-    border-bottom: none
+    border-bottom-color: rgba(255, 255, 255, .1)
     border-radius: 5px
-    padding: 0 6px 6px
+    padding: 0 6px 7px
+    &-title-wrap
+      container-type: inline-size
+      white-space: nowrap
     &-title
-      padding: 3px 0 3px
+      padding: 5px 0 8px
       font-weight: 700
-      font-size: 12px
+      font-size: 16px
+      letter-spacing: 0.1em
       text-align: center
       width: 100%
+      @container (max-width: 250px)
+        font-size: 14px
+        letter-spacing: 0
+      @container (max-width: 200px)
+        font-size: 12px
+        letter-spacing: 0
+        span:not(:last-child)
+          display: none
     &-content
       display: flex
   &__section-tier

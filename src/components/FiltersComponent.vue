@@ -2,7 +2,7 @@
   <aside class="filters" :class="{ 'filters_row': row }">
     <header class="filters__header">
       <span class="count" :title="`${contenders.length} selected`">{{ contenders.length }}x</span>
-      <router-link :to="'/' + contenders.join(',')" title="compare" :class="{ glow: contenders.length, compare: true }">
+      <router-link class="filters__compare" :to="'/' + contenders.join(',')" title="compare" :class="{ glow: contenders.length }">
         compare
       </router-link>
       <a href="" title="clear selection" class="filters__header-clear" @click.prevent="clearSelection">
@@ -92,7 +92,6 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
     gap: 5px
     &-clear
       margin-top: 5px
-
   &_row
     display: flex
     max-width: initial
@@ -112,7 +111,7 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
         display: flex
         flex-direction: row
 
-  header
+  &__compare    
     font-size: 20px
     text-align: center
     color: colors.$orange
