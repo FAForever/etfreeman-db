@@ -4,7 +4,7 @@
       <tr class="unit-details__sec">
         <td>{{ !wIdx ? 'Weapons' : '' }}</td>
         <td colspan="3" class="unit-details__minititle">
-          {{ w.DisplayName }}
+          {{ w.DisplayName || 'Dummy weapon' }}
           <span v-if="w.count > 1" class="sm">(&times;{{ w.count }})</span>
         </td>
       </tr>
@@ -19,7 +19,7 @@
           <span title="DoT damage" class="sm" v-if="w.projectileDotText">{{ w.projectileDotText }}</span>
         </td>
       </tr>
-      <tr v-if="w.Damage + (w.InitialDamage || 0) != w.fullDamage">
+      <tr v-if="(w.Damage || 0) + (w.InitialDamage || 0) != w.fullDamage">
         <td></td>
         <td colspan="2">
           <span class="sm">Full damage per {{ w.BeamLifetime? 'beam' : 'projectile'}}</span>
