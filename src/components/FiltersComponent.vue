@@ -1,12 +1,12 @@
 <template>
   <aside class="filters" :class="{ 'filters_row': row }">
     <header class="filters__header">
-      <span class="count" :title="`${contenders.length} selected`">{{ contenders.length }}x</span>
-      <router-link class="filters__compare" :to="'/' + contenders.join(',')" title="compare" :class="{ glow: contenders.length }">
-        compare
-      </router-link>
-      <a href="" title="clear selection" class="filters__header-clear" @click.prevent="clearSelection">
-        <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" width="25">
+      <button class="filters__btn filters__compare" :class="{ 'filters__compare--active': contenders.length }" title="compare"
+        :disabled="!contenders.length" @click="router.push('/' + contenders.join(','))"
+        ><div v-html="contenders.length ? `compare&nbsp;<span>${contenders.length}</span>&nbsp;unit${contenders.length > 1 ? 's' : ''}` : 'select units to compare'" /></button>
+      <button type="button" title="clear selection" class="filters__btn filters__header-clear" :disabled="!contenders.length"
+        @click="clearSelection">
+        <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
           <g id="SVGRepo_iconCarrier">
@@ -15,11 +15,11 @@
               fill="white"></path>
           </g>
         </svg>
-      </a>
+      </button>
     </header>
 
     <form @submit.prevent>
-      <input class="filters__input" id="filter" type="text" placeholder="filter" autofocus v-model="textFilter"
+      <input class="filters__input" autocomplete="off" id="filter" type="text" placeholder="filter" autofocus v-model="textFilter"
         @input="onInput" />
     </form>
 
@@ -46,12 +46,12 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 
 const { row } = defineProps(['row'])
 
-const route = useRoute()
+const router = useRouter()
 
 const {
   toggleFaction,
@@ -71,15 +71,6 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
 </script>
 
 <style lang="sass">
-.glow
-  animation: neon-glow 1.5s ease-in-out infinite alternate
-  
-@keyframes neon-glow
-  from
-    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 4px #f90, 0 0 5px #f90, 0 0 6px #f90, 0 0 7px #f90, 0 0 8px #f90
-  to
-    text-shadow: 0 0 0 #fff
-
 .filters
   flex-shrink: 0
   display: grid
@@ -91,7 +82,15 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
     align-items: center
     gap: 5px
     &-clear
-      margin-top: 5px
+      width: 30px
+      height: 30px
+      padding: 0
+      --insetradius: 4px
+      svg
+        width: 24px
+        height: 24px
+        transition: transform .1s ease-out
+        transform: translateY(-0.5px)
   &_row
     display: flex
     max-width: initial
@@ -111,22 +110,64 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
         display: flex
         flex-direction: row
 
-  &__compare    
-    font-size: 20px
-    text-align: center
-    color: colors.$orange
-    a
-      font-size: 28px
-      text-decoration: none
-      display: inline-block
+  &__btn
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    border-radius: 4px
+    border: 1px solid var(--bcolor, #bbb)
+    background: var(--bg, #111)
+    box-shadow: inset 0 0 var(--insetradius, 8px) 0px var(--scolor, #777)
+    transition: all 0.2s, font-size 0s, font-weight 0s
+    cursor: pointer
+    color: inherit
+    &[disabled]
+      --bcolor: #333
+      box-shadow: none 
+      opacity: 0.5 !important
+      pointer-events: none
+    &:hover
+      --bg: #050505
+      --bcolor: #ddd
+      --scolor: #777
+    &:active
+      --bg: black
+      --bcolor: white
+      --scolor: black
+      svg, div
+        transform: translateY(0.5px)
 
-      &:hover, &:focus, &:active
-        color: #fff
+  &__compare
+    font-size: 18px
+    font-weight: 700
+    color: white
+    height: 30px
+    width: 200px
+    text-decoration: none
+    font-weight: 500
+    white-space: nowrap
+    &[disabled]
+      font-size: 15px
+    &--active:not(:hover)
+      animation: glow-pulse 2s ease-in-out infinite alternate
+    span
+      font-weight: 700
+      font-size: .92em
+      display: inline-block
+    div
+      transition: transform .1s ease-out
+      transform: translateY(-0.5px)
 
   &__input
     width: 100%
+    height: 30px
     border-radius: 5px
     padding: 5px 10px
+    color: white
+    border: 1px solid #999
+    background: #111 !important
+    &:focus
+      border: 1px solid white
 
   a
     display: block
@@ -160,4 +201,12 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
 
   .v2-link
     width: 100%
+
+@keyframes glow-pulse
+  from
+    box-shadow: 0 0 0px 0px rgba(255, 255, 255, 0.2), inset 0 0 3px 0px #888
+    border-color: #bbb
+  to
+    box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.6), inset 0 0 5px 1px #aaa
+    border-color: #eee
 </style>

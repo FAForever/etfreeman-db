@@ -62,7 +62,7 @@ const containerWidth = computed(() => rawWidth.value - scrollbarGap)
 const tierOrder = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4 }
 
 const tierButtons = {
-  'Land': [4, 6, 3],
+  'Land': [5, 6, 3],
   'Air': [4, 4, 4],
   'Naval': [2, 3, 1],
   'Structures - Weapons': [3, 6, 4],
@@ -189,11 +189,12 @@ onUnmounted(() => {
     width: 100%
 
   &__section
-    background: rgba(0,0,0,.1)
+    background: rgba(0,0,0,.35)
     border: 2px solid rgba(255, 255, 255, .6)
-    border-bottom-color: rgba(255, 255, 255, .1)
+    border-bottom-color: rgba(255, 255, 255, .15)
     border-radius: 5px
     padding: 0 6px 7px
+    backdrop-filter: blur(1px)
     &-title-wrap
       container-type: inline-size
       white-space: nowrap

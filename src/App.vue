@@ -15,7 +15,7 @@ import { RouterView } from 'vue-router'
 @use './sass/generated/ui_sprites.sass'
 
 body
-  background-color: #000
+  background-color: #090909
   color: #fff
   display: flex
   flex-direction: column
