@@ -91,6 +91,9 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
         height: 24px
         transition: transform .1s ease-out
         transform: translateY(-0.5px)
+      &[disabled]
+        svg
+          opacity: 0.5
   &_row
     display: flex
     max-width: initial
@@ -164,9 +167,13 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
     border-radius: 5px
     padding: 5px 10px
     color: white
-    border: 1px solid #999
+    border: 1px solid #333
     background: #111 !important
+    opacity: 0.5
+    &::placeholder
+      color: #aaa
     &:focus
+      opacity: 1
       border: 1px solid white
 
   a
