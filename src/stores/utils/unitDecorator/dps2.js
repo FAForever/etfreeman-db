@@ -162,13 +162,13 @@ export const fireCycle = (weapon) => {
       const muzzleDelay = weapon.MuzzleSalvoDelay || 0
       const salvoTime = muzzleDelay * (cycleProjs - 1)
       const actualReload = cycleTime - salvoTime
-      return `${cycleProjs} times 1 projectile in ${salvoTime.toFixed(1)} sec + ${actualReload.toFixed(1)} sec reload = ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
+      return `${cycleProjs} times 1 projectile in ${salvoTime.toFixed(1)} sec ${actualReload?`+ ${actualReload.toFixed(1)} sec reload `:''}= ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
     }
 
     const rackCount = weapon.RackBones?.length || 1
     const shots = hasMuzzleSalvo ? cycleProjs : rackCount
     const projsPerShot = cycleProjs / shots
-    return `${shots} times ${projsPerShot} projectiles in ${firingTime.toFixed(1)} sec + ${reloadTime.toFixed(1)} sec reload = ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
+    return `${shots} times ${projsPerShot} projectiles in ${firingTime.toFixed(1)} sec ${reloadTime? `+ ${reloadTime.toFixed(1)} sec reload `:''}= ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
   }
 
   const plural = cycleProjs > 1 ? 's' : ''
