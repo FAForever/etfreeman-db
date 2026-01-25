@@ -26,15 +26,15 @@
     <div class="filter-icons">
       <div class="icon-column">
         <a v-for="f in factions" :key="f" :title="f" @click.prevent="toggleFaction(f)"
-          :class="['icon_ui-scalable', `icon-${f}`, { active: isFactionSelected(f) }]"></a>
+          :class="['icon_ui', `icon-${f}`, { active: isFactionSelected(f) }]"></a>
       </div>
       <div class="icon-column">
         <a v-for="k in kinds" :key="k" :title="k" @click.prevent="toggleKind(k)"
-          :class="['icon_ui-scalable', `icon-${k}`, { active: isKindSelected(k) }]"></a>
+          :class="['icon_ui', `icon-${k}`, { active: isKindSelected(k) }]"></a>
       </div>
       <div class="icon-column">
         <a v-for="t in techLevels" :key="t" :title="t" @click.prevent="toggleTech(t)"
-          :class="['icon_ui-scalable', `icon-${t}`, { active: isTechSelected(t) }]"></a>
+          :class="['icon_ui', `icon-${t}`, { active: isTechSelected(t) }]"></a>
       </div>
     </div>
 
@@ -106,6 +106,7 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
       align-items: center
       gap: 16px !important
       a
+        background-size: 120px 120px
         width: 30px
         height: 30px
       &, .icon-column

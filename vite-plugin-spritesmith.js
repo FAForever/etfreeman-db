@@ -112,6 +112,20 @@ export default function viteSpritesmith(options = {}) {
 
           cssContent += `.icon-${iconName}\n  background-position: ${posXPercent.toFixed(4)}% ${posYPercent.toFixed(4)}%\n`
         })
+      } else if (modifier === 'ui') {
+        cssContent += `${iconClass}\n`
+        cssContent += `  background-image: url(${cssImageRef})\n`
+        cssContent += `  background-size: ${packed.width}px ${packed.height}px\n\n`
+
+        items.forEach(item => {
+          const iconName = path.basename(item.file, '.png')
+          const posX = packed.width === item.width ? 0 : (item.x / (packed.width - item.width)) * 100
+          const posY = packed.height === item.height ? 0 : (item.y / (packed.height - item.height)) * 100
+          cssContent += `.icon-${iconName}\n`
+          cssContent += `  width: ${item.width}px\n`
+          cssContent += `  height: ${item.height}px\n`
+          cssContent += `  background-position: ${posX.toFixed(4)}% ${posY.toFixed(4)}%\n`
+        })
       } else if (modifier === 'ui-scalable') {
         const columnCount = Math.round(packed.width / 48)
 

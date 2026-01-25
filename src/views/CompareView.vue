@@ -2,7 +2,7 @@
   <div class="compare">
     <aside class="compare__tools">
       <a class="compare__tools-back" @click="router.push(lastListViewRoute)" title="back to unit list">
-        <img src="/img/icons/back.png" alt="">
+        <span class="icon_ui icon-back"></span>
       </a>
       <ul class="compare__tools-list">
         <li v-for="(isShown, section) in showedSections" :key="section">

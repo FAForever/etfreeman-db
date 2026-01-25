@@ -48,6 +48,9 @@ function handleClick(event) {
   &:not(&_mini)
     width: var(--thumbwidth,48px)
     height: var(--thumbwidth,48px)
+    .strategic
+      top: 1px
+      left: 1px
     @each $name, $color in colors.$factions2
       &.thumb_#{$name}
         background-color: color.adjust($color, $alpha: -0.15)
@@ -73,10 +76,12 @@ function handleClick(event) {
     background: none
     width: 21px
     height: 21px
+    display: flex
+    justify-content: center
+    align-items: center
     margin-right: 3px
-    margin-bottom: 8px
+    margin-bottom: 6px
 
     .strategic
-      top: 1px
-      left: 2px
+      position: static
 </style>

@@ -104,4 +104,8 @@ a
 
 .w-100
   width: 100%
+
+[class*="icon_"]
+  display: inline-block
+  background-repeat: no-repeat
 </style>
