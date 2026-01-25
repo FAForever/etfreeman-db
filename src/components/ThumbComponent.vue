@@ -38,7 +38,8 @@ function handleClick(event) {
   height: auto
   aspect-ratio: 1
   max-width: var(--thumbwidth, 64px)
-
+  &:active
+    transform: scale(0.99) translateY(1px)
   .strategic
     position: absolute
     top: 0
@@ -54,7 +55,8 @@ function handleClick(event) {
         box-shadow: inset 0 0 4px 0px color.adjust($color, $alpha: .2, $saturation: 700%, $lightness: 20%)
         padding: 3px
         filter: contrast(110%)
-        transition: border .1s, box-shadow .1s, outline .1s
+        outline: 1px solid transparent
+        transition: border .1s, box-shadow .1s, outline .1s, transform .1s
         &:hover
           border: 1px solid color.adjust($color, $alpha: .5, $lightness: 30%) !important
           box-shadow: inset 0 0 6px 0px color.adjust($color, $alpha: .4, $saturation: 700%, $lightness: 20%)

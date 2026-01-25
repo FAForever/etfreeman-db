@@ -279,6 +279,8 @@ body.scrolled .home__top
       --bg: #111
       --bcolor: white
       --scolor: #aaa
+      transform: scale(0.99) translateY(-14.5px) !important
+
     &::before, &::after
       content: ''
       z-index: -1
