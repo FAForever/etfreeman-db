@@ -8,8 +8,14 @@
       <div v-for="section in groupSectionsByTier" :key="section.baseClass" class="home__section">
         <div class="home__section-title">{{ section.baseClass }}</div>
         <div class="home__section-content">
-          <div v-for="tierGroup in section.tierGroups" :key="tierGroup.tier" class="home__section-tier">
+          <div v-for="(tierGroup, tierIndex) in section.tierGroups" :key="tierGroup.tier" class="home__section-tier">
             <div class="home__faction-rows">
+              <div class="home__faction-row home__faction-row--buttons">
+                <button v-for="n in (tierButtons[section.baseClass]?.[tierIndex] || 0)"
+                  :key="n"
+                  @click="selectColumn(tierGroup, n)"
+                  class="home__faction-rows-colselect">+</button>
+              </div>
               <div v-for="faction in effectiveVisibleFactions" :key="faction"
                 :class="['home__faction-row', `home__faction-row--${faction.toLowerCase()}`]">
                 <ThumbComponent v-for="unit in tierGroup.unitsByFaction[faction]" :key="unit.id" :item="unit"
@@ -48,6 +54,19 @@ const containerWidth = computed(() => rawWidth.value - scrollbarGap)
 
 // Transform sections to have tierGroups before optimal layout
 const tierOrder = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4 }
+
+const tierButtons = {
+  'Land': [4, 4, 3],
+  'Air': [4, 4, 4],
+  'Naval': [2, 3, 1],
+  'Structures - Weapons': [3, 6, 4],
+  'Construction - Buildpower': [2, 1, 2],
+  'Structures - Economy': [5, 3, 3],
+  'Structures - Intelligence': [2, 3, 2],
+  'Structures - Support': [2, 1, 1],
+  'Structures - Factories': [3, 6, 7],
+  'Experimental': [1]
+}
 
 const sectionsWithTiers = computed(() => {
   return groupedByBase.value.map(section => {
@@ -96,6 +115,22 @@ const sectionsWithTiers = computed(() => {
 
 const { optimalOrder } = useOptimalLayout(sectionsWithTiers, containerWidth)
 const groupSectionsByTier = computed(() => optimalOrder.value)
+
+const selectColumn = (tierGroup, index) => {
+  const columnUnits = Object.values(tierGroup.unitsByFaction)
+    .map(units => units[index - 1])
+    .filter(Boolean)
+
+  const allSelected = columnUnits.every(u => u.selected)
+
+  if (allSelected) {
+    columnUnits.forEach(u => toggleUnitSelection(u.id))
+  } else {
+    columnUnits.forEach(u => {
+      if (!u.selected) toggleUnitSelection(u.id)
+    })
+  }
+}
 
 const updateWidth = () => {
   if (containerRef.value) {
@@ -169,9 +204,67 @@ onUnmounted(() => {
     display: flex
     flex-direction: column
     gap: 6px
+    position: relative
+    z-index: 1
 
   &__faction-row
     display: flex
     flex-wrap: wrap
     gap: 6px
+    &:empty
+      display: none
+    &--buttons
+      position: absolute
+      z-index: -1
+
+  &__faction-rows-colselect
+    width: 48px
+    display: flex
+    align-items: center
+    justify-content: center
+    font-size: 10px
+    font-weight: 700
+    color: white
+    border-radius: 4px
+    border: 1px solid var(--bcolor, #aaa)
+    opacity: 0
+    pointer-events: auto
+    transition: opacity 0.1s, transform 0.1s
+    position: relative
+    background: var(--bg,black)
+    transition-delay: 0.3s
+    box-shadow: inset 0 0 4px 0px var(--scolor, #777)
+    z-index: -1
+    &:hover
+      --bg: #050505
+      --bcolor: #ccc
+      --scolor: #999
+    &:active
+      --bg: #111
+      --bcolor: white
+      --scolor: #aaa
+    &::before, &::after
+      content: ''
+      z-index: -1
+      opacity: 1
+      position: absolute
+      bottom: -15px
+      left: 0
+      right: 0
+      width: 100%
+      height: 15px
+    &::after
+      bottom: initial
+      top: -15px
+    &:hover
+      transition-delay: 0s !important
+      opacity: 1
+      transform: translateY(-15px)
+
+@for $i from 1 through 10
+  .home__section-tier:has(> .home__faction-rows > .home__faction-row:not(.home__faction-row--buttons) > a:nth-of-type(#{$i}):hover) .home__faction-row--buttons button:nth-of-type(#{$i})
+    opacity: 1
+    transform: translateY(-15px)
+    transition-delay: 0s !important
+
 </style>
