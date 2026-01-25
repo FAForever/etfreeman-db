@@ -56,7 +56,7 @@ const containerWidth = computed(() => rawWidth.value - scrollbarGap)
 const tierOrder = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4 }
 
 const tierButtons = {
-  'Land': [4, 4, 3],
+  'Land': [4, 6, 3],
   'Air': [4, 4, 4],
   'Naval': [2, 3, 1],
   'Structures - Weapons': [3, 6, 4],
