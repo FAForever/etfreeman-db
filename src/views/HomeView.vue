@@ -206,13 +206,15 @@ onUnmounted(() => {
       text-align: center
       width: 100%
       @container (max-width: 250px)
-        font-size: 14px
-        letter-spacing: 0
-      @container (max-width: 200px)
-        font-size: 12px
-        letter-spacing: 0
         span:not(:last-child)
           display: none
+      @container (max-width: 150px)
+        font-size: 14px
+        letter-spacing: 0
+      @container (max-width: 100px)
+        font-size: 12px
+        letter-spacing: 0
+
     &-content
       display: flex
   &__section-tier
