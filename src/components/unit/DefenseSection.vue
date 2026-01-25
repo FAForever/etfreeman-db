@@ -2,19 +2,19 @@
   <tbody>
     <tr class="unit-details__firstline">
       <td :title="`${defense?.Health} hp`">
-        <img src="/img/icons/health.png" width="20" height="20" class="unit-details__ic" alt="">{{ shorten(defense?.Health) }}
+        <img src="/img/icons/health.png" class="unit-details__ic" alt="">{{ shorten(defense?.Health) }}
         <br>
         <div v-if="defense?.RegenRate" class="sm indented w-100">(+{{ defense.RegenRate }}hp/s)</div>
         <div v-if="economy?.BuildCostMass" class="sm indented w-100">({{ round(defense?.Health / economy?.BuildCostMass, 2) }}hp/mass)</div>
       </td>
       <td :title="economy?.BuildCostMass">
-        <img src="/img/icons/mass.png" width="20" height="20" class="unit-details__ic" alt="">{{ shorten(economy?.BuildCostMass) }}
+        <img src="/img/icons/mass.png" class="unit-details__ic" alt="">{{ shorten(economy?.BuildCostMass) }}
       </td>
       <td :title="economy?.BuildCostEnergy">
-        <img src="/img/icons/energy.png" width="20" height="20" class="unit-details__ic" alt="">{{ shorten(economy?.BuildCostEnergy) }}
+        <img src="/img/icons/energy.png" class="unit-details__ic" alt="">{{ shorten(economy?.BuildCostEnergy) }}
       </td>
       <td :title="economy?.BuildTime">
-        <img src="/img/icons/time.png" width="20" height="20" class="unit-details__ic" alt="">{{ shorten(economy?.BuildTime) }}
+        <img src="/img/icons/time.png" class="unit-details__ic" alt="">{{ shorten(economy?.BuildTime) }}
       </td>
     </tr>
 

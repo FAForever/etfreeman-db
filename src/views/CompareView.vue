@@ -2,7 +2,7 @@
   <div class="compare">
     <aside class="compare__tools">
       <a class="compare__tools-back" @click="router.push(lastListViewRoute)" title="back to unit list">
-        <img src="/img/icons/back.png" width="24" height="24" alt="">
+        <img src="/img/icons/back.png" alt="">
       </a>
       <ul class="compare__tools-list">
         <li v-for="(isShown, section) in showedSections" :key="section">
@@ -95,6 +95,9 @@ const contenders = computed(() => ids.value
     &-back
       width: fit-content
       margin-bottom: 10px
+      img
+        width: 24px
+        height: 24px
 
     &-list
       display: grid

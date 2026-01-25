@@ -8,13 +8,13 @@
       <tr :class="{ 'unit-details__sec-end': upgradeStats(u).length == 0 }">
         <td class="sm">{{ u.Slot }}</td>
         <td :title="u.BuildCostMass">
-          <img src="/img/icons/mass.png" width="20" height="20" class="unit-details__ic" alt="">{{ shorten(u.BuildCostMass) }}
+          <img src="/img/icons/mass.png" class="unit-details__ic" alt="">{{ shorten(u.BuildCostMass) }}
         </td>
         <td :title="u.BuildCostEnergy">
-          <img src="/img/icons/energy.png" width="20" height="20" class="unit-details__ic" alt="">{{ shorten(u.BuildCostEnergy) }}
+          <img src="/img/icons/energy.png" class="unit-details__ic" alt="">{{ shorten(u.BuildCostEnergy) }}
         </td>
         <td :title="u.BuildTime">
-          <img src="/img/icons/time.png" width="20" height="20" class="unit-details__ic" alt="">{{ shorten(u.BuildTime) }}
+          <img src="/img/icons/time.png" class="unit-details__ic" alt="">{{ shorten(u.BuildTime) }}
         </td>
       </tr>
       <tr v-for="stat, usIdx in upgradeStats(u)" :key="stat.label"

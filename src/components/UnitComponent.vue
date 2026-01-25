@@ -114,6 +114,8 @@ const hasEconomy = computed(() => {
     padding-bottom: 7px
 
   &__ic
+    width: 20px
+    height: 20px
     display: inline-block
     vertical-align: middle
 </style>
