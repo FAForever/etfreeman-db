@@ -161,12 +161,15 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass">
+body.scrolled .home__top
+  background: rgba(0,0,0,.75)
+  backdrop-filter: blur(5px)
+
 .home
   width: 100%
   display: flex
   flex-direction: column
   align-items: flex-start
-  gap: 10px
 
   &__left
     flex-shrink: 0
@@ -175,10 +178,16 @@ onUnmounted(() => {
     padding-top: 10px
 
   &__top
-    padding-top: 5px
+    padding: 5px 0 10px
     display: flex
     align-items: center
     gap: 10px
+    top: 0
+    width: 100%
+    position: sticky
+    z-index: 1
+    backdrop-filter: blur(0px)
+    transition: .3s ease-out
 
   &__units
     display: flex

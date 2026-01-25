@@ -67,11 +67,6 @@ const selectAllBeamed = (baseGroup) => {
 
 <style lang="sass">
 .home
-  width: 100%
-  display: flex
-  align-items: flex-start
-  gap: 10px
-
   &__byclass
     width: 100%
     padding: 5px
