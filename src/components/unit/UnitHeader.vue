@@ -18,7 +18,7 @@ const props = defineProps(['unit'])
 const blueprintUrl = computed(() => {
   const isNomads = props.unit.faction?.toLowerCase() === 'nomads'
   const repo = isNomads ? 'nomads' : 'fa'
-  const branch = isNomads ? 'master' : 'deploy/fafdevelop'
+  const branch = isNomads ? 'master' : 'deploy/faf'
   return `https://github.com/FAForever/${repo}/blob/${branch}/units/${props.unit.id}/${props.unit.id}_unit.bp`
 })
 </script>
