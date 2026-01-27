@@ -18,9 +18,7 @@
       </button>
     </header>
 
-    <form @submit.prevent>
-      <input class="filters__input" autocomplete="off" id="filter" type="text" placeholder="filter" autofocus v-model="filterSearch" />
-    </form>
+    <input class="filters__input" autocomplete="off" id="filter" type="text" placeholder="filter" v-model="filterSearch" />
 
     <div class="filter-icons">
       <div class="icon-column">
@@ -97,11 +95,13 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
       display: flex !important
       flex-direction: row
       align-items: center
-      gap: 16px !important
+      --iconsize: 30px
+      --iconsgap: 16px
+      gap: var(--iconsgap) !important
       a
-        background-size: 120px 120px
-        width: 30px
-        height: 30px
+        background-size: 400% 400%
+        width: var(--iconsize)
+        height: var(--iconsize)
       &, .icon-column
         gap: 0px
         display: flex
@@ -210,4 +210,35 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
   to
     box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.6), inset 0 0 5px 1px #aaa
     border-color: #eee
+
+.mobile 
+  @include from(950px)
+    .filters
+      flex-direction: row-reverse
+      justify-content: space-between
+      flex-wrap: wrap-reverse
+      width: 100%
+      .filter-icons
+        justify-content: space-between
+        width: 100%
+        max-width: 450px
+        margin: 0 auto
+        --iconsize: 24px
+        --iconsgap: 5px
+        @include since(360px)
+          --iconsize: 26px
+        @include since(390px)
+          --iconsize: 28px
+        @include since(420px)
+          --iconsize: 30px
+        @include since(700px)
+          justify-content: center
+          max-width: initial
+          --iconsgap: 30px
+      &__input
+        display: block
+        width: 10px
+        flex-grow: 1
+        max-width: 235px
+  
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <header class="app-header">
+  <header class="app-header" v-if="!isMobile">
     <div class="app-header__version ta-c sm">
       Game version: {{ version || '' }}
     </div>
@@ -14,7 +14,9 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
+import { inject } from 'vue'
 
+const isMobile = inject('isMobile')
 const route = useRoute()
 const { version } = useUnitData()
 

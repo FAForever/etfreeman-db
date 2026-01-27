@@ -1,9 +1,6 @@
 <template>
   <div class="home">
-    <div class="home__top">
-      <Header />
-      <FiltersComponent class="home__filters" :row="true" />
-    </div>
+    <HomeTop />
     <MasonryWall class="home__byclass" :items="sections" :column-width="320" :gap="10" :padding="10">
       <template #default="{ item: section }">
         <div class="home__byclass-base">
@@ -11,8 +8,8 @@
           <section v-for="[typeName, unitsByFaction] in Object.entries(section.types)" :key="typeName"
             class="home__byclass-section">
             <div v-for="faction in filterStore.effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
-              <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit"
-                :mini="true" @unit-click="handleUnitClick" />
+              <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit" :mini="true"
+                @unit-click="handleUnitClick" />
             </div>
             <h2 class="home__byclass-section-title">
               <a class="calm" @click="toggleUnitsOfTheSameClass(typeName)">
@@ -32,8 +29,7 @@ import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
 import MasonryWall from '@yeger/vue-masonry-wall'
-import Header from '../components/Header.vue'
-import FiltersComponent from '../components/FiltersComponent.vue'
+import HomeTop from '../components/HomeTop.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 import { useFilterStore } from '../stores/filterStore.js'
 

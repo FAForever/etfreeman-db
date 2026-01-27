@@ -1,9 +1,6 @@
 <template>
   <div class="home">
-    <div class="home__top">
-      <Header />
-      <FiltersComponent class="home__filters" :row="true" />
-    </div>
+    <HomeTop />
     <div class="home__units" ref="containerRef">
       <div v-for="section in optimalOrder" :key="section.name" class="home__section">
         <div class="home__section-title-wrap">
@@ -13,19 +10,18 @@
             </template>
           </div>
         </div>
-        <div class="home__section-content" :style="sectionMinWidths[section.name] ? { minWidth: `${sectionMinWidths[section.name]}px` } : undefined">
-          <div v-for="[tierName, tierData], tierIndex in Object.entries(section.tiers)" :key="tierName" class="home__section-tier">
+        <div class="home__section-content"
+          :style="sectionMinWidths[section.name] ? { minWidth: `${sectionMinWidths[section.name]}px` } : undefined">
+          <div v-for="[tierName, tierData], tierIndex in Object.entries(section.tiers)" :key="tierName"
+            class="home__section-tier">
             <div class="home__faction-rows">
               <div class="home__faction-row home__faction-row--buttons">
-                <button v-for="n in (tierButtons[section.name]?.[tierIndex] || 0)"
-                  :key="n"
-                  @click="selectColumn(tierData, n)"
-                  class="home__faction-rows-colselect">+</button>
+                <button v-for="n in (tierButtons[section.name]?.[tierIndex] || 0)" :key="n"
+                  @click="selectColumn(tierData, n)" class="home__faction-rows-colselect">+</button>
               </div>
               <div v-for="[faction, units] in Object.entries(tierData)" :key="faction"
                 :class="['home__faction-row', `home__faction-row--${faction.toLowerCase()}`]">
-                <ThumbComponent v-for="unit in units" :key="unit.id" :item="unit"
-                  @unit-click="handleUnitClick" />
+                <ThumbComponent v-for="unit in units" :key="unit.id" :item="unit" @unit-click="handleUnitClick" />
               </div>
             </div>
           </div>
@@ -36,13 +32,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, inject } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
 import { useOptimalLayout } from '../composables/useOptimalLayout.js'
-import Header from '../components/Header.vue'
-import FiltersComponent from '../components/FiltersComponent.vue'
+import HomeTop from '../components/HomeTop.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 
 const router = useRouter()
@@ -102,21 +97,17 @@ const onResize = () => {
   }
 }
 
+const resizeFunctions = inject('resizeFunctions')
+
 onMounted(() => {
   onResize()
-  window.addEventListener('resize', onResize)
+  resizeFunctions.value.push(onResize)
 })
 
-onUnmounted(() => {
-  window.removeEventListener('resize', onResize)
-})
+onUnmounted(() => resizeFunctions.value = resizeFunctions.value.filter(fn => fn !== onResize))
 </script>
 
 <style lang="sass">
-body.scrolled .home__top
-  background: rgba(0,0,0,.75)
-  backdrop-filter: blur(5px)
-
 .home
   width: 100%
   display: flex
@@ -128,18 +119,6 @@ body.scrolled .home__top
     display: grid
     gap: 10px
     padding-top: 10px
-
-  &__top
-    padding: 5px 0 10px
-    display: flex
-    align-items: center
-    gap: 10px
-    top: 0
-    width: 100%
-    position: sticky
-    z-index: 1
-    backdrop-filter: blur(0px)
-    transition: .3s ease-out
 
   &__units
     display: flex

@@ -1,18 +1,37 @@
 <template>
-  <img class="app-bg" src="/img/background.jpg"/>    
+  <img class="app-bg" src="/img/background.jpg" />
   <RouterView />
 </template>
 
 <script setup>
+import { onMounted, onUnmounted, provide, ref } from 'vue'
 import { RouterView } from 'vue-router'
 
-window.addEventListener('scroll', ()=>{
+window.addEventListener('scroll', () => {
   if (window.pageYOffset > 0) {
     document.body.classList.add('scrolled')
   } else {
     document.body.classList.remove('scrolled')
   }
 })
+
+const isMobile = ref(false)
+provide('isMobile', isMobile)
+const mobileThreshold = 1120
+const resizeFunctions = ref([() => {
+  if (window.innerWidth < mobileThreshold) {
+    document.body.classList.add('mobile')
+    isMobile.value = true
+  } else {
+    document.body.classList.remove('mobile')
+    isMobile.value = false
+  }
+}])
+const onResize = () => resizeFunctions.value.forEach(fn => fn())
+onResize()
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
+provide('resizeFunctions', resizeFunctions)
 </script>
 
 <style lang="sass">

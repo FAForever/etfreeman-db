@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { decorateUnits } from './utils/unitDecorator/index.js'
+import { decorateUnits } from './utils/unitDecorator/decorator.js'
 import { generateTierTree, generateTypeTree } from './utils/categorizer.js'
 import { useFilterStore } from './filterStore.js'
 import { useContenders } from './utils/useContenders.js'
