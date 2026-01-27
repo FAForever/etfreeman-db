@@ -10,7 +10,7 @@
           <h1 class="home__byclass-base-title">{{ section.name }}</h1>
           <section v-for="[typeName, unitsByFaction] in Object.entries(section.types)" :key="typeName"
             class="home__byclass-section">
-            <div v-for="faction in effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
+            <div v-for="faction in filterStore.effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
               <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit"
                 :mini="true" @unit-click="handleUnitClick" />
             </div>
@@ -35,9 +35,11 @@ import MasonryWall from '@yeger/vue-masonry-wall'
 import Header from '../components/Header.vue'
 import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
+import { useFilterStore } from '../stores/filterStore.js'
 
 const router = useRouter()
-const { visibleUnits, toggleUnitSelection, setUnitSelection, contenders, typeTree, effectiveVisibleFactions } = useUnitData()
+const { visibleUnits, toggleUnitSelection, setUnitSelection, contenders, typeTree } = useUnitData()
+const filterStore = useFilterStore()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 
 const sections = computed(() => {

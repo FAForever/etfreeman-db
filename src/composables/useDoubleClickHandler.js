@@ -16,7 +16,7 @@ export function useDoubleClickHandler(toggleUnitSelection, contenders, router) {
 
     if (isDoubleClick) {
       if (!unit.selected) toggleUnitSelection(unit.id)
-      router.push('/' + contenders.value.join(','))
+      router.push('/' + [...contenders.value].join(','))
     } else {
       lastClickUnit.value = unit
       lastClickTime.value = now

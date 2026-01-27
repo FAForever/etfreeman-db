@@ -1,10 +1,10 @@
 <template>
   <aside class="filters" :class="{ 'filters_row': row }">
     <header class="filters__header">
-      <button class="filters__btn filters__compare" :class="{ 'filters__compare--active': contenders.length }" title="compare"
-        :disabled="!contenders.length" @click="router.push('/' + contenders.join(','))"
-        ><div v-html="contenders.length ? `compare&nbsp;<span>${contenders.length}</span>&nbsp;unit${contenders.length > 1 ? 's' : ''}` : 'select units to compare'" /></button>
-      <button type="button" title="clear selection" class="filters__btn filters__header-clear" :disabled="!contenders.length"
+      <button class="filters__btn filters__compare" :class="{ 'filters__compare--active': contenders.size }" title="compare"
+        :disabled="!contenders.size" @click="router.push('/' + [...contenders].join(','))"
+        ><div v-html="contenders.size ? `compare&nbsp;<span>${contenders.size}</span>&nbsp;unit${contenders.size > 1 ? 's' : ''}` : 'select units to compare'" /></button>
+      <button type="button" title="clear selection" class="filters__btn filters__header-clear" :disabled="!contenders.size"
         @click="clearSelection">
         <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -19,22 +19,21 @@
     </header>
 
     <form @submit.prevent>
-      <input class="filters__input" autocomplete="off" id="filter" type="text" placeholder="filter" autofocus v-model="textFilter"
-        @input="onInput" />
+      <input class="filters__input" autocomplete="off" id="filter" type="text" placeholder="filter" autofocus v-model="filterSearch" />
     </form>
 
     <div class="filter-icons">
       <div class="icon-column">
-        <a v-for="f in factions" :key="f" :title="f" @click.prevent="toggleFaction(f)"
-          :class="['icon_ui', `icon-${f}`, { active: isFactionSelected(f) }]"></a>
+        <a v-for="f in factions" :key="f" :title="f" @click.prevent="filterStore.toggleFaction(f)"
+          :class="['icon_ui', `icon-${f}`, { active: filterFactions.includes(f) }]"></a>
       </div>
       <div class="icon-column">
-        <a v-for="k in kinds" :key="k" :title="k" @click.prevent="toggleKind(k)"
-          :class="['icon_ui', `icon-${k}`, { active: isKindSelected(k) }]"></a>
+        <a v-for="k in kinds" :key="k" :title="k" @click.prevent="filterStore.toggleKind(k)"
+          :class="['icon_ui', `icon-${k}`, { active: filterKinds.includes(k) }]"></a>
       </div>
       <div class="icon-column">
-        <a v-for="t in techLevels" :key="t" :title="t" @click.prevent="toggleTech(t)"
-          :class="['icon_ui', `icon-${t}`, { active: isTechSelected(t) }]"></a>
+        <a v-for="t in techLevels" :key="t" :title="t" @click.prevent="filterStore.toggleTech(t)"
+          :class="['icon_ui', `icon-${t}`, { active: filterTech.includes(t) }]"></a>
       </div>
     </div>
 
@@ -47,23 +46,17 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useUnitData } from '../composables/useUnitData.js'
+import { useFilterStore } from '../stores/filterStore.js'
 
 const { row } = defineProps(['row'])
 
 const router = useRouter()
 
-const {
-  toggleFaction,
-  toggleKind,
-  toggleTech,
-  clearSelection,
-  isFactionSelected,
-  isKindSelected,
-  isTechSelected,
-  contenders,
-  textFilter
-} = useUnitData()
+const filterStore = useFilterStore()
+const { factions: filterFactions, kinds: filterKinds, tech: filterTech, search: filterSearch } = storeToRefs(filterStore)
+const { clearSelection, contenders } = useUnitData()
 
 const factions = ref(['UEF', 'Cybran', 'Aeon', 'Seraphim', 'Nomads'])
 const kinds = ref(['Base', 'Land', 'Air', 'Naval'])

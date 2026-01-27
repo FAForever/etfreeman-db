@@ -28,12 +28,13 @@ const buildSortedTree = (units, groupKey, keySortOrOrder) => {
   }
 
   const sorted = {}
+  const keySort = typeof keySortOrOrder === 'function'
+    ? keySortOrOrder
+    : (a, b) => keySortOrOrder?.[a] - keySortOrOrder?.[b]
+
   for (const section of SECTION_ORDER) {
     if (!raw[section]) continue
     sorted[section] = {}
-    const keySort = typeof keySortOrOrder === 'function'
-      ? keySortOrOrder
-      : (a, b) => keySortOrOrder?.[a] - keySortOrOrder?.[b]
     for (const key of Object.keys(raw[section]).sort(keySort)) {
       sorted[section][key] = {}
       for (const faction of Object.keys(raw[section][key]).sort(sortFaction)) {

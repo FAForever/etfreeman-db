@@ -1,7 +1,8 @@
-// Unit Data Store Tests - Tests state management and filtering
+// Unit Data Store Tests - Tests state management
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useUnitDataStore } from '../../stores/unitData.js'
+import { useFilterStore } from '../../stores/filterStore.js'
 
 describe('Unit Data Store', () => {
   beforeEach(() => {
@@ -14,11 +15,7 @@ describe('Unit Data Store', () => {
 
       expect(store.units).toEqual([])
       expect(store.version).toBeNull()
-      expect(store.contenders).toEqual([])
-      expect(store.selectedFilterFactions).toEqual(['UEF', 'Cybran', 'Aeon', 'Seraphim'])
-      expect(store.selectedFilterKinds).toEqual([])
-      expect(store.selectedFilterTech).toEqual([])
-      expect(store.textFilter).toBe('')
+      expect(store.contenders.size).toBe(0)
     })
 
     it('provides units computed property', () => {
@@ -71,218 +68,29 @@ describe('Unit Data Store', () => {
     })
   })
 
-  describe('Faction Filtering', () => {
+  describe('visibleUnits integrates with filterStore', () => {
     beforeEach(() => {
       const store = useUnitDataStore()
       store.setData({
         units: [
           { Id: 'UEL0201', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
-          { Id: 'URL0107', General: { FactionName: 'Cybran', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
-          { Id: 'UAL0201', General: { FactionName: 'Aeon', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] }
+          { Id: 'URL0107', General: { FactionName: 'Cybran', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] }
         ]
       })
     })
 
-    it('shows all units with default faction filters', () => {
+    it('shows all units when filters are default', () => {
       const store = useUnitDataStore()
-      expect(store.visibleUnits).toHaveLength(3)
-    })
-
-    it('toggleFaction removes faction from filter', () => {
-      const store = useUnitDataStore()
-      store.toggleFaction('UEF')
-
-      expect(store.selectedFilterFactions).not.toContain('UEF')
       expect(store.visibleUnits).toHaveLength(2)
-      expect(store.visibleUnits.map(u => u.faction)).not.toContain('UEF')
     })
 
-    it('toggleFaction adds faction back when called twice', () => {
+    it('filters units based on filterStore state', () => {
       const store = useUnitDataStore()
-      store.toggleFaction('UEF')
-      store.toggleFaction('UEF')
-
-      expect(store.selectedFilterFactions).toContain('UEF')
-      expect(store.visibleUnits).toHaveLength(3)
-    })
-
-    it('filters to specific factions', () => {
-      const store = useUnitDataStore()
-      store.toggleFaction('Aeon')
-      store.toggleFaction('Seraphim')
-
-      expect(store.visibleUnits).toHaveLength(2)
-      const factions = store.visibleUnits.map(u => u.faction)
-      expect(factions).toContain('UEF')
-      expect(factions).toContain('Cybran')
-      expect(factions).not.toContain('Aeon')
-    })
-  })
-
-  describe('Kind (Classification) Filtering', () => {
-    beforeEach(() => {
-      const store = useUnitDataStore()
-      store.setData({
-        units: [
-          { Id: 'UEL0201', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
-          { Id: 'UEA0101', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryAircraft' }, Categories: ['TECH1'] },
-          { Id: 'UES0201', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryShip' }, Categories: ['TECH2'] }
-        ]
-      })
-    })
-
-    it('toggleKind filters by classification', () => {
-      const store = useUnitDataStore()
-      store.toggleKind('Land')
+      const filterStore = useFilterStore()
+      filterStore.toggleFaction('UEF')
 
       expect(store.visibleUnits).toHaveLength(1)
-      expect(store.visibleUnits[0].kind).toBe('Land')
-    })
-
-    it('filters multiple kinds', () => {
-      const store = useUnitDataStore()
-      store.toggleKind('Land')
-      store.toggleKind('Air')
-
-      expect(store.visibleUnits).toHaveLength(2)
-      const classifications = store.visibleUnits.map(u => u.kind)
-      expect(classifications).toContain('Land')
-      expect(classifications).toContain('Air')
-    })
-  })
-
-  describe('Tech Level Filtering', () => {
-    beforeEach(() => {
-      const store = useUnitDataStore()
-      store.setData({
-        units: [
-          { Id: 'UEL0201', General: { FactionName: 'UEF' }, Categories: ['TECH1'] },
-          { Id: 'UEL0202', General: { FactionName: 'UEF' }, Categories: ['TECH2'] },
-          { Id: 'UEL0303', General: { FactionName: 'UEF' }, Categories: ['TECH3'] },
-          { Id: 'UEL0401', General: { FactionName: 'UEF' }, Categories: ['EXPERIMENTAL'] }
-        ]
-      })
-    })
-
-    it('toggleTech filters by tech level', () => {
-      const store = useUnitDataStore()
-      store.toggleTech('T1')
-
-      expect(store.visibleUnits).toHaveLength(1)
-      expect(store.visibleUnits[0].tech).toBe('T1')
-    })
-
-    it('filters multiple tech levels', () => {
-      const store = useUnitDataStore()
-      store.toggleTech('T2')
-      store.toggleTech('T3')
-
-      expect(store.visibleUnits).toHaveLength(2)
-      const techs = store.visibleUnits.map(u => u.tech)
-      expect(techs).toContain('T2')
-      expect(techs).toContain('T3')
-    })
-  })
-
-  describe('Text Filtering', () => {
-    beforeEach(() => {
-      const store = useUnitDataStore()
-      store.setData({
-        units: [
-          { Id: 'UEL0201', Description: 'Medium Tank', General: { FactionName: 'UEF', UnitName: 'Striker' }, Categories: [] },
-          { Id: 'UEL0202', Description: 'Heavy Tank', General: { FactionName: 'UEF', UnitName: 'Pillar' }, Categories: [] },
-          { Id: 'UEA0101', Description: 'Interceptor', General: { FactionName: 'UEF', UnitName: 'Cyclone' }, Categories: [] }
-        ]
-      })
-    })
-
-    it('filters by unit ID', () => {
-      const store = useUnitDataStore()
-      store.textFilter = 'UEL0201'
-
-      expect(store.visibleUnits).toHaveLength(1)
-      expect(store.visibleUnits[0].id).toBe('UEL0201')
-    })
-
-    it('filters by unit name', () => {
-      const store = useUnitDataStore()
-      store.textFilter = 'striker'
-
-      expect(store.visibleUnits).toHaveLength(1)
-      expect(store.visibleUnits[0].name).toBe('Striker')
-    })
-
-    it('filters by description', () => {
-      const store = useUnitDataStore()
-      store.textFilter = 'tank'
-
-      expect(store.visibleUnits).toHaveLength(2)
-    })
-
-    it('is case insensitive', () => {
-      const store = useUnitDataStore()
-      store.textFilter = 'STRIKER'
-
-      expect(store.visibleUnits).toHaveLength(1)
-    })
-
-    it('handles empty text filter', () => {
-      const store = useUnitDataStore()
-      store.textFilter = ''
-
-      expect(store.visibleUnits).toHaveLength(3)
-    })
-  })
-
-  describe('Combined Filtering', () => {
-    beforeEach(() => {
-      const store = useUnitDataStore()
-      store.setData({
-        units: [
-          { Id: 'UEL0201', Description: 'Medium Tank', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
-          { Id: 'URL0107', Description: 'Light Assault Bot', General: { FactionName: 'Cybran', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
-          { Id: 'UEL0202', Description: 'Heavy Tank', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH2'] },
-          { Id: 'UEA0101', Description: 'Interceptor', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryAircraft' }, Categories: ['TECH1'] }
-        ]
-      })
-    })
-
-    it('combines faction and tech filters', () => {
-      const store = useUnitDataStore()
-      store.toggleFaction('Cybran')
-      store.toggleFaction('Aeon')
-      store.toggleFaction('Seraphim')
-      store.toggleTech('T1')
-
-      expect(store.visibleUnits).toHaveLength(2)
-      store.visibleUnits.forEach(unit => {
-        expect(unit.faction).toBe('UEF')
-        expect(unit.tech).toBe('T1')
-      })
-    })
-
-    it('combines all filter types', () => {
-      const store = useUnitDataStore()
-      store.toggleFaction('Cybran')
-      store.toggleFaction('Aeon')
-      store.toggleFaction('Seraphim')
-      store.toggleKind('Land')
-      store.toggleTech('T2')
-
-      expect(store.visibleUnits).toHaveLength(1)
-      expect(store.visibleUnits[0].id).toBe('UEL0202')
-    })
-
-    it('combines filters with text search', () => {
-      const store = useUnitDataStore()
-      store.toggleFaction('Cybran')
-      store.toggleFaction('Aeon')
-      store.toggleFaction('Seraphim')
-      store.textFilter = 'tank'
-
-      expect(store.visibleUnits).toHaveLength(2)
-      expect(store.visibleUnits[0].id).toBe('UEL0201')
-      expect(store.visibleUnits[1].id).toBe('UEL0202')
+      expect(store.visibleUnits[0].id).toBe('URL0107')
     })
   })
 
@@ -303,7 +111,7 @@ describe('Unit Data Store', () => {
 
       const unit = store.units.find(u => u.id === 'UEL0201')
       expect(unit.selected).toBe(true)
-      expect(store.contenders).toContain('UEL0201')
+      expect(store.contenders.has('UEL0201')).toBe(true)
     })
 
     it('toggleUnitSelection deselects a unit', () => {
@@ -313,7 +121,7 @@ describe('Unit Data Store', () => {
 
       const unit = store.units.find(u => u.id === 'UEL0201')
       expect(unit.selected).toBe(false)
-      expect(store.contenders).not.toContain('UEL0201')
+      expect(store.contenders.has('UEL0201')).toBe(false)
     })
 
     it('tracks multiple selected units', () => {
@@ -321,9 +129,9 @@ describe('Unit Data Store', () => {
       store.toggleUnitSelection('UEL0201')
       store.toggleUnitSelection('URL0107')
 
-      expect(store.contenders).toHaveLength(2)
-      expect(store.contenders).toContain('UEL0201')
-      expect(store.contenders).toContain('URL0107')
+      expect(store.contenders.size).toBe(2)
+      expect(store.contenders.has('UEL0201')).toBe(true)
+      expect(store.contenders.has('URL0107')).toBe(true)
     })
 
     it('clearSelection deselects all units', () => {
@@ -332,10 +140,19 @@ describe('Unit Data Store', () => {
       store.toggleUnitSelection('URL0107')
       store.clearSelection()
 
-      expect(store.contenders).toHaveLength(0)
+      expect(store.contenders.size).toBe(0)
       store.units.forEach(unit => {
         expect(unit.selected).toBe(false)
       })
+    })
+
+    it('setUnitSelection sets selection state', () => {
+      const store = useUnitDataStore()
+      store.setUnitSelection('UEL0201', true)
+
+      const unit = store.units.find(u => u.id === 'UEL0201')
+      expect(unit.selected).toBe(true)
+      expect(store.contenders.has('UEL0201')).toBe(true)
     })
   })
 
