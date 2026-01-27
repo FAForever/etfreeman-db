@@ -4,19 +4,19 @@
       <Header />
       <FiltersComponent class="home__filters" :row="true" />
     </div>
-    <MasonryWall class="home__byclass" :items="groupedByBase" :column-width="320" :gap="10" :padding="10">
-      <template #default="{ item: baseGroup }">
+    <MasonryWall class="home__byclass" :items="sections" :column-width="320" :gap="10" :padding="10">
+      <template #default="{ item: section }">
         <div class="home__byclass-base">
-          <h1 class="home__byclass-base-title">{{ baseGroup.baseClass }}</h1>
-          <section v-for="classGroup in baseGroup.classifications" :key="classGroup.classification"
+          <h1 class="home__byclass-base-title">{{ section.name }}</h1>
+          <section v-for="[typeName, unitsByFaction] in Object.entries(section.types)" :key="typeName"
             class="home__byclass-section">
             <div v-for="faction in effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
-              <ThumbComponent v-for="unit in classGroup.unitsByFaction[faction]" :key="unit.id" :item="unit"
+              <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit"
                 :mini="true" @unit-click="handleUnitClick" />
             </div>
             <h2 class="home__byclass-section-title">
-              <a class="calm" @click="toggleUnitsOfTheSameClass(classGroup.classification)">
-                {{ classGroup.classification }}
+              <a class="calm" @click="toggleUnitsOfTheSameClass(typeName)">
+                {{ typeName }}
               </a>
             </h2>
           </section>
@@ -30,7 +30,6 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
-import { useUnitGrouping } from '../composables/useUnitGrouping.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
 import MasonryWall from '@yeger/vue-masonry-wall'
 import Header from '../components/Header.vue'
@@ -38,30 +37,17 @@ import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 
 const router = useRouter()
-const { visibleUnits, toggleUnitSelection, setUnitSelection, contenders, effectiveVisibleFactions } = useUnitData()
-const { groupByHierarchy } = useUnitGrouping()
+const { visibleUnits, toggleUnitSelection, setUnitSelection, contenders, typeTree, effectiveVisibleFactions } = useUnitData()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 
-const groupedByBase = computed(() => groupByHierarchy(visibleUnits.value))
+const sections = computed(() => {
+  return Object.entries(typeTree.value).map(([name, types]) => ({ name, types }))
+})
 
-const toggleUnitsOfTheSameClass = (classification) => {
-  const classItems = visibleUnits.value.filter(unit => unit.detailedClassification === classification)
+const toggleUnitsOfTheSameClass = (typeName) => {
+  const classItems = visibleUnits.value.filter(unit => unit.type === typeName)
   const isAlreadySelected = classItems.some(u => u.selected)
   classItems.forEach(unit => setUnitSelection(unit.id, !isAlreadySelected))
-}
-
-const selectAllBeamed = (baseGroup) => {
-  baseGroup.classifications.forEach(classification => {
-    //toggleUnitsOfTheSameClass(classification.classification)
-    const unitsInClass = visibleUnits.value.filter(unit => unit.detailedClassification === classification.classification)
-    const beamedUnits = (unitsInClass.flat().filter(el=>el.Weapon?.some(w=>w.BeamLifetime)))
-    if (beamedUnits?.length) {
-      console.log(beamedUnits.map(u=>u.name))
-      for (const unit of beamedUnits) {
-        setUnitSelection(unit.id, true)
-      }
-    }
-  })
 }
 </script>
 

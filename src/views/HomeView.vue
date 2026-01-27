@@ -5,26 +5,26 @@
       <FiltersComponent class="home__filters" :row="true" />
     </div>
     <div class="home__units" ref="containerRef">
-      <div v-for="section in groupSectionsByTier" :key="section.baseClass" class="home__section">
+      <div v-for="section in optimalOrder" :key="section.name" class="home__section">
         <div class="home__section-title-wrap">
           <div class="home__section-title">
-            <template v-for="(chunk, idx) in section.baseClass.split(' - ')" :key="idx">
-              <span>{{ chunk }}</span><span v-if="idx < section.baseClass.split(' - ').length - 1"> - </span>
+            <template v-for="(chunk, idx) in section.name.split(' - ')" :key="idx">
+              <span>{{ chunk }}</span><span v-if="idx < section.name.split(' - ').length - 1"> - </span>
             </template>
           </div>
         </div>
-        <div class="home__section-content" :style="sectionMinWidths[section.baseClass] ? { minWidth: `${sectionMinWidths[section.baseClass]}px` } : undefined">
-          <div v-for="(tierGroup, tierIndex) in section.tierGroups" :key="tierGroup.tier" class="home__section-tier">
+        <div class="home__section-content" :style="sectionMinWidths[section.name] ? { minWidth: `${sectionMinWidths[section.name]}px` } : undefined">
+          <div v-for="[tierName, tierData], tierIndex in Object.entries(section.tiers)" :key="tierName" class="home__section-tier">
             <div class="home__faction-rows">
               <div class="home__faction-row home__faction-row--buttons">
-                <button v-for="n in (tierButtons[section.baseClass]?.[tierIndex] || 0)"
+                <button v-for="n in (tierButtons[section.name]?.[tierIndex] || 0)"
                   :key="n"
-                  @click="selectColumn(tierGroup, n)"
+                  @click="selectColumn(tierData, n)"
                   class="home__faction-rows-colselect">+</button>
               </div>
-              <div v-for="faction in effectiveVisibleFactions" :key="faction"
+              <div v-for="[faction, units] in Object.entries(tierData)" :key="faction"
                 :class="['home__faction-row', `home__faction-row--${faction.toLowerCase()}`]">
-                <ThumbComponent v-for="unit in tierGroup.unitsByFaction[faction]" :key="unit.id" :item="unit"
+                <ThumbComponent v-for="unit in units" :key="unit.id" :item="unit"
                   @unit-click="handleUnitClick" />
               </div>
             </div>
@@ -37,9 +37,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
-import { useUnitGrouping } from '../composables/useUnitGrouping.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
 import { useOptimalLayout } from '../composables/useOptimalLayout.js'
 import Header from '../components/Header.vue'
@@ -47,19 +46,15 @@ import FiltersComponent from '../components/FiltersComponent.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 
 const router = useRouter()
-const { visibleUnits, toggleUnitSelection, contenders, effectiveVisibleFactions } = useUnitData()
-const { groupByHierarchy } = useUnitGrouping()
+const route = useRoute()
+const { toggleUnitSelection, contenders, tierTree } = useUnitData()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
-
-const groupedByBase = computed(() => groupByHierarchy(visibleUnits.value))
 
 const containerRef = ref(null)
 const scrollbarGap = 10
+const mobThreshold = 1120
 const rawWidth = ref(document.body.offsetWidth)
 const containerWidth = computed(() => rawWidth.value - scrollbarGap)
-
-// Transform sections to have tierGroups before optimal layout
-const tierOrder = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4 }
 
 const tierButtons = {
   'Land': [5, 6, 3],
@@ -80,56 +75,10 @@ const sectionMinWidths = {
   'Experimental': 70
 }
 
-const sectionsWithTiers = computed(() => {
-  return groupedByBase.value.map(section => {
-    const tierGroups = {}
+const { optimalOrder } = useOptimalLayout(tierTree, containerWidth)
 
-    section.classifications.forEach(classGroup => {
-      Object.entries(classGroup.unitsByFaction).forEach(([faction, units]) => {
-        units.forEach(unit => {
-          const tier = unit.tech || 'T1'
-          if (unit.Id == 'XEB0204') {
-            console.log(unit)
-            console.log("TIER")
-            console.log(tier)
-          }
-
-
-          if (!tierGroups[tier]) {
-            tierGroups[tier] = {
-              tier,
-              sortOrder: tierOrder[tier] || 99,
-              unitsByFaction: { UEF: [], Cybran: [], Aeon: [], Seraphim: [], Nomads: [] }
-            }
-          }
-
-          tierGroups[tier].unitsByFaction[faction].push(unit)
-        })
-      })
-    })
-
-    // Sort units in each tier->faction by sortOrder (only if has customOrder > 1e20)
-    Object.values(tierGroups).forEach(tier => {
-      Object.keys(tier.unitsByFaction).forEach(faction => {
-        const needsSort = tier.unitsByFaction[faction].some(u => u.sortOrder > 1e20)
-        if (needsSort) {
-          tier.unitsByFaction[faction].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-        }
-      })
-    })
-
-    return {
-      baseClass: section.baseClass,
-      tierGroups: Object.values(tierGroups).sort((a, b) => a.sortOrder - b.sortOrder)
-    }
-  })
-})
-
-const { optimalOrder } = useOptimalLayout(sectionsWithTiers, containerWidth)
-const groupSectionsByTier = computed(() => optimalOrder.value)
-
-const selectColumn = (tierGroup, index) => {
-  const columnUnits = Object.values(tierGroup.unitsByFaction)
+const selectColumn = (tierData, index) => {
+  const columnUnits = Object.values(tierData)
     .map(units => units[index - 1])
     .filter(Boolean)
 
@@ -144,19 +93,22 @@ const selectColumn = (tierGroup, index) => {
   }
 }
 
-const updateWidth = () => {
+const onResize = () => {
   if (containerRef.value) {
     rawWidth.value = containerRef.value.clientWidth
+  }
+  if (window.innerWidth < mobThreshold && route.path !== '/by-class') {
+    router.push('/by-class')
   }
 }
 
 onMounted(() => {
-  updateWidth()
-  window.addEventListener('resize', updateWidth)
+  onResize()
+  window.addEventListener('resize', onResize)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateWidth)
+  window.removeEventListener('resize', onResize)
 })
 </script>
 

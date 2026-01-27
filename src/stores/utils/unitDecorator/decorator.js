@@ -1,12 +1,6 @@
-import { classificationLookup, factionIdLookup } from './lookups.js'
-import {
-  getTech,
-  fullName,
-  getDetailedClassification,
-  getCategory,
-  getSortOrder
-} from './classification.js'
-import { calculateDps2, calculateProjectileDamage, simulateFiringCycle, fireCycle, beamCycle, isTML, formatDotText } from './dps2.js'
+import { getTech, kindMap } from '../categorizer.js'
+import { calculateDps, calculateProjectileDamage, simulateFiringCycle, fireCycle, beamCycle, isTML, formatDotText } from './dps2.js'
+import { categorize } from '../categorizer.js'
 
 export const decorateUnit = (blueprint) => {
   const self = {
@@ -14,31 +8,27 @@ export const decorateUnit = (blueprint) => {
     name: blueprint.General?.UnitName || '',
     description: blueprint.Description || '',
     faction: blueprint.General?.FactionName || '',
-    factionId: factionIdLookup[blueprint.General?.FactionName] || 0,
-    classification: classificationLookup[blueprint.General?.Classification] || 'Unknown',
-    detailedClassification: getDetailedClassification(blueprint),
-    category: getCategory(blueprint),
-    sortOrder: getSortOrder(blueprint),
+    kind: kindMap[blueprint.General?.Classification] || 'Unknown',
     tech: getTech(blueprint),
     strategicIcon: blueprint.StrategicIconName || '',
     icon: blueprint.General?.Icon || '',
-    order: blueprint.BuildIconSortPriority || 1000,
     fireCycle: fireCycle,
     beamCycle: beamCycle,
     selected: false
   }
 
-  self.fullName = fullName(self)
+  categorize(blueprint)
+  self.fullName = (self.name ? self.name + ': ' : '') + (self.tech === 'EXP' ? '' : self.tech + ' ') + self.description
 
   if (blueprint.Weapon) {
     for (let i = 0; i < blueprint.Weapon.length; i++) {
       const weapon = blueprint.Weapon[i]
-      weapon.dps = calculateDps2(weapon, false)
+      weapon.dps = calculateDps(weapon, false)
       weapon.fullDamage = calculateProjectileDamage(weapon, false)
       weapon.fullSalvoDamage = weapon.fullDamage * simulateFiringCycle(weapon).cycleProjs
       weapon.projectileDotText = formatDotText(weapon)
       if (weapon.DamageToShields) {
-        weapon.dpsShields = calculateDps2(weapon, true)
+        weapon.dpsShields = calculateDps(weapon, true)
       }
       weapon.isTML = isTML(weapon)
     }

@@ -7,9 +7,16 @@ Supreme Commander unit database built with Vue.js 3.
 
 ### Application
 **Location:** `src/`
-- `main.js` - App entry point, router setup
+- `main.js` - App entry point
 - `App.vue` - Root component with global sass imports
 - `index.html` - Main HTML file
+
+**Router:** `src/router/`
+- `index.js` - Vue Router 4 configuration with hash mode
+  - `/` - View A (HomeView)
+  - `/by-class` - View B (ByClassView)
+  - `/:ids` - Compare view (comma-separated unit IDs)
+  - Route guards for lastListView tracking and saved view restoration
 
 **Components:** `src/components/`
 - `ThumbComponent.vue` - Unit thumbnail tile (accepts `mini` prop for compact display)
@@ -17,7 +24,18 @@ Supreme Commander unit database built with Vue.js 3.
 - `Header.vue` - Version display + view switcher buttons
 - `AppFooter.vue` - Footer
 - `UnitComponent.vue` - Full unit details for compare view (accepts `unit` and `showedSections` props)
-  - `unit/` - Sub-components for unit sections (DefenseSection, EconomySection, etc.)
+  - `unit/` - Sub-components for unit sections:
+    - `UnitHeader.vue` - Unit name, icon, description
+    - `WeaponsSection.vue` - Weapon stats with DPS, damage, cycle info
+    - `DefenseSection.vue` - HP, shields, regen
+    - `EconomySection.vue` - Build/r reclaim/mass/energy stats
+    - `IntelSection.vue` - Radar, sonar, stealth, vision
+    - `PhysicsSection.vue` - Speed, acceleration, turn rate
+    - `AirPhysicsSection.vue` - Air-specific physics (layers, loiter)
+    - `AbilitiesSection.vue` - Special abilities (transport, tactical nuke, etc.)
+    - `UpgradesSection.vue` - Upgrade/build options
+    - `VeterancySection.vue` - Veterancy bonuses
+    - `WreckageSection.vue` - Wreckage/reclaim values
 
 **Views:** `src/views/`
 - `HomeView.vue` - **View A**: Faction grid layout with horizontal filters (uses `home_A` modifier)
@@ -26,21 +44,23 @@ Supreme Commander unit database built with Vue.js 3.
 
 **State:** `src/stores/`
 - `unitData.js` - Pinia store for unit data and selection
-- `utils/unitDecorator/` - Unit data transformation (modular structure):
-  - `index.js` - Public API exports
-  - `decorator.js` - Main decoration orchestration
-  - `classification.js` - Classification and categorization logic
-  - `dps.js` - Weapon cycle formatting functions (fireCycle, beamCycle)
-  - `dps2.js` - FA-accurate DPS calculation (based on fa\lua\ui\game\unitviewDetail.lua)
-  - `lookups.js` - Static lookup tables
-  - `exceptions.js` - Special case configurations
+- `utils/` - Shared utilities:
+  - `categorizer.js` - Unit categorization and tree generation
+    - Exports: `categorize()`, `generateTierTree()`, `generateTypeTree()`, `getTech()`, `kindMap`
+  - `categorizerData/` - Categorization data tables
+    - `categorizeTables.js` - Lookup tables: `kindMap`, `TypeById`, `TypeToSection`, `sectionByType`, `typeOverrides`
+    - `categorizeOrders.js` - Sort orders: `SECTION_ORDER`, `customOrderModifiers`, `sortTierKey`, `sortFaction`, `sortUnits`
+  - `unitDecorator/` - Unit data decoration
+    - `index.js` - Public API: exports `decorateUnit`, `decorateUnits`
+    - `decorator.js` - Main decoration (adds DPS, fireCycle functions to weapons)
+    - `dps2.js` - FA-accurate DPS calculation (MATH_IRound, firing cycle simulation, beam handling)
 
 **Utilities:** `src/composables/`
 - `useUnitData.js` - Composable wrapping store, adds `effectiveVisibleFactions` computed
-- `useUnitGrouping.js` - Unit hierarchy grouping for ByClassView (exports `groupByHierarchy()`)
+- `useOptimalLayout.js` - Optimal section layout algorithm for ByClassView (replaces useUnitGrouping)
 - `useStatRows.js` - Stat row formatting for unit details
 - `useDoubleClickHandler.js` - Double-click event handling
-- `helpers/` - Utility functions (sorting, unit ID parsing, common helpers)
+- `helpers/common.js` - Common utility functions
 
 **Static Assets:** `src/public/`
 - `img/` - Images (faction headers, background, sprite sources)
@@ -57,23 +77,17 @@ Supreme Commander unit database built with Vue.js 3.
   - `vars.sass` - Global CSS variables
   - `mixins.sass` - Responsive mixins
 - `generated/` - Auto-generated sprite sheets (git-ignored)
-  - `ui_sprites.sass`
-  - `strategic_sprites.sass`
-  - `units_sprites.sass`
 
 **Tests:** `src/__tests__/`
 - `stores/unitData.spec.js` - Store tests
-- `utils/unitDecorator.spec.js` - Unit decorator tests (imports from `stores/utils/unitDecorator`)
-- `utils/dpsCalculator.spec.js` - DPS calculator tests (imports from `stores/utils/unitDecorator`)
+- `utils/dpsCalculator.spec.js` - DPS calculator tests (imports `calculateDps` from `stores/utils/unitDecorator/dps2.js`)
 
 ### Build & Config
 - `vite-plugin-spritesmith.js` - Custom plugin for PNG sprite generation
-- `vite.config.js` - Vite config with:
-  - Vue dev server (port 9001)
-  - Sprite generation plugin
-  - Sass preprocessor with auto-imports
+- `vite.config.js` - Vite config with Vue dev server (port 9001), sprite generation, Sass auto-imports
 - `vitest.config.js` - Testing config
-- `package.json` - Scripts (see below)
+- `eslint.config.js` - ESLint flat config
+- `package.json` - Scripts
 
 ### Data Generator
 **Location:** `tools/generator/`
@@ -82,7 +96,7 @@ Supreme Commander unit database built with Vue.js 3.
   - `fetcher.js` - Fetches blueprints from GitHub API (fa and nomads repos)
   - `downloader.js` - Downloads and caches blueprints locally
   - `parser.js` - Lua AST parser (handles blueprint and version files)
-  - `index.js` - Main generator orchestration
+  - `index.js` - Main generator orchestration, pre-calculates `ProjectileFragmentMultiplier`
 - **Scripts:**
   - `npm run download-blueprints` - Downloads blueprints to local cache
   - `npm run generate` - Fetches and generates on-the-fly (slim only)
@@ -90,10 +104,10 @@ Supreme Commander unit database built with Vue.js 3.
   - `npm run generate:fat` - Fetches and generates with fat file
   - `npm run generate:cached:fat` - Generates from cache with fat file
 - **Outputs:** `src/public/data/{index.json, projectiles.json, version.json}` + optional `index.fat.json`
-  - `index.json` - Slim version with essential properties only (always generated)
-  - `projectiles.json` - Projectile fragment data for nested fragmentation DPS calculations (always generated)
-  - `index.fat.json` - Full unit data (only generated with `--withfat` flag)
-  - `version.json` - FAF version number (always generated)
+  - `index.json` - Slim version with essential properties only
+  - `projectiles.json` - Projectile fragment data for nested fragmentation DPS calculations
+  - `index.fat.json` - Full unit data (only with `--withfat` flag)
+  - `version.json` - FAF version number
 
 ## Key Patterns
 
@@ -105,56 +119,71 @@ Supreme Commander unit database built with Vue.js 3.
 - View preference persisted to localStorage as `faf-last-view`
 - `lastListViewRoute` in store tracks user's last list view for "back" button
 
-**Unit Properties (added by decorator):**
-- `displayName` - Unit name without tech prefix
-- `classification` - Basic type (Build, Land, Air, Naval, Base)
-- `displayClassification` - UI grouping (Build, Support, Defenses, Land, Air, Naval)
-- `detailedClassification` - Specific classification (e.g., "T2 Engineering Station", "T3 Assault Bot")
-- `category` - High-level grouping for ByClassView (11 categories: "Land", "Structures - Weapons", "Construction - Buildpower", etc.)
-- `sortOrder` - Numeric value for sorting units by category and detail
-- `tech` - Tech level (T1, T2, T3, EXP)
-- `fullName` - Display name with tech prefix (e.g., "T3 Percival: T3 Assault Bot")
-- `fireCycle` / `beamCycle` - Functions for weapon cycle formatting
-- Weapon properties (added to each weapon in blueprint.Weapon array):
-  - `dps` - Calculated using FA-accurate algorithm (calculateDps2)
+**Unit Properties (added by decorator + categorizer):**
+- From `decorator.js`:
+  - `id` - Unit blueprint ID
+  - `name` - Unit name from blueprint
+  - `description` - Unit description
+  - `faction` - Faction name
+  - `kind` - Basic kind (Build, Land, Air, Naval, Base) via `kindMap`
+  - `tech` - Tech level (T1, T2, T3, EXP) via `getTech()`
+  - `strategicIcon` - Strategic icon path
+  - `icon` - Unit icon path
+  - `fullName` - Display name with tech prefix (e.g., "T3 Percival: T3 Assault Bot")
+  - `selected` - Boolean for compare view selection
+  - `fireCycle` / `beamCycle` - Functions for weapon cycle formatting
+- From `categorizer.js`:
+  - `type` - Specific unit type (e.g., "T3 Assault Bot", "T2 Gunship")
+  - `section` - High-level section (e.g., "Land", "Structures - Weapons")
+  - `sortOrder` - Numeric value for sorting within categories
+- Weapon properties (added to each weapon in `blueprint.Weapon` array):
+  - `dps` - Calculated using FA-accurate algorithm (`calculateDps`)
   - `dpsShields` - DPS including DamageToShields bonus (only present if weapon has DamageToShields)
   - `fullDamage` - Total damage per projectile including fragments
   - `fullSalvoDamage` - `fullDamage * cycleProjs`
   - `projectileDotText` - Formatted DoT info
   - `isTML` - Boolean indicating if weapon is a Tactical Missile Launcher
 
+**Categorization (categorizer.js):**
+- `categorize(bp)` - Mutates blueprint to add `type`, `section`, `sortOrder`
+- `type` is determined from `TypeById` lookup or generated from tech + description
+- `section` maps from `type` via `TypeToSection` lookup
+- `sortOrder` combines unit number, tech level, and custom modifiers
+- `generateTierTree(units)` - Returns nested structure: `section -> tech -> faction -> units[]`
+- `generateTypeTree(units)` - Returns nested structure: `section -> type -> faction -> units[]`
+
 **DPS Calculation (dps2.js):**
 - Implements FA game-accurate DPS calculation based on `fa\lua\ui\game\unitviewDetail.lua`
-- Key features:
-  - Full firing cycle simulation with RackBones iteration
-  - Tick-based rounding (MATH_IRound: 0.1s precision)
-  - Beam weapon calculation with BeamLifetime and BeamCollisionDelay
-  - Nested projectile fragmentation support (reads from projectiles.json)
-  - DoTPulses and InitialDamage handling
-  - MuzzleChargeDelay support
-  - Returns 2-decimal rounded values using .toFixed(2)
+- `MATH_IRound(val)` - Banker's rounding to 0.1 precision (rounds .05 to nearest even)
+- `calculateProjectileDamage(weapon, toShields)` - Returns damage per projectile
+  - Beams: `damage * (1 + floor(beamTicks / (collisionTicks + 1)))`
+  - Non-beams: `damage * DoTPulses + InitialDamage`
+  - Fragments: multiplies by `weapon.ProjectileFragmentMultiplier` (pre-calculated by generator)
+- `simulateFiringCycle(weapon)` - Returns `{ cycleProjs, cycleTime }`
+  - Iterates `RackBones` with proper muzzle counting
+  - Handles `RackFireTogether`, `MuzzleSalvoDelay`, `RackSalvoChargeTime`, `RackSalvoReloadTime`
+- `calculateDps(weapon, toShields)` - Returns `(damage * cycleProjs) / cycleTime`
 - Special cases:
-  - NukeWeapon returns -1
-  - ForceSingleFire returns null
-  - Weapons without RackBones default to MuzzleSalvoSize || 1
+  - `NukeWeapon` returns -1
+  - `ForceSingleFire` returns null
+  - Weapons without `RackBones` default to `MuzzleSalvoSize || 1`
 
-**Routing:** Vue Router 4 with hash mode
-- `/` - View A (HomeView)
-- `/by-class` - View B (ByClassView)
-- `/:ids` - Compare view (comma-separated unit IDs)
-- Catch-all redirects to `/`
-
-**Unit Selection:** `unit.selected` toggled by `store.toggleUnitSelection()` in `stores/unitData.js`
+**Unit Selection:**
+- `unit.selected` toggled by `store.toggleUnitSelection(id)`
+- Contender IDs stored in `store.contenders`
+- Used for compare view URL generation
 
 **Filter Behavior:**
-- Faction filters default to `['UEF', 'Cybran', 'Aeon', 'Seraphim']` (Nomads excluded initially)
-- Empty filter array = show all (applies to all filter types)
+- Faction filters default to `['UEF', 'Cybran', 'Aeon', 'Seraphim']` (Nomads excluded)
+- Empty filter array = show all (applies to faction, kind, tech filters)
 - `effectiveVisibleFactions` computed in `useUnitData.js` handles "empty = all" logic
+- Text filter searches across `id`, `name`, `description`, `faction`, `kind`
 - Inactive filters styled with `filter: grayscale(1); opacity: 0.4`
 
-**Data Loading:** `stores/unitData.js` → `loadData()` on app startup
+**Data Loading:**
+- `store.loadData()` on app startup
 - Fat data loads when URL has `?fat` query parameter
-- Units are decorated via `decorateUnits()` after loading
+- Units decorated via `decorateUnits()` after loading
 
 **Compare View Section Toggles:**
 - Section visibility stored in `ref()` object (Defense, Economy, Abilities, etc.)
@@ -172,19 +201,8 @@ Supreme Commander unit database built with Vue.js 3.
 - `sass:color`
 - `sass:math`
 
-**groupByHierarchy() return structure (from useUnitGrouping.js):**
-```javascript
-{
-  baseClass: "Land",           // Category level
-  classifications: [
-    {
-      classification: "T3 Assault Bot",
-      unitsByFaction: {
-        UEF: [unit1, unit2],
-        Cybran: [unit3],
-        // ... all factions always present
-      }
-    }
-  ]
-}
-```
+**useOptimalLayout(tierTree, containerWidth, ...):**
+- Computes optimal section arrangement for ByClassView to minimize rows and wasted space
+- Uses subset enumeration for first 2 rows, First-Fit Decreasing for remaining
+- Section scores prioritize Land/Air to top rows
+- Returns computed `optimalOrder` as flattened section list with tier data

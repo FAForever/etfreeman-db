@@ -12,7 +12,6 @@ describe('Unit Data Store', () => {
     it('initializes with default state', () => {
       const store = useUnitDataStore()
 
-      expect(store.unitIndex).toEqual([])
       expect(store.units).toEqual([])
       expect(store.version).toBeNull()
       expect(store.contenders).toEqual([])
@@ -33,7 +32,7 @@ describe('Unit Data Store', () => {
     })
   })
 
-  describe('setIndex', () => {
+  describe('setData', () => {
     it('sets unit data and decorates units', () => {
       const store = useUnitDataStore()
       const mockData = {
@@ -48,14 +47,13 @@ describe('Unit Data Store', () => {
         ]
       }
 
-      store.setIndex(mockData)
+      store.setData(mockData)
 
       expect(store.version).toBe('1.0.0')
-      expect(store.unitIndex).toHaveLength(1)
       expect(store.units).toHaveLength(1)
       expect(store.units[0].id).toBe('UEL0201')
       expect(store.units[0].faction).toBe('UEF')
-      expect(store.units[0].classification).toBe('Land')
+      expect(store.units[0].kind).toBe('Land')
     })
 
     it('handles data without version', () => {
@@ -66,17 +64,17 @@ describe('Unit Data Store', () => {
         ]
       }
 
-      store.setIndex(mockData)
+      store.setData(mockData)
 
       expect(store.version).toBeNull()
-      expect(store.unitIndex).toHaveLength(1)
+      expect(store.units).toHaveLength(1)
     })
   })
 
   describe('Faction Filtering', () => {
     beforeEach(() => {
       const store = useUnitDataStore()
-      store.setIndex({
+      store.setData({
         units: [
           { Id: 'UEL0201', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
           { Id: 'URL0107', General: { FactionName: 'Cybran', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
@@ -124,7 +122,7 @@ describe('Unit Data Store', () => {
   describe('Kind (Classification) Filtering', () => {
     beforeEach(() => {
       const store = useUnitDataStore()
-      store.setIndex({
+      store.setData({
         units: [
           { Id: 'UEL0201', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
           { Id: 'UEA0101', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryAircraft' }, Categories: ['TECH1'] },
@@ -138,7 +136,7 @@ describe('Unit Data Store', () => {
       store.toggleKind('Land')
 
       expect(store.visibleUnits).toHaveLength(1)
-      expect(store.visibleUnits[0].classification).toBe('Land')
+      expect(store.visibleUnits[0].kind).toBe('Land')
     })
 
     it('filters multiple kinds', () => {
@@ -147,7 +145,7 @@ describe('Unit Data Store', () => {
       store.toggleKind('Air')
 
       expect(store.visibleUnits).toHaveLength(2)
-      const classifications = store.visibleUnits.map(u => u.classification)
+      const classifications = store.visibleUnits.map(u => u.kind)
       expect(classifications).toContain('Land')
       expect(classifications).toContain('Air')
     })
@@ -156,7 +154,7 @@ describe('Unit Data Store', () => {
   describe('Tech Level Filtering', () => {
     beforeEach(() => {
       const store = useUnitDataStore()
-      store.setIndex({
+      store.setData({
         units: [
           { Id: 'UEL0201', General: { FactionName: 'UEF' }, Categories: ['TECH1'] },
           { Id: 'UEL0202', General: { FactionName: 'UEF' }, Categories: ['TECH2'] },
@@ -189,7 +187,7 @@ describe('Unit Data Store', () => {
   describe('Text Filtering', () => {
     beforeEach(() => {
       const store = useUnitDataStore()
-      store.setIndex({
+      store.setData({
         units: [
           { Id: 'UEL0201', Description: 'Medium Tank', General: { FactionName: 'UEF', UnitName: 'Striker' }, Categories: [] },
           { Id: 'UEL0202', Description: 'Heavy Tank', General: { FactionName: 'UEF', UnitName: 'Pillar' }, Categories: [] },
@@ -239,7 +237,7 @@ describe('Unit Data Store', () => {
   describe('Combined Filtering', () => {
     beforeEach(() => {
       const store = useUnitDataStore()
-      store.setIndex({
+      store.setData({
         units: [
           { Id: 'UEL0201', Description: 'Medium Tank', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
           { Id: 'URL0107', Description: 'Light Assault Bot', General: { FactionName: 'Cybran', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
@@ -291,7 +289,7 @@ describe('Unit Data Store', () => {
   describe('Unit Selection', () => {
     beforeEach(() => {
       const store = useUnitDataStore()
-      store.setIndex({
+      store.setData({
         units: [
           { Id: 'UEL0201', Categories: [] },
           { Id: 'URL0107', Categories: [] }
@@ -359,7 +357,7 @@ describe('Unit Data Store', () => {
 
       expect(global.fetch).toHaveBeenCalledWith('/data/index.json')
       expect(store.version).toBe('1.0.0')
-      expect(store.unitIndex).toHaveLength(1)
+      expect(store.units).toHaveLength(1)
     })
 
     it('loads fat data when URL contains fat parameter', async () => {

@@ -11,18 +11,19 @@
       <tr v-if="w.dps || w.Damage">
         <td></td>
         <td title="category (damage type)" colspan="2">
-          <span class="sm">{{ w.WeaponCategory }} ({{ w.DamageType }})</span>
+          <span class="sm">{{ w.WeaponCategory }} {{ w.DamageType != 'Normal'? `(${w.DamageType})`:'' }}</span>
         </td>
         <td>
           <span v-if="w.dps" title="damage per second" class="sm">{{ roundVal(w.dps, 2) }}dps<br /></span>
-          <span title="initial damage per shot" class="sm">{{ roundVal(w.Damage + (w.InitialDamage || 0)) }}dmg</span><br />
+          <span title="initial damage per shot" class="sm">{{ roundVal(w.Damage + (w.InitialDamage || 0))
+            }}dmg</span><br />
           <span title="DoT damage" class="sm" v-if="w.projectileDotText">{{ w.projectileDotText }}</span>
         </td>
       </tr>
       <tr v-if="(w.Damage || 0) + (w.InitialDamage || 0) != w.fullDamage">
         <td></td>
         <td colspan="2">
-          <span class="sm">Full damage per {{ w.BeamLifetime? 'beam' : 'projectile'}}</span>
+          <span class="sm">Full damage per {{ w.BeamLifetime ? 'beam' : 'projectile' }}</span>
         </td>
         <td>
           <span class="sm">{{ w.fullDamage }}</span>
@@ -111,6 +112,18 @@ const weaponStats = (w) => {
         title: 'dps to shields'
       })
     }
+  }
+  if (w.TractorDamage) {
+    stats.push({
+      label: 'Tractor damage',
+      value: shorten(w.TractorDamage) + 'dmg',
+      title: 'Damage starts when target fully attracted'
+    })
+    stats.push({
+      label: 'Tractor dps',
+      value: shorten(w.TractorDamage / Math.max(0.1, w.TractorDamageInterval / 10)) + 'dps',
+      title: `Interval is once per ${w.TractorDamageInterval / 10} sec.`
+    })
   }
   if (w.MaxRadius) stats.push({
     label: 'Range',

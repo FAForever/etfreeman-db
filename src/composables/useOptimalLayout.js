@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitGap = 6, sectionGap = 10, tierGap = 14, sectionPadding = 16) {
+export function useOptimalLayout(tierTree, containerWidth, itemWidth = 48, unitGap = 6, sectionGap = 10, tierGap = 14, sectionPadding = 16) {
   const sectionScores = {
     'Land': 1e6,
     'Air': 1e4,
@@ -9,22 +9,17 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
     'Structures - Support': -1
   }
 
-  const getSectionScore = (section) => sectionScores[section.baseClass] || 0
+  const getSectionScore = (sectionName) => sectionScores[sectionName] || 0
 
-  const getSectionWidth = (section) => {
+  const getSectionWidth = (sectionName, tierData) => {
     let totalWidth = 0
 
-    section.tierGroups.forEach((tier) => {
-      const factionTotals = { UEF: 0, Cybran: 0, Aeon: 0, Seraphim: 0, Nomads: 0 }
-
-      for (const faction in tier.unitsByFaction) {
-        factionTotals[faction] += tier.unitsByFaction[faction]?.length || 0
-      }
-
-      const maxUnits = Math.max(...Object.values(factionTotals))
-      const tierWidth = maxUnits * (itemWidth + unitGap) - unitGap + tierGap
-      totalWidth += tierWidth
-    })
+    for (const tier in tierData) {
+      const tierUnits = tierData[tier]
+      const factionCounts = Object.values(tierUnits).map(units => units.length)
+      const maxUnits = Math.max(...factionCounts, 0)
+      totalWidth += maxUnits * (itemWidth + unitGap) - unitGap + tierGap
+    }
 
     return totalWidth - tierGap + sectionPadding
   }
@@ -81,16 +76,20 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
   }
 
   const optimalOrder = computed(() => {
-    if (!sections.value?.length) return []
+    const sections = tierTree.value
+    if (!sections) return []
+
+    const sectionNames = Object.keys(sections)
+    if (!sectionNames.length) return []
 
     const maxWidth = containerWidth.value + sectionGap
-    const widths = sections.value.map(s => Math.min(getSectionWidth(s) + sectionGap, maxWidth))
-    const n = sections.value.length
+    const widths = sectionNames.map(s => Math.min(getSectionWidth(s, sections[s]) + sectionGap, maxWidth))
+    const n = sectionNames.length
     const allIndices = Array.from({ length: n }, (_, i) => i)
     let bestSolution = null
     let bestScore = { rows: Infinity, waste: Infinity }
 
-    const landIdx = sections.value.findIndex(s => s.baseClass === 'Land')
+    const landIdx = sectionNames.indexOf('Land')
 
     const row1Subsets = enumerateSubsets(allIndices, widths, maxWidth)
       .filter(subset => landIdx === -1 || subset.items.includes(landIdx))
@@ -98,7 +97,6 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
     for (const row1 of row1Subsets) {
       const remaining1 = allIndices.filter(i => !row1.items.includes(i))
 
-      // If no remaining items, row1 is the complete solution
       if (remaining1.length === 0) {
         bestSolution = [row1.items]
         break
@@ -129,53 +127,21 @@ export function useOptimalLayout(sections, containerWidth, itemWidth = 48, unitG
       [...row].sort((a, b) => widths[b] - widths[a])
     )
 
-    // Log before post-sort
-    const flatBefore = sortedRows.flat()
-    const hasXEBBefore = flatBefore.find(idx => sections.value[idx]?.baseClass === 'Land')
-    if (hasXEBBefore !== undefined) {
-      const rowUnits = sortedRows[hasXEBBefore].map(idx => sections.value[idx])
-      const hasXEB = rowUnits.find(u => u && u.id === 'XEB0204')
-      const hasUEL = rowUnits.find(u => u && u.id === 'UEL0301')
-      if (hasXEB || hasUEL) {
-        console.log('Before post-sort:', rowUnits.map(u => u?.id).filter(id => id === 'XEB0204' || id === 'UEL0301'))
-      }
-    }
-
-    // Post-sort by rowSortScore
     sortedRows.sort((rowA, rowB) => {
-      const scoreA = rowA.reduce((sum, idx) => sum + getSectionScore(sections.value[idx]), 0)
-      const scoreB = rowB.reduce((sum, idx) => sum + getSectionScore(sections.value[idx]), 0)
+      const scoreA = rowA.reduce((sum, idx) => sum + getSectionScore(sectionNames[idx]), 0)
+      const scoreB = rowB.reduce((sum, idx) => sum + getSectionScore(sectionNames[idx]), 0)
       return scoreB - scoreA
     })
 
-    // Sort sections within each row by score
     sortedRows.forEach(row => {
       row.sort((a, b) => {
-        const scoreA = getSectionScore(sections.value[a])
-        const scoreB = getSectionScore(sections.value[b])
+        const scoreA = getSectionScore(sectionNames[a])
+        const scoreB = getSectionScore(sectionNames[b])
         return scoreB - scoreA
       })
     })
 
-    // Log after post-sort
-    const hasXEBAfter = flatBefore.find(idx => sections.value[idx]?.baseClass === 'Land')
-    if (hasXEBAfter !== undefined) {
-      const rowUnits = sortedRows[hasXEBAfter].map(idx => sections.value[idx])
-      const hasXEB = rowUnits.find(u => u && u.id === 'XEB0204')
-      const hasUEL = rowUnits.find(u => u && u.id === 'UEL0301')
-      if (hasXEB || hasUEL) {
-        console.log('After post-sort:', rowUnits.map(u => u?.id).filter(id => id === 'XEB0204' || id === 'UEL0301'))
-      }
-    }
-
-    const rowW = r => r.reduce((s, i) => s + widths[i], -sectionGap)
-    const rowWidths = sortedRows.map(rowW)
-    const longestRowWidth = Math.max(...rowWidths)
-    const totalWaste = maxWidth * sortedRows.length - widths.reduce((a, b) => a + b, 0)
-
-    console.log('rows:', sortedRows.length)
-
-    return sortedRows.flat().map(i => sections.value[i])
+    return sortedRows.flat().map(i => ({ name: sectionNames[i], tiers: sections[sectionNames[i]] }))
   })
 
   return { optimalOrder }

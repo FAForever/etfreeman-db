@@ -4,10 +4,13 @@ import { useUnitDataStore } from '../stores/unitData.js'
 
 export function useUnitData() {
   const store = useUnitDataStore()
-  const { units, visibleUnits, contenders, version, selectedFilterFactions, selectedFilterKinds, selectedFilterTech, textFilter } = storeToRefs(store)
+  const { units, unitsMap, tierTree, typeTree, visibleUnits, contenders, version, selectedFilterFactions, selectedFilterKinds, selectedFilterTech, textFilter } = storeToRefs(store)
 
   return {
     units,
+    unitsMap,
+    tierTree,
+    typeTree,
     visibleUnits,
     contenders,
     version,
@@ -34,7 +37,7 @@ export function useUnitData() {
 
     strain: (unit) =>
       (!selectedFilterFactions.value.length || selectedFilterFactions.value.includes(unit.faction)) &&
-      (!selectedFilterKinds.value.length || selectedFilterKinds.value.includes(unit.classification)) &&
+      (!selectedFilterKinds.value.length || selectedFilterKinds.value.includes(unit.kind)) &&
       (!selectedFilterTech.value.length || selectedFilterTech.value.includes(unit.tech))
   }
 }

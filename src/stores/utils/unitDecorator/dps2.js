@@ -1,7 +1,22 @@
 // FA Game-Accurate DPS Calculator
 // Based on: fa\lua\ui\game\unitviewDetail.lua
 
-const MATH_IRound = (val) => Math.round(val * 10) / 10
+// Banker's rounding to 0.1 precision - per FA engine spec
+// At .05 boundary, rounds to even tenth: 1.75 → 1.8, 1.65 → 1.6
+// See: fa\engine\Core.lua
+export const MATH_IRound = (val) => {
+  const scaled = val * 10
+  const rounded = Math.round(scaled)
+
+  // Check if we're exactly at .5 (tie case)
+  const diff = Math.abs(scaled - rounded)
+  if (diff === 0.5) {
+    // Round to nearest even integer
+    return (rounded % 2 === 0 ? rounded : rounded - 1) / 10
+  }
+
+  return rounded / 10
+}
 
 export const calculateProjectileDamage = (weapon, toShields = false) => {
   let damage = weapon.Damage || 0
@@ -92,7 +107,7 @@ export const simulateFiringCycle = (weapon) => {
   return { cycleProjs, cycleTime }
 }
 
-export const calculateDps2 = (weapon, toShields = false) => {
+export const calculateDps = (weapon, toShields = false) => {
   if (weapon.NukeWeapon) return -1
   if (weapon.ForceSingleFire) return null
 
@@ -106,9 +121,6 @@ const formatBeamCollisionCycle = (shots, dmg, perShotDelay, totalDmg) => {
   const delayText = shots > 1 ? `/ ${perShotDelay} sec ` : ''
   return `${shots} times ${dmg} dmg ${delayText}${totalDmg} dmg total`
 }
-
-const formatStandardBeam = (dmg, totalDmg) =>
-  `11 times / 0.1 sec ${dmg} dmg = ${totalDmg} dmg total, 1.1 sec total`
 
 const formatNonStandardBeam = (dmg, lifetime) =>
   `${lifetime * 10 + 1} times / 0.1 sec ${dmg} dmg = ${(lifetime * 10 + 1) * dmg} dmg total`

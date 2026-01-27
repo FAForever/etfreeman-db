@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import UnitHeader from './unit/UnitHeader.vue'
 import DefenseSection from './unit/DefenseSection.vue'
 import EconomySection from './unit/EconomySection.vue'

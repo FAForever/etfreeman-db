@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { decorateUnits } from './utils/unitDecorator/index.js'
+import { generateTierTree, generateTypeTree } from './utils/categorizer.js'
 
 export const useUnitDataStore = defineStore('unitData', () => {
-  const unitIndex = ref([])
   const units = ref([])
+  const unitsMap = ref({})
   const version = ref(null)
   const contenders = ref([])
 
@@ -23,21 +24,28 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const visibleUnits = computed(() => {
     return units.value.filter(unit => {
       const factionMatch = !selectedFilterFactions.value.length || selectedFilterFactions.value.includes(unit.faction)
-      const kindMatch = !selectedFilterKinds.value.length || selectedFilterKinds.value.includes(unit.classification)
+      const kindMatch = !selectedFilterKinds.value.length || selectedFilterKinds.value.includes(unit.kind)
       const techMatch = !selectedFilterTech.value.length || selectedFilterTech.value.includes(unit.tech)
 
       const search = textFilter.value.trim().toLowerCase()
-      const textMatch = !search || ['id', 'name', 'description', 'faction', 'classification']
+      const textMatch = !search || ['id', 'name', 'description', 'faction', 'kind']
         .some(field => unit[field]?.toLowerCase().includes(search))
 
       return factionMatch && kindMatch && techMatch && textMatch
     })
   })
 
-  const setIndex = (index) => {
-    unitIndex.value = index.units || []
-    units.value = decorateUnits(unitIndex.value)
+  const tierTree = computed(() => generateTierTree(visibleUnits.value))
+  const typeTree = computed(() => generateTypeTree(visibleUnits.value))
+
+  const setData = (index) => {
+    units.value = decorateUnits(index.units || [])
     version.value = index.version || null
+
+    unitsMap.value = {}
+    for (const unit of units.value) {
+      unitsMap.value[unit.Id] = unit
+    }
   }
 
   const toggleFaction = (faction) => toggleArrayItem(selectedFilterFactions.value, faction)
@@ -74,7 +82,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
 
     return fetch(dataUrl)
       .then(response => response.json())
-      .then(data => (setIndex(data), data))
+      .then(data => setData(data))
       .catch(error => {
         console.error('Failed to load unit data:', error)
         throw error
@@ -82,7 +90,6 @@ export const useUnitDataStore = defineStore('unitData', () => {
   }
 
   return {
-    unitIndex,
     version,
     contenders,
     selectedFilterFactions,
@@ -95,9 +102,12 @@ export const useUnitDataStore = defineStore('unitData', () => {
     }),
 
     units,
+    unitsMap,
+    tierTree,
+    typeTree,
     visibleUnits,
 
-    setIndex,
+    setData,
     toggleFaction,
     toggleKind,
     toggleTech,
