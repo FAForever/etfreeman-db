@@ -22,7 +22,13 @@ export const customOrderModifiers = {
   'T3 Engineering Station': 1e3,
   'T3 Engineering Drone': 1e3,
   'T3 Omni Sensor Array': -1e5,
-  'Direct Fire Experimental': -1e3
+  'Direct Fire Experimental': -1e3,
+
+  /* nomads issues: */
+  'T3 Mobile Anti-Air': -1e3,
+  'T2 Tactical Missile Launcher': -1e2,
+  'T3 Heavy Artillery Installation': -1e3,
+  'T3 Anti-Air SAM Launcher': -1e4,
 }
 
 export const customTypeOrderModifiers = {
@@ -40,6 +46,9 @@ export const customTypeOrderModifiers = {
   'T1 Anti-Air Boat': 500,
   'T2 Torpedo Boat': 100,
   'T3 Battlecruiser': -2,
+  'T1 Tank Destroyer': 1e2,
+  'T3 Heavy Point Defense': 1e3,
+  'T3 Torpedo Ambushing System': 1e3
 }
 
 const TIER_ORDER = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4, '': 1 }

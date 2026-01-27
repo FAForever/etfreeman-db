@@ -57,23 +57,30 @@ const toggleUnitsOfTheSameClass = (typeName) => {
 
   &__byclass-base
     display: block
-    background: rgba(0,0,0,.5)
-    padding: 10px 5px 5px
+    background-color: rgba(0,0,0,.5)
+    padding: 10px 5px 0px
     border: 1px solid rgba(255,255,255,.2)
+    box-shadow: inset 0 0 30px 5px rgb(0, 0, 0, 1)
 
   &__byclass-base-title
     font-size: 1.3em
-    margin-bottom: 8px
+    padding-bottom: 8px
 
   &__byclass-section
-    width: 100%
+    width: calc(100% + 10px)
     display: flex
-
+    margin: 0 -5px
+    padding: 4px 5px 2px
+    &:last-child
+      padding-bottom: 5px
+    &:hover
+      background: rgba(255,255,255,.1)
   &__byclass-section-title
-    margin-left: 8px
+    margin-left: 5px
     margin-right: 8px
+    flex-grow: 1
     font-size: 1em
-    margin: 3px 0
+    padding: 1px 0 5px
     font-weight: normal
     font-family: 'Muli', Verdana, Arial, sans-serif
 

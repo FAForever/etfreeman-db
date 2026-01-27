@@ -10,6 +10,7 @@
         'icon_strategic',
         `icon-${item.faction}_${item.strategicIcon}`
       ]" />
+      <span v-if="item?.fullName?.endsWith('HQ')" :class="['thumb__HQ', `thumb__HQ_-${item.faction}`]">HQ</span>
     </div>
     <span v-else :class="[
       'strategic',
@@ -20,7 +21,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['item', 'mini'])
+const props = defineProps(['item', 'mini','HQ'])
 const emit = defineEmits(['unit-click'])
 
 function handleClick(event) {
@@ -45,6 +46,18 @@ function handleClick(event) {
     top: 0
     left: 0
 
+  &__HQ
+    position: absolute
+    right: 2px
+    top: 2px
+    font-size: 10px
+    font-weight: 700
+    z-index: 199
+    color: white
+    display: block
+    text-shadow: -2px -2px 0 #000, 0   -2px 0 #000, 2px -2px 0 #000, 2px  0   0 #000, 2px  2px 0 #000, 0    2px 0 #000, -2px  2px 0 #000,  -2px  0   0 #000
+    border-radius: 5px
+
   &:not(&_mini)
     width: var(--thumbwidth,48px)
     height: var(--thumbwidth,48px)
@@ -53,7 +66,8 @@ function handleClick(event) {
       left: 1px
     @each $name, $color in colors.$factions2
       &.thumb_#{$name}
-        background-color: color.adjust($color, $alpha: -0.15)
+        background: linear-gradient(rgba(0,0,0,.27), rgba(0,0,0,.27))
+        background-color: color.adjust($color, $alpha: -0.1)
         border: 1px solid color.adjust($color, $alpha: .1, $lightness: 30%) !important
         box-shadow: inset 0 0 4px 0px color.adjust($color, $alpha: .2, $saturation: 700%, $lightness: 20%)
         padding: 3px
@@ -65,6 +79,7 @@ function handleClick(event) {
           box-shadow: inset 0 0 6px 0px color.adjust($color, $alpha: .4, $saturation: 700%, $lightness: 20%)
           outline: 1px solid color.adjust($color, $alpha: .5, $lightness: 30%) !important
         &.selected
+          background-color: color.adjust($color, $alpha: 0, $lightness: 20%)
           filter: contrast(120%) brightness(120%) saturate(120%)
           border: 1px solid color.adjust($color, $alpha: 1, $lightness: 30%) !important
           outline: 1px solid color.adjust($color, $alpha: 1, $lightness: 30%) !important
@@ -79,8 +94,6 @@ function handleClick(event) {
     display: flex
     justify-content: center
     align-items: center
-    margin-right: 3px
-    margin-bottom: 6px
 
     .strategic
       position: static
