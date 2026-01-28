@@ -15,12 +15,12 @@ export function useDoubleClickHandler(toggleUnitSelection, contenders, router) {
     const isDoubleClick = lastClickUnit.value === unit && (now - lastClickTime.value) < maxDoubleClickDelay
 
     if (isDoubleClick) {
-      if (!unit.selected) toggleUnitSelection(unit.id)
+      if (!unit.selected) toggleUnitSelection(unit)
       router.push('/' + [...contenders.value].join(','))
     } else {
       lastClickUnit.value = unit
       lastClickTime.value = now
-      toggleUnitSelection(unit.id)
+      toggleUnitSelection(unit)
     }
   }
 

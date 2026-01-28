@@ -6,7 +6,7 @@
     <div class="app-header__view-switcher">
       <router-link to="/" title="view units by kind" :class="['calm',{ active: route.path === '/' }]" @click="saveView('/')">View A</router-link>
       |
-      <router-link to="/by-class" title="view units by class" :class="['calm',{ active: route.path === '/by-class' }]" @click="saveView('/by-class')">View B</router-link>
+      <router-link to="/by-type" title="view units by type" :class="['calm',{ active: route.path === '/by-type' }]" @click="saveView('/by-type')">View B</router-link>
     </div>
   </header>
 </template>

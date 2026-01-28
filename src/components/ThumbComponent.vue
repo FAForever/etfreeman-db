@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['item', 'mini','HQ'])
+const props = defineProps(['item', 'mini'])
 const emit = defineEmits(['unit-click'])
 
 function handleClick(event) {

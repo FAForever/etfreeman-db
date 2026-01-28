@@ -12,7 +12,7 @@
                 @unit-click="handleUnitClick" />
             </div>
             <h2 class="home__byclass-section-title">
-              <a class="calm" @click="toggleUnitsOfTheSameClass(typeName)">
+              <a class="calm" @click="toggleUnitsOfTheSameType(unitsByFaction)">
                 {{ typeName }}
               </a>
             </h2>
@@ -34,7 +34,7 @@ import ThumbComponent from '../components/ThumbComponent.vue'
 import { useFilterStore } from '../stores/filterStore.js'
 
 const router = useRouter()
-const { visibleUnits, toggleUnitSelection, setUnitSelection, contenders, typeTree } = useUnitData()
+const { toggleUnitSelection, contenders, typeTree, smartSelect } = useUnitData()
 const filterStore = useFilterStore()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 
@@ -42,10 +42,9 @@ const sections = computed(() => {
   return Object.entries(typeTree.value).map(([name, types]) => ({ name, types }))
 })
 
-const toggleUnitsOfTheSameClass = (typeName) => {
-  const classItems = visibleUnits.value.filter(unit => unit.type === typeName)
-  const isAlreadySelected = classItems.some(u => u.selected)
-  classItems.forEach(unit => setUnitSelection(unit.id, !isAlreadySelected))
+const toggleUnitsOfTheSameType = (unitsByFaction) => {
+  const units = Object.values(unitsByFaction).flat()
+  smartSelect(units)
 }
 </script>
 
@@ -70,19 +69,21 @@ const toggleUnitsOfTheSameClass = (typeName) => {
     width: calc(100% + 10px)
     display: flex
     margin: 0 -5px
-    padding: 4px 5px 2px
+    --sectionbottompad: 2px
+    padding: 4px 0px var(--sectionbottompad) 5px
     &:last-child
-      padding-bottom: 5px
+      --sectionbottompad: 5px
     &:hover
       background: rgba(255,255,255,.1)
   &__byclass-section-title
     margin-left: 5px
-    margin-right: 8px
     flex-grow: 1
     font-size: 1em
-    padding: 1px 0 5px
     font-weight: normal
     font-family: 'Muli', Verdana, Arial, sans-serif
+    a
+      padding: 5px 8px calc(5px + var(--sectionbottompad)) 0
+      margin: -4px 0 calc(var(--sectionbottompad) * (-1))
 
   &__byclass-faction
     flex-shrink: 0

@@ -3,6 +3,7 @@
     <HomeTop />
     <div class="home__units" ref="containerRef">
       <div v-for="section in optimalOrder" :key="section.name" class="home__section">
+
         <div class="home__section-title-wrap">
           <div class="home__section-title">
             <template v-for="(chunk, idx) in section.name.split(' - ')" :key="idx">
@@ -10,20 +11,25 @@
             </template>
           </div>
         </div>
-        <div class="home__section-content"
-          :style="sectionMinWidths[section.name] ? { minWidth: `${sectionMinWidths[section.name]}px` } : undefined">
+
+        <div class="home__section-content" :style="{ minWidth: sectionMinWidths[section.name] }">
           <div v-for="[tierName, tierData], tierIndex in Object.entries(section.tiers)" :key="tierName"
             class="home__section-tier">
+
             <div class="home__faction-rows">
+
               <div class="home__faction-row home__faction-row--buttons">
                 <button v-for="n in (tierButtons[section.name]?.[tierIndex] || 0)" :key="n"
                   @click="selectColumn(tierData, n)" class="home__faction-rows-colselect">+</button>
               </div>
+
               <div v-for="[faction, units] in Object.entries(tierData)" :key="faction"
                 :class="['home__faction-row', `home__faction-row--${faction.toLowerCase()}`]">
                 <ThumbComponent v-for="unit in units" :key="unit.id" :item="unit" @unit-click="handleUnitClick" />
               </div>
+
             </div>
+
           </div>
         </div>
       </div>
@@ -42,7 +48,7 @@ import ThumbComponent from '../components/ThumbComponent.vue'
 
 const router = useRouter()
 const route = useRoute()
-const { toggleUnitSelection, contenders, tierTree } = useUnitData()
+const { toggleUnitSelection, contenders, tierTree, smartSelect } = useUnitData()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 
 const containerRef = ref(null)
@@ -65,35 +71,24 @@ const tierButtons = {
 }
 
 const sectionMinWidths = {
-  'Structures - Intelligence': 60,
-  'Construction - Buildpower': 60,
-  'Experimental': 70
+  'Structures - Intelligence': '60px',
+  'Construction - Buildpower': '60px',
+  'Experimental': '70px'
 }
 
 const { optimalOrder } = useOptimalLayout(tierTree, containerWidth)
 
 const selectColumn = (tierData, index) => {
-  const columnUnits = Object.values(tierData)
-    .map(units => units[index - 1])
-    .filter(Boolean)
-
-  const allSelected = columnUnits.every(u => u.selected)
-
-  if (allSelected) {
-    columnUnits.forEach(u => toggleUnitSelection(u.id))
-  } else {
-    columnUnits.forEach(u => {
-      if (!u.selected) toggleUnitSelection(u.id)
-    })
-  }
+  const units = Object.values(tierData).map(arr => arr[index - 1]).filter(Boolean)
+  smartSelect(units)
 }
 
 const onResize = () => {
   if (containerRef.value) {
     rawWidth.value = containerRef.value.clientWidth
   }
-  if (window.innerWidth < mobThreshold && route.path !== '/by-class') {
-    router.push('/by-class')
+  if (window.innerWidth < mobThreshold && route.path !== '/by-type') {
+    router.push('/by-type')
   }
 }
 

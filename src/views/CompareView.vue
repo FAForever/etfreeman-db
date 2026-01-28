@@ -15,7 +15,7 @@
         </li>
       </ul>
     </aside>
-    <MasonryWall class="compare__unitlist" :items="contenders" :column-width="345" :gap="10" :padding="10">
+    <MasonryWall class="compare__unitlist" :items="comparedUnits" :column-width="345" :gap="10" :padding="10">
       <template #default="{ item: u }">
         <UnitComponent
           :unit="u"
@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
@@ -37,7 +37,7 @@ import MasonryWall from '@yeger/vue-masonry-wall'
 
 const route = useRoute()
 const router = useRouter()
-const { units } = useUnitData()
+const { unitsMap } = useUnitData()
 const store = useUnitDataStore()
 const { lastListViewRoute } = storeToRefs(store)
 
@@ -75,9 +75,11 @@ function toggleSection(section) {
 
 const ids = computed(() => route.params.ids ? route.params.ids.split(',') : [])
 
-const contenders = computed(() => ids.value
-    .map(id => units.value.find(u => u.id === id))
-    .filter(u => u !== undefined))
+const comparedUnits = computed(() => ids.value
+    .map(id => unitsMap.value[id])
+    .filter(Boolean))
+
+watch(comparedUnits, () => comparedUnits.value.length || router.push(lastListViewRoute.value))
 
 </script>
 

@@ -4,17 +4,14 @@ export function useContenders({ unitsMap }) {
   const contenders = ref(new Set())
   const updateContenders = (unitId, selected) => selected ? contenders.value.add(unitId) : contenders.value.delete(unitId)
 
-  const toggleUnitSelection = (unitId) => {
-    const unit = unitsMap.value[unitId]
-    if (!unit) return
+  const toggleUnitSelection = (unit) => {
     unit.selected = !unit.selected
-    updateContenders(unitId, unit.selected)
+    updateContenders(unit.id, unit.selected)
   }
 
-  const setUnitSelection = (unitId, selected) => {
-    const unit = unitsMap.value[unitId]
-    if (!unit || unit.selected === selected) return
-    toggleUnitSelection(unitId)
+  const setUnitSelection = (unit, selected) => {
+    if (unit.selected === selected) return
+    toggleUnitSelection(unit)
   }
 
   const clearSelection = () => {
@@ -25,5 +22,12 @@ export function useContenders({ unitsMap }) {
     contenders.value.clear()
   }
 
-  return { contenders, toggleUnitSelection, setUnitSelection, clearSelection }
+  const smartSelect = (units) => {
+    if (!units?.length) return
+    const unselected = units.filter(u => !u.selected);
+    (unselected.length ? unselected : units)
+      .forEach(toggleUnitSelection)
+  }
+
+  return { contenders, toggleUnitSelection, setUnitSelection, clearSelection, smartSelect }
 }

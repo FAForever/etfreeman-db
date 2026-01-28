@@ -107,27 +107,30 @@ describe('Unit Data Store', () => {
 
     it('toggleUnitSelection selects a unit', () => {
       const store = useUnitDataStore()
-      store.toggleUnitSelection('UEL0201')
-
       const unit = store.units.find(u => u.id === 'UEL0201')
+      store.toggleUnitSelection(unit)
+
       expect(unit.selected).toBe(true)
       expect(store.contenders.has('UEL0201')).toBe(true)
     })
 
     it('toggleUnitSelection deselects a unit', () => {
       const store = useUnitDataStore()
-      store.toggleUnitSelection('UEL0201')
-      store.toggleUnitSelection('UEL0201')
+      const unit1 = store.units.find(u => u.id === 'UEL0201')
+      const unit2 = store.units.find(u => u.id === 'UEL0201')
+      store.toggleUnitSelection(unit1)
+      store.toggleUnitSelection(unit2)
 
-      const unit = store.units.find(u => u.id === 'UEL0201')
-      expect(unit.selected).toBe(false)
+      expect(unit1.selected).toBe(false)
       expect(store.contenders.has('UEL0201')).toBe(false)
     })
 
     it('tracks multiple selected units', () => {
       const store = useUnitDataStore()
-      store.toggleUnitSelection('UEL0201')
-      store.toggleUnitSelection('URL0107')
+      const unit1 = store.units.find(u => u.id === 'UEL0201')
+      const unit2 = store.units.find(u => u.id === 'URL0107')
+      store.toggleUnitSelection(unit1)
+      store.toggleUnitSelection(unit2)
 
       expect(store.contenders.size).toBe(2)
       expect(store.contenders.has('UEL0201')).toBe(true)
@@ -136,8 +139,10 @@ describe('Unit Data Store', () => {
 
     it('clearSelection deselects all units', () => {
       const store = useUnitDataStore()
-      store.toggleUnitSelection('UEL0201')
-      store.toggleUnitSelection('URL0107')
+      const unit1 = store.units.find(u => u.id === 'UEL0201')
+      const unit2 = store.units.find(u => u.id === 'URL0107')
+      store.toggleUnitSelection(unit1)
+      store.toggleUnitSelection(unit2)
       store.clearSelection()
 
       expect(store.contenders.size).toBe(0)
@@ -148,9 +153,9 @@ describe('Unit Data Store', () => {
 
     it('setUnitSelection sets selection state', () => {
       const store = useUnitDataStore()
-      store.setUnitSelection('UEL0201', true)
-
       const unit = store.units.find(u => u.id === 'UEL0201')
+      store.setUnitSelection(unit, true)
+
       expect(unit.selected).toBe(true)
       expect(store.contenders.has('UEL0201')).toBe(true)
     })

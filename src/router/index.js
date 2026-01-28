@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { useUnitDataStore } from '../stores/unitData.js'
 import HomeView from '../views/HomeView.vue'
-import ByClassView from '../views/ByClassView.vue'
+import ByTypeView from '../views/ByTypeView.vue'
 import CompareView from '../views/CompareView.vue'
 
 const router = createRouter({
@@ -14,9 +14,9 @@ const router = createRouter({
       meta: { isListView: true }
     },
     {
-      path: '/by-class',
-      name: 'by-class',
-      component: ByClassView,
+      path: '/by-type',
+      name: 'by-type',
+      component: ByTypeView,
       meta: { isListView: true }
     },
     {

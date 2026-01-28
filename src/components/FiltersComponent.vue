@@ -23,15 +23,15 @@
     <div class="filter-icons">
       <div class="icon-column">
         <a v-for="f in factions" :key="f" :title="f" @click.prevent="filterStore.toggleFaction(f)"
-          :class="['icon_ui', `icon-${f}`, { active: filterFactions.includes(f) }]"></a>
+          :class="['icon_ui', `icon-${f}`, { active: filterFactions.has(f) }]"></a>
       </div>
       <div class="icon-column">
         <a v-for="k in kinds" :key="k" :title="k" @click.prevent="filterStore.toggleKind(k)"
-          :class="['icon_ui', `icon-${k}`, { active: filterKinds.includes(k) }]"></a>
+          :class="['icon_ui', `icon-${k}`, { active: filterKinds.has(k) }]"></a>
       </div>
       <div class="icon-column">
         <a v-for="t in techLevels" :key="t" :title="t" @click.prevent="filterStore.toggleTech(t)"
-          :class="['icon_ui', `icon-${t}`, { active: filterTech.includes(t) }]"></a>
+          :class="['icon_ui', `icon-${t}`, { active: filterTech.has(t) }]"></a>
       </div>
     </div>
 
