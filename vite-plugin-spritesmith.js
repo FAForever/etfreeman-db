@@ -117,8 +117,12 @@ export default function viteSpritesmith(options = {}) {
         cssContent += `  background-image: url(${cssImageRef})\n`
         cssContent += `  background-size: ${packed.width}px ${packed.height}px\n\n`
 
+        const factionIconNames = []
         items.forEach(item => {
           const iconName = path.basename(item.file, '.png')
+          if (['uef', 'cybran', 'aeon', 'seraphim', 'nomads'].includes(iconName.toLowerCase())) {
+            factionIconNames.push(iconName)
+          }
           const posX = packed.width === item.width ? 0 : (item.x / (packed.width - item.width)) * 100
           const posY = packed.height === item.height ? 0 : (item.y / (packed.height - item.height)) * 100
           cssContent += `.icon-${iconName}\n`
@@ -126,6 +130,8 @@ export default function viteSpritesmith(options = {}) {
           cssContent += `  height: ${item.height}px\n`
           cssContent += `  background-position: ${posX.toFixed(4)}% ${posY.toFixed(4)}%\n`
         })
+        console.log(`[spritesmith] Faction icons found: ${factionIconNames.join(', ')}`)
+        console.log(`[spritesmith] Faction CSS classes: .icon-${factionIconNames.join(', .icon-')}`)
       } else if (modifier === 'ui-scalable') {
         const columnCount = Math.round(packed.width / 48)
 
@@ -171,6 +177,7 @@ export default function viteSpritesmith(options = {}) {
       fs.writeFileSync(cssDest, cssContent)
 
       console.log(`[spritesmith] Generated ${name} sprite (${items.length} icons, size ${packed.width}x${packed.height})`)
+      console.log(`[spritesmith] CSS saved to: ${cssDest}`)
     } catch (error) {
       console.error(`[spritesmith] Error generating ${name} sprite:`, error)
     }

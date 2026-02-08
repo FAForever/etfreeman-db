@@ -43,7 +43,7 @@ export default defineConfig(() => ({
       ]
     })
   ],
-  base: './',
+  base: process.env.GITHUB_ACTIONS ? '/etfreeman-db/' : '/',
   root: './src',
   publicDir: 'public',
   build: {

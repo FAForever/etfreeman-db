@@ -7,6 +7,8 @@ import { shorten } from '../../composables/helpers/common.js'
 import { computed } from 'vue'
 const { unit } = defineProps(['unit'])
 
+const baseUrl = import.meta.env.BASE_URL
+
 const blueprintUrl = computed(() => {
   const isNomads = unit.faction?.toLowerCase() === 'nomads'
   const repo = isNomads ? 'nomads' : 'fa'
@@ -19,7 +21,7 @@ const blueprintUrl = computed(() => {
 <template>
   <div class="u2header uc__secti" :class="`u2header_${unit.faction}`">
     <a class="u2header__img calm" :href="blueprintUrl" target="_blank">
-      <img class="u2header__img-bg" :src="`/img/${unit.General.Icon}.png`">
+      <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.png`">
       <div class="u2header__img-main-wrap">
         <span :class="['u2header__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></span>
       </div>
