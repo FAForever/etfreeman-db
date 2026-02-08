@@ -63,9 +63,11 @@ const COLUMN_ORDER = [
   'cycle', 'cycle to shields'
 ]
 
+const visibleWeapons = computed(() => Object.values(weaponGroups.value).flat())
+
 const weaponColumns = computed(() => {
   const present = new Set()
-  for (let weapon of weapons) {
+  for (let weapon of visibleWeapons.value) {
     present.add('type')
     if (weapon.DamageRadius || weapon.NukeInnerRingRadius) {
       present.add('AoE')
@@ -89,14 +91,14 @@ const weaponColumns = computed(() => {
     }
     present.add('cycle')
   }
-  if (weapons.some(w => w.dps != null)) {
+  if (visibleWeapons.value.some(w => w.dps != null)) {
     present.add('DPS')
     present.add('dps/mass')
   }
-  if (weapons.some(w => w.MaxRadius != null)) {
+  if (visibleWeapons.value.some(w => w.MaxRadius != null)) {
     present.add('range')
   }
-  if (weapons.some(w => w.FiringTolerance != null)) {
+  if (visibleWeapons.value.some(w => w.FiringTolerance != null)) {
     present.add('firingTol')
   }
   return COLUMN_ORDER.filter(col => present.has(col))
