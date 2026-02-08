@@ -1,3 +1,57 @@
 {
-  "version": "3829"
+  "version": "3829",
+  "shieldDefaultOverspill": 0.15,
+  "shieldDefaultRechargeTime": 5,
+  "techToVetMultipliers": {
+    "TECH1": 2,
+    "TECH2": 1.5,
+    "TECH3": 1.25,
+    "SUBCOMMANDER": 2,
+    "EXPERIMENTAL": 2,
+    "COMMAND": 2
+  },
+  "veterancyRegenBuffs": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    [
+      3,
+      6,
+      9,
+      12,
+      15
+    ],
+    [
+      6,
+      12,
+      18,
+      24,
+      30
+    ],
+    [
+      9,
+      18,
+      27,
+      36,
+      45
+    ],
+    [
+      25,
+      50,
+      75,
+      100,
+      125
+    ]
+  ],
+  "wreckageTechMassMults": {
+    "TECH1": 0.9,
+    "TECH2": 0.8,
+    "TECH3": 0.7,
+    "EXPERIMENTAL": 0.6
+  },
+  "wreckageWaterMult": 0.6
 }
