@@ -30,7 +30,7 @@ const getWeaponCategory = (weapon) => {
 
 const weaponGroups = computed(() => {
   const groups = weapons?.reduce((acc, weapon) => {
-    if (!weapon.dps && !weapon.fullDamage) return acc
+    if (!weapon.dps && !weapon.fullDamage && weapon.DamageType != "EMP") return acc
     const isWeirdBeetleWeapon = (weapon.WeaponCategory == "Kamikaze" && weapon.fullDamage == 1)
     if (isWeirdBeetleWeapon) return acc
     const category = getWeaponCategory(weapon)

@@ -35,7 +35,7 @@ const isEconomyFirst = computed(() => {
   const eco = props.unit.Economy || {}
   return (eco.BuildRate ?? 0) > 1 || eco.ProductionPerSecondMass || eco.ProductionPerSecondEnergy || (eco.MaintenanceConsumptionPerSecondEnergy >= 200)
 })
-
+console.log(JSON.stringify(props.unit, null, 2))
 const canGetVeterancy = computed(() =>
   props.unit.Weapon?.some(w =>
     !w.FireOnDeath && !['Teleport', 'Kamikaze', 'Death'].includes(w.WeaponCategory) && !(w.Label == "DeathWeapon") && (w.Damage || w.NukeInnerRingDamage)
@@ -143,20 +143,18 @@ const canGetVeterancy = computed(() =>
       &-item
         display: flex
   &__li
-    white-space: nowrap
-    padding-left: 12px
     position: relative
+    display: flex
+    align-items: flex-start
     &:first-child:last-child
       grid-column: span 12
     &::before
       content: ''
+      flex-shrink: 0
       width: .5em
       height: .5em
+      margin: 4px 4px 4px 0px
       border-radius: 50%
-      position: absolute
-      left: 0
-      top: 50%
-      transform: translateY(-50%)
 
 .uc
   @container (max-width: 350px)
