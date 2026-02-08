@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve, join } from 'path'
 import viteSpritesmith from './vite-plugin-spritesmith.js'
+import { svgWatcherPlugin } from './vite-plugin-svgmaker.js'
 
 const publicDir = join(__dirname, 'src', 'public')
 const assetsDir = join(__dirname, 'src', 'assets')
@@ -12,6 +13,7 @@ const distDir = join(__dirname, 'dist')
 export default defineConfig(() => ({
   plugins: [
     vue(),
+    svgWatcherPlugin('./src/assets/img/embed_icons/', './src/data/svgicons/'),
     viteSpritesmith({
       sprites: [
         {

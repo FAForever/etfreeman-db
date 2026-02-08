@@ -2,7 +2,7 @@ import { SECTION_ORDER, getUnitSortOrder, getTypeSortOrder, sortFaction, sortUni
 import { kindMap, TypeById, TypeToSection } from "./categorizerData/categorizeTables"
 
 const techMap = { 'TECH1': 'T1', 'TECH2': 'T2', 'TECH3': 'T3','EXPERIMENTAL': 'EXP' }
-const getTech = (bp) => techMap[bp?.Categories?.find(c => techMap[c])] || 'T1'
+const getTech = (bp, fallback = 'T1') => techMap[bp?.Categories?.find(c => techMap[c])] || fallback
 const stripType = (type) => type.replace(/^(T[1234]|EXP) /, '').replace(/\(.*\)/, '').replace(/\sHQ$/, '').trim()
 
 export const categorize = (bp) => {

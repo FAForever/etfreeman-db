@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, inject } from 'vue'
+import { ref, computed, onMounted, onUnmounted, inject, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
@@ -53,7 +53,8 @@ const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contender
 
 const containerRef = ref(null)
 const scrollbarGap = 10
-const mobThreshold = 1120
+const isMobile = inject('isMobile')
+watch(isMobile, (notEnoughWidth) => !notEnoughWidth || router.push('/by-type'), { immediate: true })
 const rawWidth = ref(document.body.offsetWidth)
 const containerWidth = computed(() => rawWidth.value - scrollbarGap)
 
@@ -83,23 +84,15 @@ const selectColumn = (tierData, index) => {
   smartSelect(units)
 }
 
-const onResize = () => {
-  if (containerRef.value) {
-    rawWidth.value = containerRef.value.clientWidth
-  }
-  if (window.innerWidth < mobThreshold && route.path !== '/by-type') {
-    router.push('/by-type')
-  }
-}
-
+const onResize = () => rawWidth.value = containerRef.value.clientWidth
 const resizeFunctions = inject('resizeFunctions')
 
 onMounted(() => {
   onResize()
-  resizeFunctions.value.push(onResize)
+  resizeFunctions.value.add(onResize)
 })
 
-onUnmounted(() => resizeFunctions.value = resizeFunctions.value.filter(fn => fn !== onResize))
+onUnmounted(() => resizeFunctions.value.delete(onResize))
 </script>
 
 <style lang="sass">
@@ -130,6 +123,7 @@ onUnmounted(() => resizeFunctions.value = resizeFunctions.value.filter(fn => fn 
     border-bottom-color: rgba(255, 255, 255, .15)
     border-radius: 5px
     padding: 0 6px 7px
+    overflow: hidden
     box-shadow: inset 0 0 30px 5px rgb(0, 0, 0, 1)
     backdrop-filter: blur(1px)
     &-title-wrap
@@ -137,7 +131,7 @@ onUnmounted(() => resizeFunctions.value = resizeFunctions.value.filter(fn => fn 
       white-space: nowrap
     &-title
       padding: 5px 0 8px
-      font-weight: 700
+      font-weight: 800
       font-size: 16px
       letter-spacing: 0.1em
       text-align: center
@@ -180,6 +174,7 @@ onUnmounted(() => resizeFunctions.value = resizeFunctions.value.filter(fn => fn 
     &--buttons
       position: absolute
       z-index: -1
+      flex-wrap: nowrap
 
   &__faction-rows-colselect
     width: 48px
@@ -187,7 +182,7 @@ onUnmounted(() => resizeFunctions.value = resizeFunctions.value.filter(fn => fn 
     align-items: center
     justify-content: center
     font-size: 10px
-    font-weight: 700
+    font-weight: 800
     color: white
     border-radius: 4px
     border: 1px solid var(--bcolor, #aaa)

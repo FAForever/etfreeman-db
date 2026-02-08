@@ -1,16 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { fetchAllBlueprints, fetchAllProjectiles } from './fetcher.js';
-import { parseBlueprint, parseVersion, parseProjectile } from './parser.js';
+import { fetchDefaults, fetchAllBlueprints, fetchAllProjectiles } from './fetcher.js';
+import { parseBlueprint, parseVersion, parseProjectile, parseShield, parseVeterancyConstants, parseWreckageConstants } from './parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.join(__dirname, '../../src/public/data');
 const CACHE_DIR = path.join(__dirname, 'cached_blueprints');
 
 const ESSENTIAL_PROPS = [
-  'Description', 'Categories', 'General', 'Economy', 'Defense', 'Intel',
-  'Weapon', 'Wreckage', 'Veteran', 'Display', 'StrategicIconName',
+  'Description', 'Categories', 'General', 'Economy', 'Defense', 'Intel', 'Transport',
+  'Weapon', 'Wreckage', 'Veteran', 'VeteranMassMult', 'VeteranMass', 'Display', 'StrategicIconName',
   'Physics', 'Air', 'Enhancements'
 ];
 
@@ -45,6 +45,14 @@ function deriveClassification(categories) {
   return null;
 }
 
+const DEFAULT_FILES = [
+  ['versionContent', 'version.lua'],
+  ['shieldContent', 'shield.lua'],
+  ['blueprintsUnitsContent', 'blueprints-units.lua'],
+  ['defaultComponentsContent', 'defaultcomponents.lua'],
+  ['unitContent', 'unit.lua'],
+]
+
 const useCached = process.argv.includes('--cached');
 const withFat = process.argv.includes('--withfat');
 
@@ -54,20 +62,28 @@ async function generate() {
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-  let blueprints, versionContent;
+  let blueprints, versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent;
 
   if (useCached) {
-    console.log('Loading blueprints from cache...');
-    ({ blueprints, versionContent } = loadFromCache());
+    console.log('Loading from cache...');
+    const loaded = loadFromCache();
+    ({ blueprints, versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent } = loaded);
   } else {
-    console.log('Fetching blueprints from GitHub...\n');
-    ({ blueprints, versionContent } = await fetchAllBlueprints());
+    console.log('Fetching from GitHub...\n');
+    const defaults = await fetchDefaults();
+    ({ versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent } = defaults);
+    ({ blueprints } = await fetchAllBlueprints());
+  }
+
+  for (const [key, file] of DEFAULT_FILES) {
+    if (!eval(key)) throw new Error(`Failed to fetch ${file}`)
   }
 
   console.log(`\nParsing ${blueprints.length} blueprints...`);
   const units = [];
   const exceptions = new Set(['SRL0310', 'XRB2309', 'URB3103', 'UEB5204', 'URB5204', 'UAB5204','UXL0021','UEB5208'])
   const force_include = new Set(['XEA0002'])
+  let filteredCount = 0;
 
   for (const bp of blueprints) {
     try {
@@ -80,6 +96,7 @@ async function generate() {
 
 
       if (!force_include.has(data.Id) && (isCampaign || exceptions.has(data.Id))) {
+        filteredCount++;
         continue;
       }
 
@@ -113,11 +130,36 @@ async function generate() {
     }
   }
 
-  console.log(`  ✓ Parsed ${units.length}/${blueprints.length} units`);
+  console.log(`  ✓ Parsed ${units.length}/${blueprints.length} units (filtered: ${filteredCount})`);
 
   console.log('\nExtracting version...');
   const version = parseVersion(versionContent);
   console.log(`  ✓ Version: ${version}`);
+
+  console.log('\nExtracting shield defaults...');
+  const shieldDefaults = parseShield(shieldContent);
+  console.log(`  ✓ Shield default overspill: ${shieldDefaults.overspill}`);
+  console.log(`  ✓ Shield default recharge time: ${shieldDefaults.rechargeTime}`);
+
+  console.log('\nExtracting veterancy constants...');
+  const vetConstants = parseVeterancyConstants(blueprintsUnitsContent, defaultComponentsContent);
+  console.log(`  ✓ TechToVetMultipliers: ${JSON.stringify(vetConstants.techToVetMultipliers)}`);
+  console.log(`  ✓ VeterancyRegenBuffs: ${JSON.stringify(vetConstants.veterancyRegenBuffs)}`);
+
+  console.log('\nExtracting wreckage constants...');
+  const wreckageConstants = parseWreckageConstants(unitContent);
+  console.log(`  ✓ WreckageTechMassMults: ${JSON.stringify(wreckageConstants.techMassMults)}`);
+  console.log(`  ✓ WreckageWaterMult: ${wreckageConstants.waterMult}`);
+
+  const config = {
+    version,
+    shieldDefaultOverspill: shieldDefaults.overspill,
+    shieldDefaultRechargeTime: shieldDefaults.rechargeTime,
+    techToVetMultipliers: vetConstants.techToVetMultipliers,
+    veterancyRegenBuffs: vetConstants.veterancyRegenBuffs,
+    wreckageTechMassMults: wreckageConstants.techMassMults,
+    wreckageWaterMult: wreckageConstants.waterMult,
+  };
 
   // Process projectiles
   console.log('\nProcessing projectiles...');
@@ -196,7 +238,7 @@ async function generate() {
   console.log('\nGenerating output files...');
 
   if (withFat) {
-    const fatData = { version, units };
+    const fatData = { ...config, units };
     fs.writeFileSync(
       path.join(OUTPUT_DIR, 'index.fat.json'),
       JSON.stringify(fatData, null, 2)
@@ -205,7 +247,7 @@ async function generate() {
   }
 
   const slimUnits = units.map(u => filterProps(u, ESSENTIAL_PROPS));
-  const slimData = { version, units: slimUnits };
+  const slimData = { ...config, units: slimUnits };
   fs.writeFileSync(
     path.join(OUTPUT_DIR, 'index.json'),
     JSON.stringify(slimData)
@@ -214,7 +256,7 @@ async function generate() {
 
   fs.writeFileSync(
     path.join(OUTPUT_DIR, 'version.json'),
-    JSON.stringify({ version }, null, 2)
+    JSON.stringify(config, null, 2)
   );
   console.log(`  ✓ version.json`);
 
@@ -236,10 +278,14 @@ function loadFromCache() {
   });
 
   const versionContent = fs.readFileSync(path.join(CACHE_DIR, 'version.lua'), 'utf8');
+  const shieldContent = fs.readFileSync(path.join(CACHE_DIR, 'shield.lua'), 'utf8');
+  const blueprintsUnitsContent = fs.readFileSync(path.join(CACHE_DIR, 'blueprints-units.lua'), 'utf8');
+  const defaultComponentsContent = fs.readFileSync(path.join(CACHE_DIR, 'defaultcomponents.lua'), 'utf8');
+  const unitContent = fs.readFileSync(path.join(CACHE_DIR, 'unit.lua'), 'utf8');
 
   console.log(`  ✓ Loaded ${blueprints.length} blueprints from cache`);
 
-  return { blueprints, versionContent };
+  return { blueprints, versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent };
 }
 
 function loadProjectilesFromCache() {
@@ -277,7 +323,7 @@ function filterProps(obj, props) {
 }
 
 function cleanWeapon(weapon) {
-  const { Audio, Effects, WeaponUnpackAnimation, WeaponUnpacks, WeaponRepackTimeout, ...rest } = weapon;
+  const { Audio, Effects, WeaponUnpacks, WeaponRepackTimeout, ...rest } = weapon;
   return rest;
 }
 

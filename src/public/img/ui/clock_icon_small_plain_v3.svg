@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 888 888" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-2692.43,-4850.78)">
+        <g transform="matrix(1.10208,0,0,1.10208,-320.157,-540.492)">
+            <path d="M3136.18,4891.89C3358.41,4891.89 3538.83,5072.31 3538.83,5294.54C3538.83,5516.77 3358.41,5697.19 3136.18,5697.19C2913.95,5697.19 2733.53,5516.77 2733.53,5294.54C2733.53,5072.31 2913.95,4891.89 3136.18,4891.89ZM3136.18,4924.65C2932.03,4924.65 2766.29,5090.39 2766.29,5294.54C2766.29,5498.68 2932.03,5664.43 3136.18,5664.43C3340.33,5664.43 3506.07,5498.68 3506.07,5294.54C3506.07,5090.39 3340.33,4924.65 3136.18,4924.65Z" style="fill:rgb(61,148,255,0);"/>
+        </g>
+        <g transform="matrix(0.873012,0,0,0.873012,-741.721,672.341)">
+        </g>
+    </g>
+    <!-- Tick marks -->
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" style="fill:white;"/>
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" transform="rotate(45 444 444)" style="fill:white;"/>
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" transform="rotate(90 444 444)" style="fill:white;"/>
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" transform="rotate(135 444 444)" style="fill:white;"/>
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" transform="rotate(180 444 444)" style="fill:white;"/>
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" transform="rotate(225 444 444)" style="fill:white;"/>
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" transform="rotate(270 444 444)" style="fill:white;"/>
+    <rect x="424" y="30" width="40" height="90" rx="5" ry="5" transform="rotate(315 444 444)" style="fill:white;"/>
+    <rect x="419" y="69" width="50" height="400" rx="25" ry="25" style="fill:white;"/>
+    <rect x="419" y="169" width="50" height="300" rx="25" ry="25" transform="rotate(150 444 444)" style="fill:white;"/>
+</svg>

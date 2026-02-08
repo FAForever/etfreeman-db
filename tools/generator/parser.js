@@ -176,3 +176,64 @@ function parseString(raw) {
            .replace(/\\t/g, '\t');
   return str;
 }
+
+export function parseShield(content) {
+  const overspillMatch = content.match(/SpillOverDmgMod\s*=\s*spec\.ShieldSpillOverDamageMod\s+or\s+([\d.]+)/);
+  const rechargeMatch = content.match(/ShieldRechargeTime\s*=\s*spec\.ShieldRechargeTime\s+or\s+([\d.]+)/);
+
+  if (!overspillMatch) throw new Error('Failed to parse ShieldSpillOverDamageMod from shield.lua')
+  if (!rechargeMatch) throw new Error('Failed to parse ShieldRechargeTime from shield.lua')
+
+  return {
+    overspill: parseFloat(overspillMatch[1]),
+    rechargeTime: parseFloat(rechargeMatch[1])
+  };
+}
+
+export function parseVeterancyConstants(blueprintsUnitsContent, defaultComponentsContent) {
+  const bpAst = luaparse.parse(blueprintsUnitsContent, { comments: false })
+
+  const bpNode = bpAst.body.find(n =>
+    n.type === 'LocalStatement' && n.variables.some(v => v.name === 'TechToVetMultipliers')
+  )
+  if (!bpNode) throw new Error('Failed to find TechToVetMultipliers in blueprints-units.lua')
+
+  const techToVetMultipliers = astToObject(bpNode.init[0])
+  if (!techToVetMultipliers) throw new Error('Failed to parse TechToVetMultipliers table')
+
+  const defAst = luaparse.parse(defaultComponentsContent, { comments: false })
+
+  const defNode = defAst.body.find(n =>
+    n.type === 'LocalStatement' && n.variables.some(v => v.name === 'VeterancyRegenBuffs')
+  )
+  if (!defNode) throw new Error('Failed to find VeterancyRegenBuffs in defaultcomponents.lua')
+
+  const veterancyRegenBuffs = astToObject(defNode.init[0])
+  if (!veterancyRegenBuffs) throw new Error('Failed to parse VeterancyRegenBuffs table')
+
+  return { techToVetMultipliers, veterancyRegenBuffs }
+}
+
+export function parseWreckageConstants(unitContent) {
+  const tech1Match = unitContent.match(/tech_category == 'TECH1'[\s\S]*?mass_tech_mult = ([\d.]+)/);
+  const tech2Match = unitContent.match(/tech_category == 'TECH2'[\s\S]*?mass_tech_mult = ([\d.]+)/);
+  const tech3Match = unitContent.match(/tech_category == 'TECH3'[\s\S]*?mass_tech_mult = ([\d.]+)/);
+  const expMatch = unitContent.match(/tech_category == 'EXPERIMENTAL'[\s\S]*?mass_tech_mult = ([\d.]+)/);
+  const waterMatch = unitContent.match(/layer == 'Water'[\s\S]*?mass = mass \* ([\d.]+)/);
+
+  if (!tech1Match) throw new Error("Failed to parse TECH1 mass_tech_mult from unit.lua")
+  if (!tech2Match) throw new Error("Failed to parse TECH2 mass_tech_mult from unit.lua")
+  if (!tech3Match) throw new Error("Failed to parse TECH3 mass_tech_mult from unit.lua")
+  if (!expMatch) throw new Error("Failed to parse EXPERIMENTAL mass_tech_mult from unit.lua")
+  if (!waterMatch) throw new Error("Failed to parse Water mass multiplier from unit.lua")
+
+  return {
+    techMassMults: {
+      TECH1: parseFloat(tech1Match[1]),
+      TECH2: parseFloat(tech2Match[1]),
+      TECH3: parseFloat(tech3Match[1]),
+      EXPERIMENTAL: parseFloat(expMatch[1]),
+    },
+    waterMult: parseFloat(waterMatch[1]),
+  };
+}

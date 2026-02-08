@@ -52,7 +52,7 @@ export const customTypeOrderModifiers = {
 }
 
 const TIER_ORDER = { 'T1': 1, 'T2': 2, 'T3': 3, 'EXP': 4, '': 1 }
-const FACTION_ORDER = { 'UEF': 1, 'Cybran': 2, 'Aeon': 3, 'Seraphim': 4, 'Nomads': 5 }
+const FACTION_ORDER = { 'uef': 1, 'cybran': 2, 'aeon': 3, 'seraphim': 4, 'nomads': 5 }
 
 export const getUnitNumber = (id) => (id.slice(-4).match(/\d+$/)?.[0] || 0) - 0
 export const getUnitSortOrder = (bp) => {

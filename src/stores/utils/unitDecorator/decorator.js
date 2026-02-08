@@ -7,9 +7,10 @@ export const decorateUnit = (blueprint) => {
     id: blueprint.Id,
     name: blueprint.General?.UnitName || '',
     description: blueprint.Description || '',
-    faction: blueprint.General?.FactionName || '',
+    faction: blueprint.General?.FactionName?.toLowerCase() || '',
     kind: kindMap[blueprint.General?.Classification] || 'Unknown',
-    tech: getTech(blueprint),
+    tech: getTech(blueprint, 'T1'),
+    rawTech: getTech(blueprint, ''),
     strategicIcon: blueprint.StrategicIconName || '',
     icon: blueprint.General?.Icon || '',
     fireCycle: fireCycle,
@@ -23,6 +24,10 @@ export const decorateUnit = (blueprint) => {
   if (blueprint.Weapon) {
     for (let i = 0; i < blueprint.Weapon.length; i++) {
       const weapon = blueprint.Weapon[i]
+      weapon.__unitID = self.id
+
+      if (weapon.WeaponCategory == 'Death' && !weapon.FireOnDeath)
+        weapon.FireOnDeath = true
       weapon.dps = calculateDps(weapon, false)
       weapon.fullDamage = calculateProjectileDamage(weapon, false)
       weapon.fullSalvoDamage = weapon.fullDamage * simulateFiringCycle(weapon).cycleProjs
@@ -33,6 +38,8 @@ export const decorateUnit = (blueprint) => {
       weapon.isTML = isTML(weapon)
     }
   }
+
+  if (self.id == 'UAL0001') console.log(Object.assign({}, self, blueprint))
 
   return Object.assign({}, self, blueprint)
 }

@@ -9,6 +9,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const units = ref([])
   const unitsMap = ref({})
   const version = ref(null)
+  const unitDefauls = ref(null)
   const lastListViewRoute = ref('/')
   const filterStore = useFilterStore()
 
@@ -22,6 +23,14 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const setData = (json) => {
     units.value = decorateUnits(json.units || [])
     version.value = json.version || null
+    unitDefauls.value = {
+      shieldDefaultOverspill: json.shieldDefaultOverspill,
+      shieldDefaultRechargeTime: json.shieldDefaultRechargeTime,
+      techToVetMultipliers: json.techToVetMultipliers || {},
+      veterancyRegenBuffs: json.veterancyRegenBuffs || [],
+      wreckageTechMassMults: json.wreckageTechMassMults || {},
+      wreckageWaterMult: json.wreckageWaterMult || 0.6
+    }
 
     unitsMap.value = {}
     for (const unit of units.value) {
@@ -44,6 +53,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
 
   return {
     version,
+    unitDefauls,
     contenders,
     lastListViewRoute,
     units,

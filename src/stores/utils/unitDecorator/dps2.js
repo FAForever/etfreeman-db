@@ -19,7 +19,10 @@ export const MATH_IRound = (val) => {
 }
 
 export const calculateProjectileDamage = (weapon, toShields = false) => {
-  let damage = weapon.Damage || 0
+  let damage = weapon.TractorDamage ||weapon.Damage || 0
+  if (weapon.NukeInnerRingDamage) {
+    return damage + weapon.NukeInnerRingDamage + weapon.NukeOuterRingDamage
+  }
 
   if (toShields && weapon.DamageToShields) {
     damage += weapon.DamageToShields
@@ -41,11 +44,21 @@ export const calculateProjectileDamage = (weapon, toShields = false) => {
   return damage
 }
 
+export const getBeamDamageTicks = (weapon) => {
+  if (!weapon.BeamLifetime || weapon.BeamLifetime <= 0) return 0
+  const beamTicks = Math.floor(MATH_IRound(weapon.BeamLifetime * 10))
+  const collisionTicks = Math.floor(MATH_IRound((weapon.BeamCollisionDelay || 0) * 10))
+  return 1 + Math.floor(beamTicks / (collisionTicks + 1))
+}
+
 export const simulateFiringCycle = (weapon) => {
   let cycleProjs = 0
   let cycleTime = 0
 
-  const firingCooldown = Math.max(0.1, MATH_IRound(10 / weapon.RateOfFire) / 10)
+  const firingCooldown = Math.max(0.1, (weapon.TractorDamageInterval || MATH_IRound(10 / weapon.RateOfFire)) / 10)
+  if (firingCooldown * 10 % 1) {
+    console.error('Bad firing cooldown:', firingCooldown, ' engine will round it to something?')
+  }
 
   let chargeTime = weapon.RackSalvoChargeTime || 0
   if (chargeTime > 0) {
@@ -57,9 +70,9 @@ export const simulateFiringCycle = (weapon) => {
     muzzleDelays = Math.max(0.1, MATH_IRound(10 * muzzleDelays) / 10)
   }
 
-  const muzzleChargeDelay = weapon.MuzzleChargeDelay || 0
+  let muzzleChargeDelay = weapon.MuzzleChargeDelay || 0
   if (muzzleChargeDelay > 0) {
-    muzzleDelays = muzzleDelays + Math.max(0.1, MATH_IRound(10 * muzzleChargeDelay) / 10)
+    muzzleChargeDelay = Math.max(0.1, MATH_IRound(10 * muzzleChargeDelay) / 10)
   }
 
   let reloadTime = weapon.RackSalvoReloadTime || 0
@@ -82,7 +95,7 @@ export const simulateFiringCycle = (weapon) => {
       }
 
       cycleProjs += muzzleCount
-      subCycleTime += muzzleCount * muzzleDelays
+      subCycleTime += muzzleCount * muzzleDelays + muzzleCount * muzzleChargeDelay
 
       if (!weapon.RackFireTogether && index !== rackCount - 1) {
         if (firingCooldown <= subCycleTime + chargeTime) {
@@ -97,23 +110,41 @@ export const simulateFiringCycle = (weapon) => {
     // No RackBones data - default to at least 1 projectile
     cycleProjs = weapon.MuzzleSalvoSize || 1
   }
-
   if (firingCooldown <= (subCycleTime + chargeTime + reloadTime)) {
     cycleTime += subCycleTime + reloadTime + chargeTime + Math.max(0.1, firingCooldown - subCycleTime - chargeTime - reloadTime)
   } else {
     cycleTime += firingCooldown
   }
 
+  const isSequentialSingleFire =
+    weapon.RackBones?.length > 1 &&
+    !weapon.RackFireTogether &&
+    weapon.RackBones.every(r => !r.MuzzleBones || r.MuzzleBones.length === 1) &&
+    !(weapon.MuzzleSalvoDelay || weapon.RackSalvoReloadTime ||
+      (weapon.RackSalvoChargeTime && weapon.RackFireTogether))
+
+  if (isSequentialSingleFire) {
+    cycleTime /= cycleProjs
+    cycleProjs = 1
+  }
+
+  if ((weapon.WeaponUnpackAnimation && weapon.NukeInnerRingDamage) || isNaN(cycleTime)) {
+    cycleTime = null
+  }
+
+  weapon.__cycleProjs = cycleProjs
+  weapon.__cycleTime = cycleTime
+
   return { cycleProjs, cycleTime }
 }
 
 export const calculateDps = (weapon, toShields = false) => {
-  if (weapon.NukeWeapon) return -1
-  if (weapon.ForceSingleFire) return null
+  if (!weapon.RateOfFire || weapon.ForceSingleFire || weapon.FireOnDeath || ['Teleport',"Kamikaze"].includes(weapon.WeaponCategory)) return null
 
   const damage = calculateProjectileDamage(weapon, toShields)
   const { cycleProjs, cycleTime } = simulateFiringCycle(weapon)
-
+  //if (weapon.__unitID == 'UAA0310') console.log(weapon)
+    
   return Number(((damage * cycleProjs) / cycleTime).toFixed(2))
 }
 
@@ -122,8 +153,10 @@ const formatBeamCollisionCycle = (shots, dmg, perShotDelay, totalDmg) => {
   return `${shots} times ${dmg} dmg ${delayText}${totalDmg} dmg total`
 }
 
-const formatNonStandardBeam = (dmg, lifetime) =>
-  `${lifetime * 10 + 1} times / 0.1 sec ${dmg} dmg = ${(lifetime * 10 + 1) * dmg} dmg total`
+const formatNonStandardBeam = (dmg, lifetime, collisionDelay = 0) => {
+  const ticks = getBeamDamageTicks({ BeamLifetime: lifetime, BeamCollisionDelay: collisionDelay })
+  return `${ticks} times / 0.1 sec ${dmg} dmg = ${ticks * dmg} dmg total`
+}
 
 const formatDotPulses = (pulses, dmg, timePerPulse, totalDmg, totalTime) =>
   `${pulses} times ${dmg} dmg / ${timePerPulse} sec = ${totalDmg} total ${totalTime} sec total`
@@ -136,7 +169,7 @@ export const beamCycle = (weapon) => {
   }
 
   if (weapon.BeamLifetime) {
-    return formatNonStandardBeam(weapon.Damage, weapon.BeamLifetime)
+    return formatNonStandardBeam(weapon.Damage, weapon.BeamLifetime, weapon.BeamCollisionDelay || 0)
   }
 
   if (weapon.DoTPulses) {
@@ -159,33 +192,125 @@ export const fireCycle = (weapon) => {
   }
 
   if (weapon.BeamLifetime) {
-    return `${cycleProjs} beam${cycleProjs > 1? 's': ''} / ${cycleTime}s, ${Math.round(totalDamage)} dmg total`
+    return `${cycleProjs} beam${cycleProjs > 1 ? 's' : ''} / ${cycleTime}s, ${Math.round(totalDamage)} dmg total`
   }
 
   const hasMuzzleSalvo = (weapon.MuzzleSalvoDelay || 0) > 0
   const hasMultiRackSequential = (weapon.RackBones?.length > 1) && !weapon.RackFireTogether
-  const isSalvo = hasMuzzleSalvo || hasMultiRackSequential
+  const hasMultiMuzzleSingleRack = weapon.RackBones?.length === 1 &&
+    weapon.RackBones[0].MuzzleBones?.length > 1 &&
+    (weapon.MuzzleChargeDelay || 0) > 0
+  const isSalvo = hasMuzzleSalvo || hasMultiRackSequential || hasMultiMuzzleSingleRack
 
   if (isSalvo && cycleProjs > 1) {
     const reloadTime = weapon.RackSalvoReloadTime || 0
     const firingTime = cycleTime - reloadTime
+    const muzzleChargeDelay = weapon.MuzzleChargeDelay || 0
 
     if (hasMuzzleSalvo) {
       const muzzleDelay = weapon.MuzzleSalvoDelay || 0
-      const salvoTime = muzzleDelay * (cycleProjs - 1)
+      const salvoTime = muzzleChargeDelay > 0
+        ? muzzleChargeDelay + (cycleProjs - 1) * (muzzleDelay + muzzleChargeDelay)
+        : (cycleProjs - 1) * muzzleDelay + 0.1
       const actualReload = cycleTime - salvoTime
-      return `${cycleProjs} times 1 projectile in ${salvoTime.toFixed(1)} sec ${actualReload?`+ ${actualReload.toFixed(1)} sec reload `:''}= ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
+      return `${cycleProjs} times 1 projectile in ${salvoTime.toFixed(1)} sec ${actualReload ? `+ ${actualReload.toFixed(1)} sec reload ` : ''}= ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
     }
 
     const rackCount = weapon.RackBones?.length || 1
     const shots = hasMuzzleSalvo ? cycleProjs : rackCount
     const projsPerShot = cycleProjs / shots
-    return `${shots} times ${projsPerShot} projectiles in ${firingTime.toFixed(1)} sec ${reloadTime? `+ ${reloadTime.toFixed(1)} sec reload `:''}= ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
+    return `${shots} times ${projsPerShot} projectiles in ${firingTime.toFixed(1)} sec ${reloadTime ? `+ ${reloadTime.toFixed(1)} sec reload ` : ''}= ${cycleTime.toFixed(1)} sec total, ${Math.round(totalDamage)} dmg total`
   }
 
   const plural = cycleProjs > 1 ? 's' : ''
   const cycleTimeText = cycleTime === 1 ? '' : cycleTime.toFixed(1)
   return `${cycleProjs} shot${plural} / ${cycleTimeText} sec<br/>${Math.round(totalDamage)} total dmg`
+}
+
+export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true) => {
+  if (toShields) return null // TODO: handle cycle to shields
+
+  const { cycleProjs, cycleTime } = simulateFiringCycle(weapon)
+  if (!cycleTime) return null
+
+  // Beam weapon - combine beamCycle internals with fireCycle reload
+  if (weapon.BeamLifetime && weapon.BeamLifetime !== 0) {
+    const damageTicks = getBeamDamageTicks(weapon)
+    const perBeamPerTick = weapon.Damage
+    const combinedPerTick = perBeamPerTick * cycleProjs
+    const totalDamage = combinedPerTick * damageTicks
+
+    let result = `${damageTicks} times / 0.1 sec ${Math.round(combinedPerTick)} dmg`
+    const reloadTime = Math.max(0, cycleTime - damageTicks * 0.1)
+    if (reloadTime > 0.1) result += ` + ${reloadTime.toFixed(1)}s reload`
+    result += ` = ${Math.round(totalDamage)} dmg total`
+
+    return result
+  }
+
+  // Continuous beam - return null or format based on nullIfSimple parameter
+  if (weapon.BeamLifetime === 0) {
+    if (nullIfSimple) return null
+    return `continuous beam: ${Math.round(calculateProjectileDamage(weapon) * cycleProjs)}`
+  }
+
+  // Non-beam weapons - custom format showing damage per projectile instead of count
+  const perProjDamage = calculateProjectileDamage(weapon)
+  const totalDamage = perProjDamage * cycleProjs
+  const hasMuzzleSalvo = (weapon.MuzzleSalvoDelay || 0) > 0
+  const hasMultiRackSequential = (weapon.RackBones?.length > 1) && !weapon.RackFireTogether
+  const hasMultiMuzzleSingleRack = weapon.RackBones?.length === 1 &&
+    weapon.RackBones[0].MuzzleBones?.length > 1 &&
+    (weapon.MuzzleChargeDelay || 0) > 0
+  const isSalvo = hasMuzzleSalvo || hasMultiRackSequential || hasMultiMuzzleSingleRack
+
+  if (isSalvo && cycleProjs > 1) {
+    const reloadTime = weapon.RackSalvoReloadTime || 0
+    const firingTime = cycleTime - reloadTime
+    const muzzleChargeDelay = weapon.MuzzleChargeDelay || 0
+
+    if (hasMuzzleSalvo) {
+      const muzzleDelay = weapon.MuzzleSalvoDelay || 0
+      const salvoTime = muzzleChargeDelay > 0
+        ? muzzleChargeDelay + (cycleProjs - 1) * (muzzleDelay + muzzleChargeDelay)
+        : (cycleProjs - 1) * muzzleDelay + 0.1
+      const actualReload = cycleTime - salvoTime
+      const hasReload = actualReload > 0.1
+      const displaySalvoTime = salvoTime
+      const displayReload = actualReload
+      return `${cycleProjs} times ${Math.round(perProjDamage)}dmg in ${displaySalvoTime.toFixed(1)}s${displayReload > 0 ? ` + ${displayReload.toFixed(1)}s reload` : ''} = ${cycleTime.toFixed(1)}s total, ${Math.round(totalDamage)} dmg total`
+    }
+
+    const rackCount = weapon.RackBones?.length || 1
+    const shots = hasMuzzleSalvo ? cycleProjs : (hasMultiMuzzleSingleRack ? cycleProjs : rackCount)
+    const projsPerShot = cycleProjs / shots
+    const dmgPerShot = perProjDamage * projsPerShot
+    const actualFiringTime = hasMultiMuzzleSingleRack ? cycleProjs * (weapon.MuzzleChargeDelay || 0) : firingTime
+    const actualCycleTime = hasMultiMuzzleSingleRack ? cycleTime : cycleTime
+    const actualReloadTime = hasMultiMuzzleSingleRack ? cycleTime - actualFiringTime : cycleTime - firingTime
+    return `${shots} times ${Math.round(dmgPerShot)}dmg in ${actualFiringTime.toFixed(1)}s${actualReloadTime > 0 ? ` + ${actualReloadTime.toFixed(1)}s reload` : ''} = ${actualCycleTime.toFixed(1)}s total, ${Math.round(totalDamage)} dmg total`
+  }
+
+  // Simple shots (no salvo) - return null or format based on nullIfSimple parameter
+  if (nullIfSimple) return null
+
+  const plural = cycleProjs > 1 ? 's' : ''
+  const cycleTimeText = cycleTime === 1 ? '' : cycleTime.toFixed(1)
+  return `${cycleProjs} shot${plural} / ${cycleTimeText}s ${Math.round(totalDamage)} dmg total`
+}
+
+export const getShotsAmount = (weapon) => {
+  if (weapon.BeamLifetime === 0 || weapon.BeamLifetime) return null
+  const { cycleProjs, cycleTime } = simulateFiringCycle(weapon)
+
+  const hasMuzzleSalvo = (weapon.MuzzleSalvoDelay || 0) > 0
+  const hasMultiRackSequential = (weapon.RackBones?.length > 1) && !weapon.RackFireTogether
+  const hasMultiMuzzleSingleRack = weapon.RackBones?.length === 1 &&
+    weapon.RackBones[0].MuzzleBones?.length > 1 &&
+    (weapon.MuzzleChargeDelay || 0) > 0
+  const isSalvo = hasMuzzleSalvo || hasMultiRackSequential || hasMultiMuzzleSingleRack
+  if (isSalvo && cycleProjs > 1) return null
+  return cycleProjs
 }
 
 export const formatDotText = (weapon) => {
@@ -195,7 +320,7 @@ export const formatDotText = (weapon) => {
   const nonInitialPulses = weapon.DoTPulses - 1
   const damagePerTick = weapon.Damage
 
-  return `+ after ${interval.toFixed(1)} sec, ${nonInitialPulses} tick${nonInitialPulses > 1?'s':''} of ${damagePerTick}dmg${nonInitialPulses > 1?` / ${interval.toFixed(1)} sec`:''}`
+  return `+ after ${interval.toFixed(1)} sec, ${nonInitialPulses} tick${nonInitialPulses > 1 ? 's' : ''} of ${damagePerTick}dmg${nonInitialPulses > 1 ? ` / ${interval.toFixed(1)} sec` : ''}`
 }
 
 export const isTML = (weapon) => !!weapon.ForceSingleFire

@@ -1,11 +1,18 @@
 <template>
+  <SvgSprite :icons="icons" />
   <img class="app-bg" src="/img/background.jpg" />
   <RouterView />
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, provide, ref } from 'vue'
 import { RouterView } from 'vue-router'
+import { useResizeWatcher } from '@/composables/useResizeWatcher'
+import { useIcons } from '@/composables/useIcons'
+import SvgSprite from '@/components/SvgSprite.vue'
+import * as iconData from '@/data/svgicons/index.js'
+
+const icons = Object.values(iconData)
+useIcons(icons)
 
 window.addEventListener('scroll', () => {
   if (window.pageYOffset > 0) {
@@ -15,23 +22,7 @@ window.addEventListener('scroll', () => {
   }
 })
 
-const isMobile = ref(false)
-provide('isMobile', isMobile)
-const mobileThreshold = 1120
-const resizeFunctions = ref([() => {
-  if (window.innerWidth < mobileThreshold) {
-    document.body.classList.add('mobile')
-    isMobile.value = true
-  } else {
-    document.body.classList.remove('mobile')
-    isMobile.value = false
-  }
-}])
-const onResize = () => resizeFunctions.value.forEach(fn => fn())
-onResize()
-onMounted(() => window.addEventListener('resize', onResize))
-onUnmounted(() => window.removeEventListener('resize', onResize))
-provide('resizeFunctions', resizeFunctions)
+useResizeWatcher()
 </script>
 
 <style lang="sass">
@@ -48,7 +39,10 @@ body
   flex-direction: column
   min-height: 100vh
   min-height: 100dvh
-  font-family: 'Muli', Verdana, Arial, sans-serif
+  font-family: 'Nunito', 'Muli', Verdana, Arial, sans-serif
+
+  --titlefont: 'Montserrat', 'Zeroes Three'
+  --titlespacing: 0
 
   &::-webkit-scrollbar
     width: 8px
@@ -86,9 +80,6 @@ body
   object-fit: cover
   object-position: center
 
-h1, h2, h3, h4, h5, h6
-  font-family: 'Zeroes Three', 'Muli', Verdana, Arial, sans-serif
-
 a
   text-decoration: none
   color: white
@@ -124,7 +115,62 @@ a
 .w-100
   width: 100%
 
+.nowrap
+  white-space: nowrap
+
+.important
+  color: rgb(255,255,0)
+  font-weight: bold
+
+math
+  font-family: 'Nunito', 'Muli', Verdana, Arial, sans-serif
+  font-weight: inherit
+  font-size: 1.1em
+  padding-bottom: .1em
+  mi
+    padding-bottom: .3em
+  mi:last-child
+    padding-top: .3em
+
+.not-dotted
+  text-decoration: none !important  
+[data-tooltip],[data-tooltip-big]
+  .underline-dotted
+    text-decoration: underline dotted
+    text-underline-offset: 3px
+    padding-bottom: 4px
+
 [class*="icon_"]
-  display: inline-block
+  display: block
   background-repeat: no-repeat
+
+[data-tooltip],[data-tooltip-big]
+  position: relative
+  text-decoration: underline dotted
+  text-underline-offset: 4px
+  &:hover::after
+    content: attr(data-tooltip)
+    white-space: normal
+    position: absolute
+    top: calc(100% + 5px)
+    left: 50%
+    transform: translateX(-50%)
+    background: #333
+    color: #fff
+    padding: 5px
+    border-radius: 5px
+    z-index: 100
+[data-tooltip-big]:hover::after
+  content: attr(data-tooltip-big) !important
+  min-width: 200px
+  left: 0 !important
+  transform: none !important
+  bottom: calc(100% + 5px)
+  top: initial !important
+[data-tooltip-top]:hover::after
+  top: initial !important
+  bottom: calc(100% + 5px)
+[data-tooltip-right]:hover::after
+  left: initial !important
+  right: 0 !important
 </style>

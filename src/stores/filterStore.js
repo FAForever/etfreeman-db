@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useFilterStore = defineStore('filters', () => {
-  const factions = ref(new Set(['UEF', 'Cybran', 'Aeon', 'Seraphim']))
+  const factions = ref(new Set(['uef', 'cybran', 'aeon', 'seraphim']))
   const kinds = ref(new Set())
   const tech = ref(new Set())
   const search = ref('')
@@ -23,7 +23,7 @@ export const useFilterStore = defineStore('filters', () => {
   const toggleKind = (k) => kinds.value.has(k) ? kinds.value.delete(k) : kinds.value.add(k)
   const toggleTech = (t) => tech.value.has(t) ? tech.value.delete(t) : tech.value.add(t)
 
-  const effectiveVisibleFactions = computed(() => factions.value.size ? [...factions.value] : ['UEF', 'Cybran', 'Aeon', 'Seraphim', 'Nomads'])
+  const effectiveVisibleFactions = computed(() => factions.value.size ? [...factions.value] : ['uef', 'cybran', 'aeon', 'seraphim', 'nomads'])
 
   return { factions, kinds, tech, search, effectiveVisibleFactions, matches, toggleFaction, toggleKind, toggleTech }
 })

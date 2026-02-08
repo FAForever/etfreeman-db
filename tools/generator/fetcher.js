@@ -3,7 +3,7 @@ const REPOS = [
     name: 'fa',
     owner: 'FAForever',
     branch: 'deploy/faf',
-    paths: ['units', 'lua/version.lua'],
+    paths: ['units', 'lua/version.lua', 'lua/shield.lua', 'lua/system/blueprints-units.lua', 'lua/defaultcomponents.lua', 'lua/sim/Unit.lua'],
     projectilePaths: ['projectiles']
   },
   {
@@ -15,30 +15,41 @@ const REPOS = [
   }
 ];
 
+export async function fetchDefaults() {
+  const faRepo = REPOS.find(r => r.name === 'fa')
+
+  const [versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent] = await Promise.all([
+    fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/version.lua'),
+    fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/shield.lua'),
+    fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/system/blueprints-units.lua'),
+    fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/defaultcomponents.lua'),
+    fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/sim/Unit.lua'),
+  ])
+
+  return { versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
+}
+
 export async function fetchAllBlueprints() {
   const blueprints = [];
-  let versionContent = null;
 
   for (const repo of REPOS) {
     console.log(`Fetching from ${repo.owner}/${repo.name} (${repo.branch})...`);
 
     for (const repoPath of repo.paths) {
-      if (repoPath.endsWith('.lua')) {
-        versionContent = await fetchFile(repo.owner, repo.name, repo.branch, repoPath);
-      } else {
-        const files = await listBlueprintFiles(repo.owner, repo.name, repo.branch, repoPath);
-        console.log(`  ${files.length} blueprint files`);
+      if (repoPath.endsWith('.lua')) continue
 
-        for (const file of files) {
-          const content = await fetchFile(repo.owner, repo.name, repo.branch, file.path);
-          const unitId = file.path.match(/([^/]+)_unit\.bp$/)[1];
-          blueprints.push({ id: unitId, content, faction: repo.name });
-        }
+      const files = await listBlueprintFiles(repo.owner, repo.name, repo.branch, repoPath);
+      console.log(`  ${files.length} blueprint files`);
+
+      for (const file of files) {
+        const content = await fetchFile(repo.owner, repo.name, repo.branch, file.path);
+        const unitId = file.path.match(/([^/]+)_unit\.bp$/)[1];
+        blueprints.push({ id: unitId, content, faction: repo.name });
       }
     }
   }
 
-  return { blueprints, versionContent };
+  return { blueprints };
 }
 
 export async function fetchAllProjectiles() {

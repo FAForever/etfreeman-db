@@ -161,7 +161,7 @@ export default function viteSpritesmith(options = {}) {
         items.forEach(item => {
           const iconName = path.basename(item.file, '.png')
 
-          cssContent += `.icon-${iconName}\n`
+          cssContent += `.icon-${iconName.toLowerCase()}\n`
           cssContent += `  width: ${item.width}px\n`
           cssContent += `  height: ${item.height}px\n`
           cssContent += `  background-position: -${item.x}px -${item.y}px\n`

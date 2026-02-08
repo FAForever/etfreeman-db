@@ -51,7 +51,7 @@ function handleClick(event) {
     right: 2px
     top: 2px
     font-size: 10px
-    font-weight: 700
+    font-weight: 800
     z-index: 199
     color: white
     display: block

@@ -5,12 +5,7 @@ export function useDoubleClickHandler(toggleUnitSelection, contenders, router) {
   const lastClickUnit = ref(null)
   const maxDoubleClickDelay = 200
 
-  const handleUnitClick = (unit, event) => {
-    if (event.ctrlKey) {
-      window.open('#/' + unit.id, '_blank')
-      return
-    }
-
+  const handleUnitClick = (unit) => {
     const now = performance.now()
     const isDoubleClick = lastClickUnit.value === unit && (now - lastClickTime.value) < maxDoubleClickDelay
 
