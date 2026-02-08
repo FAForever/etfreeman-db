@@ -2,6 +2,8 @@ import { getTech, kindMap } from '../categorizer.js'
 import { calculateDps, calculateProjectileDamage, simulateFiringCycle, fireCycle, beamCycle, isTML, formatDotText } from './dps2.js'
 import { categorize } from '../categorizer.js'
 
+const loggedUnits = new Set()
+
 export const decorateUnit = (blueprint) => {
   const self = {
     id: blueprint.Id,
@@ -36,12 +38,30 @@ export const decorateUnit = (blueprint) => {
         weapon.dpsShields = calculateDps(weapon, true)
       }
       weapon.isTML = isTML(weapon)
+      if (weapon.WeaponCategory == 'Anti Navy')
+        weapon.WeaponCategory = 'Anti-Navy'
     }
   }
 
-  if (self.id == 'UAL0001') console.log(Object.assign({}, self, blueprint))
+  if (blueprint.Weapon) {
+    for (const weapon of blueprint.Weapon) {
+      const rackCount = weapon.RackBones?.length || 0
+      const rackSalvoSize = weapon.RackSalvoSize
+      // Bug only affects weapons with: RackFireTogether=false AND MuzzleSalvoDelay > 0 AND RackSalvoSize < rackCount
+      const shouldLimitRacks = !weapon.RackFireTogether && (weapon.MuzzleSalvoDelay || 0) > 0
+      if (shouldLimitRacks && rackCount > 1 && rackSalvoSize !== undefined && rackSalvoSize < rackCount) {
+        loggedUnits.add(self.id)
+      }
+    }
+  }
 
   return Object.assign({}, self, blueprint)
 }
 
-export const decorateUnits = (units) => units.map(decorateUnit)
+export const decorateUnits = (units) => {
+  const result = units.map(decorateUnit)
+  if (loggedUnits.size === 62) {
+    console.log('All affected units:', Array.from(loggedUnits).join(','))
+  }
+  return result
+}

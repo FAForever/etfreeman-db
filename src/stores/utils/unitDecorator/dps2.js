@@ -82,11 +82,15 @@ export const simulateFiringCycle = (weapon) => {
 
   let subCycleTime = 0
   const rackBones = weapon.RackBones
+  const rackCount = rackBones?.length || 0
+  // RackSalvoSize only limits racks when: RackFireTogether=false AND MuzzleSalvoDelay > 0
+  const shouldLimitRacks = !weapon.RackFireTogether && (weapon.MuzzleSalvoDelay || 0) > 0
+  const racksToFire = shouldLimitRacks && rackCount > 0
+    ? Math.min(weapon.RackSalvoSize ?? rackCount, rackCount)
+    : rackCount
 
   if (rackBones && rackBones.length > 0) {
-    const rackCount = rackBones.length
-
-    for (let index = 0; index < rackCount; index++) {
+    for (let index = 0; index < racksToFire; index++) {
       const rack = rackBones[index]
       let muzzleCount = weapon.MuzzleSalvoSize || 1
 
@@ -97,7 +101,7 @@ export const simulateFiringCycle = (weapon) => {
       cycleProjs += muzzleCount
       subCycleTime += muzzleCount * muzzleDelays + muzzleCount * muzzleChargeDelay
 
-      if (!weapon.RackFireTogether && index !== rackCount - 1) {
+      if (!weapon.RackFireTogether && index !== racksToFire - 1) {
         if (firingCooldown <= subCycleTime + chargeTime) {
           cycleTime += subCycleTime + chargeTime + Math.max(0.1, firingCooldown - subCycleTime - chargeTime)
         } else {
@@ -117,9 +121,9 @@ export const simulateFiringCycle = (weapon) => {
   }
 
   const isSequentialSingleFire =
-    weapon.RackBones?.length > 1 &&
+    racksToFire > 1 &&
     !weapon.RackFireTogether &&
-    weapon.RackBones.every(r => !r.MuzzleBones || r.MuzzleBones.length === 1) &&
+    weapon.RackBones?.every(r => !r.MuzzleBones || r.MuzzleBones.length === 1) &&
     !(weapon.MuzzleSalvoDelay || weapon.RackSalvoReloadTime ||
       (weapon.RackSalvoChargeTime && weapon.RackFireTogether))
 

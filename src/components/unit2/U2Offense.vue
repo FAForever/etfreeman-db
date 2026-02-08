@@ -25,6 +25,10 @@ const getWeaponCategory = (weapon) => {
   if (weapon.WeaponCategory == 'Missile' && weapon.NukeInnerRingRadius) return 'Nuke'
   if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode') return 'Sniper mode'
   if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled) return 'Kamikaze'
+  if (weapon.WeaponCategory == 'Defense') {
+    if (weapon.TargetRestrictOnlyAllow.toLowerCase().match('missile')) return 'Anti-Missile'
+    if (weapon.TargetRestrictOnlyAllow.toLowerCase().match('torpedo')) return 'Anti-Torpedo'
+  }
   return categoriesMap[weapon.WeaponCategory] || weapon.WeaponCategory
 }
 
