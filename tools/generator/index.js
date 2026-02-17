@@ -205,35 +205,51 @@ async function generate() {
     return multiplier;
   }
 
-  // Embed projectile fragment data into weapon objects
-  console.log('\nEmbedding projectile data into weapons...');
-  let weaponsEnhanced = 0;
+  // Embed projectile data into weapon objects
+  console.log('\nEmbedding projectile data into weapons...')
+  let weaponsWithFragments = 0
+  let weaponsWithCost = 0
 
   for (const unit of units) {
-    if (!unit.Weapon || !Array.isArray(unit.Weapon)) continue;
+    if (!unit.Weapon || !Array.isArray(unit.Weapon)) continue
 
     for (const weapon of unit.Weapon) {
-      if (!weapon.ProjectileId) continue;
+      if (!weapon.ProjectileId) continue
 
-      // Extract projectile ID from path: "/projectiles/Foo/Foo_proj.bp" -> "foo"
-      const match = weapon.ProjectileId.match(/([^/]+)_proj\.bp$/i);
-      if (!match) continue;
+      const match = weapon.ProjectileId.match(/([^/]+)_proj\.bp$/i)
+      if (!match) continue
 
-      const projId = match[1].toLowerCase();
-      if (projectiles[projId]) {
-        const baseFragments = projectiles[projId].fragments;
-        const nestedMultiplier = projectiles[projId].fragmentId
-          ? getTotalFragmentMultiplier(projectiles[projId].fragmentId)
-          : 1;
+      const projId = match[1].toLowerCase()
+      const proj = projectiles[projId]
+      if (!proj) continue
 
-        weapon.ProjectileFragmentMultiplier = baseFragments * nestedMultiplier;
-        console.log(weapon.DisplayName + ' for ' + unit.General.UnitName + ': ' + weapon.ProjectileFragmentMultiplier);
-        weaponsEnhanced++;
+      // Fragment multiplier (for DPS calculations)
+      if (proj.fragments) {
+        const nestedMultiplier = proj.fragmentId
+          ? getTotalFragmentMultiplier(proj.fragmentId)
+          : 1
+        weapon.ProjectileFragmentMultiplier = proj.fragments * nestedMultiplier
+        weaponsWithFragments++
+      }
+
+      // Projectile data (if has Health or cost)
+      const hasCost = proj.BuildCostMass > 0 || proj.BuildCostEnergy > 0 || proj.BuildTime > 0
+      if (proj.Health > 0 || hasCost) {
+        weapon.Projectile = {
+          Description: proj.Description || weapon.DisplayName.replace('Launcher', ''),
+          Health: proj.Health,
+          BuildCostEnergy: proj.BuildCostEnergy,
+          BuildCostMass: proj.BuildCostMass,
+          BuildTime: proj.BuildTime
+        }
+        weapon.Projectile.Description = weapon.Projectile.Description.replace('AEON','Aeon').replace('CYBRAN','Cybran')
+        if (hasCost) weaponsWithCost++
       }
     }
   }
 
-  console.log(`  ✓ Enhanced ${weaponsEnhanced} weapons with projectile fragment data`);
+  console.log(`  ✓ ${weaponsWithFragments} weapons with fragment multiplier`)
+  console.log(`  ✓ ${weaponsWithCost} weapons with projectile cost data`)
 
   console.log('\nGenerating output files...');
 
@@ -260,7 +276,7 @@ async function generate() {
   );
   console.log(`  ✓ version.json`);
 
-  console.log(`\n✓ Generated ${units.length} units with ${weaponsEnhanced} weapons enhanced by ${parsedCount} projectile fragments`);
+  console.log(`\n✓ Generated ${units.length} units (${weaponsWithFragments} fragment weapons, ${weaponsWithCost} cost weapons)`)
 }
 
 function loadFromCache() {
@@ -323,7 +339,7 @@ function filterProps(obj, props) {
 }
 
 function cleanWeapon(weapon) {
-  const { Audio, Effects, WeaponUnpacks, WeaponRepackTimeout, ...rest } = weapon;
+  const { Audio, Effects, WeaponUnpacks, ...rest } = weapon;
   return rest;
 }
 

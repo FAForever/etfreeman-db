@@ -2,7 +2,7 @@
   <div class="uc faction" :class="unit.faction.toLowerCase()" :style="{ gridRow: `span ${rowCount}` }">
     <U2Header ref="headerRef" :unit="unit" :style="{ order: getOrder('header') }" />
     <U2Defense ref="defenseRef" v-if="showedSections?.Defense" :unit="unit" :compactOverride="getCompactOverride('defense')" :style="{ order: getOrder('defense') }" />
-    <U2Economy ref="economyRef" v-if="showedSections?.Economy" :unit="unit" :compactOverride="getCompactOverride('economy')" :style="{ order: getOrder('economy') }" />
+    <U2Economy ref="economyRef" v-if="showedSections?.Economy" :unit="unit" :compactOverride="getCompactOverride('economy')" :style="{ order: getOrder('economy') }" :class="getOrder('economy') == sortedSections.length - 1? 'last':''" />
     <U2Offense ref="offenseRef" v-if="showedSections?.Offense" :unit="unit" :weapons="unit.Weapon" :compactOverride="getCompactOverride('offense')" :style="{ order: getOrder('offense') }" />
     <U2Physics ref="physicsRef" v-if="showedSections?.Physics" :unit="unit" :compactOverride="getCompactOverride('physics')" :style="{ order: getOrder('physics') }" />
     <U2Abilities ref="abilitiesRef" v-if="showedSections?.Abilities" :unit="unit" :compactOverride="getCompactOverride('abilities')" :style="{ order: getOrder('abilities') }" />

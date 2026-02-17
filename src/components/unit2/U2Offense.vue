@@ -62,7 +62,7 @@ const weaponGroups = computed(() => {
 })
 
 const COLUMN_ORDER = [
-  'type', 'DPS', 'dps/mass', 'DPS to shields', 'DPS to shields / mass', 'range', 'AoE', 'DoT',
+  'type', 'DPS', 'dps/mass', 'HP', 'DPS to shields', 'DPS to shields / mass', 'range', 'AoE', 'DoT',
   'muzzleVel', 'firingTol', 'randomness', 'randomnessMove',
   'cycle', 'cycle to shields'
 ]
@@ -104,6 +104,9 @@ const weaponColumns = computed(() => {
   }
   if (visibleWeapons.value.some(w => w.FiringTolerance != null)) {
     present.add('firingTol')
+  }
+  if (visibleWeapons.value.some(w => w.Projectile?.Health > 0 && !['Defense','Anti-Navy'].includes(w.WeaponCategory))) {
+    present.add('HP')
   }
   return COLUMN_ORDER.filter(col => present.has(col))
 })

@@ -56,36 +56,43 @@ export function parseProjectile(content) {
       return null;
     }
 
-    // Parse the projectile blueprint table
     const projectile = astToObject(callExpr.arguments);
     if (!projectile) return null;
 
-    const physics = projectile.Physics;
-    if (!physics) return null;
+    const projectileData = {}
 
-    // Extract only the minimal data needed for DPS calculations
-    const projectileData = {};
-
-    // Only extract Fragments and FragmentId
-    if (physics.Fragments !== undefined) {
-      projectileData.fragments = physics.Fragments;
-    }
-
-    if (physics.FragmentId !== undefined) {
-      // Extract just the projectile ID from the path
-      // e.g., "/projectiles/foo/foo_proj.bp" -> "foo"
-      const match = physics.FragmentId.match(/([^/]+)_proj\.bp$/i);
-      if (match) {
-        projectileData.fragmentId = match[1].toLowerCase();
+    // Extract Fragments and FragmentId from Physics
+    if (projectile.Physics) {
+      if (projectile.Physics.Fragments !== undefined) {
+        projectileData.fragments = projectile.Physics.Fragments
+      }
+      if (projectile.Physics.FragmentId !== undefined) {
+        const match = projectile.Physics.FragmentId.match(/([^/]+)_proj\.bp$/i)
+        if (match) {
+          projectileData.fragmentId = match[1].toLowerCase()
+        }
       }
     }
 
-    // Return null if no useful data
-    return Object.keys(projectileData).length > 0 ? projectileData : null;
+    // Extract Health if present
+    const health = projectile.Defense?.Health
+    if (health > 0) {
+      projectileData.Health = health
+    }
+
+    // Extract cost data if any cost exists
+    const eco = projectile.Economy || {}
+    if (eco.BuildCostMass > 0 || eco.BuildCostEnergy > 0 || eco.BuildTime > 0) {
+      projectileData.Description = projectile.Description
+      projectileData.BuildCostEnergy = eco.BuildCostEnergy
+      projectileData.BuildCostMass = eco.BuildCostMass
+      projectileData.BuildTime = eco.BuildTime
+    }
+
+    return Object.keys(projectileData).length > 0 ? projectileData : null
   } catch (error) {
     console.error(error)
-    // Skip projectiles that can't be parsed
-    return null;
+    return null
   }
 }
 

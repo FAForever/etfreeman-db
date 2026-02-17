@@ -38,6 +38,8 @@ const getStat = (weapon, stat) => {
       return weapon.FiringRandomnessWhileMoving
     case 'firingTol':
       return weapon.FiringTolerance
+    case 'HP':
+      return weapon.Projectile?.Health || null
     case 'cycle':
       return [(category == 'Defense'? 1 : weapon.fullDamage) * weapon.__cycleProjs, weapon.FireOnDeath ? null : weapon.__cycleTime]
     case 'cycle to shields':
@@ -71,6 +73,8 @@ const getStatText = (weapon, stat, value) => {
     return (val && !isNaN(val)) ? round(val, 1) + 's' : val
   if (stat == 'cycle' || stat == 'cycle to shields')
     return getCycleTextFromVal(val, weapon)
+  if (stat == 'HP')
+    return shorten(val)
   if (['range', 'AoE'].includes(stat) && Array.isArray(val))
     return `${val[0]}&#8209;${shorten(val[1])}`
   if (typeof (val) == 'number') {
@@ -86,7 +90,8 @@ const getCycleTooltip = (weapon, stat) => {
   }
 
   if (weapon.NukeInnerRingDamage) {
-    return `${shorten(weapon.NukeInnerRingDamage)} damage in ${weapon.NukeInnerRingRadius} radius,\n${shorten(weapon.NukeOuterRingDamage)} damage in ${weapon.NukeOuterRingRadius} radius`
+    const innerTotal = weapon.NukeInnerRingDamage + weapon.NukeOuterRingDamage
+    return `${shorten(innerTotal)} damage in ${weapon.NukeInnerRingRadius} radius,\n${shorten(weapon.NukeOuterRingDamage)} damage in ${weapon.NukeOuterRingRadius} radius`
   }
 
   const detailed = getDetailedCycle(weapon, false)
@@ -100,13 +105,13 @@ const getCycleTooltip = (weapon, stat) => {
 
     // No cycle time to show - just damage breakdown
     if (weapon.FireOnDeath || ['Kamikaze', 'Death', 'Teleport'].includes(category)) {
-      return `${instant}dmg + ${dotDmg} DoT dmg`
+      return `${instant}dmg + ${dotDmg} DoT`
     }
 
     const plural = cycleProjs > 1 ? 's' : ''
     const cycleTime = weapon.__cycleTime
     const cycleTimeText = cycleTime === 1 ? '' : cycleTime?.toFixed(1)
-    return `${instant}dmg + ${dotDmg} DoT dmg\n${cycleProjs} shot${plural} / ${cycleTimeText}s`
+    return `${instant}dmg + ${dotDmg} DoT\n${cycleProjs} shot${plural} / ${cycleTimeText}s`
   }
 
   return null
@@ -119,10 +124,10 @@ const getDoTTooltip = (weapon) => {
   const { cycleProjs } = simulateFiringCycle(weapon)
   if (cycleProjs > 1) {
     const totalDot = dot.dotTotal * cycleProjs
-    return `Each of ${cycleProjs} projectiles:\n${dot.ticks} ticks of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${cycleProjs} × ${dot.dotTotal} = ${totalDot}dmg`
+    return `Each of ${cycleProjs} projectiles:\n${dot.ticks} tick${dot.ticks > 1 ? 's' : ''} of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${cycleProjs} × ${dot.dotTotal} = ${totalDot}dmg`
   }
 
-  return `${dot.ticks} ticks of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${dot.dotTotal}dmg`
+  return `${dot.ticks} tick${dot.ticks > 1 ? 's' : ''} of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${dot.dotTotal}dmg`
 }
 
 const getGroupStatText = computed(() => {

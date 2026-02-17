@@ -152,7 +152,7 @@ export const simulateFiringCycle = (weapon) => {
     cycleProjs = 1
   }
 
-  if ((weapon.WeaponUnpackAnimation && weapon.NukeInnerRingDamage) || isNaN(cycleTime)) {
+  if ((weapon.WeaponUnpackAnimation && (weapon.NukeInnerRingDamage || weapon.ManualFire)) || isNaN(cycleTime)) {
     cycleTime = null
   }
 
@@ -286,7 +286,7 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
     if (!dot.hasDoT) return `${Math.round(dmg)} dmg total`
     const instantPart = Math.round(dot.instant * (dmg / perProjDamage))
     const dotPart = Math.round(dot.dotTotal * (dmg / perProjDamage))
-    return `${instantPart}dmg + ${dotPart} DoT dmg`
+    return `${instantPart}dmg + ${dotPart} DoT`
   }
   const hasMuzzleSalvo = (weapon.MuzzleSalvoDelay || 0) > 0
   const hasMultiRackSequential = (weapon.RackBones?.length > 1) && !weapon.RackFireTogether

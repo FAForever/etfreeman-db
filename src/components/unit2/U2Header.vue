@@ -4,8 +4,13 @@ import MassIcon from '../ui/MassIcon.vue'
 import EnergyIcon from '../ui/EnergyIcon.vue'
 import BuildtimeIcon from '../ui/BuildtimeIcon.vue'
 import { shorten } from '../../composables/helpers/common.js'
+import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import { useCompareStore } from '../../stores/compare.js'
+
 const { unit } = defineProps(['unit'])
+const compareStore = useCompareStore()
+const { showUnitId } = storeToRefs(compareStore)
 
 const baseUrl = import.meta.env.BASE_URL
 
@@ -19,7 +24,8 @@ const blueprintUrl = computed(() => {
 </script>
 
 <template>
-  <div class="u2header uc__secti" :class="`u2header_${unit.faction}`">
+  <div class="u2header" :class="`u2header_${unit.faction}`">
+    <a v-if="showUnitId" class="u2header__unitID new" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
     <a class="u2header__img calm" :href="blueprintUrl" target="_blank">
       <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.png`">
       <div class="u2header__img-main-wrap">
@@ -28,8 +34,11 @@ const blueprintUrl = computed(() => {
       <span :class="['u2header__img-strategic', `u2header__img-strategic_${unit.section.toLowerCase()}`, 'strategic', 'icon_strategic', `icon-${unit.faction}_${unit.strategicIcon}`]"></span>
     </a>
     <div class="u2header__content">
-      <div class="u2header__title" v-if="unit.General.UnitName">{{ unit.General.UnitName }}</div>
-      <div class="u2header__subtitle">{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</div>
+      <a v-if="unit.General.UnitName" class="u2header__title new" :href="blueprintUrl" target="_blank">{{ unit.General.UnitName }}</a>
+      <div class="u2header__subtitle">
+        <a v-if="!unit.General.UnitName" :href="blueprintUrl" target="_blank" class="new">{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</a>
+        <template v-else>{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</template>
+      </div>
       <div class="u2header__costs">
         <div class="u2header__cost">
           <MassIcon />
@@ -122,15 +131,25 @@ $localfactions: map.merge($localfactions, (uef: color.adjust(map.get($localfacti
     justify-content: flex-start
     gap: 6px
   &__title
+    width: fit-content
     font-family: var(--titlefont)
     letter-spacing: var(--titlespacing)
     font-size: 20px
     font-weight: 600
+    color: inherit
+    text-decoration: none
+    &:hover
+      text-decoration: underline
   &__subtitle
     font-size: 14px
     font-weight: 600
     &:first-child
       font-size: 18px
+    a
+      color: inherit
+      text-decoration: none
+      &:hover
+        text-decoration: underline
   &__costs
     display: flex
     gap: 10px
@@ -141,6 +160,11 @@ $localfactions: map.merge($localfactions, (uef: color.adjust(map.get($localfacti
   &__cost-value
     font-weight: 600
     font-size: 18px
+  &:has(.u2header__unitID) &__faction
+    top: 10px
+    width: 53px
+    height: 50px
+    right: 5px
   &__faction
     position: absolute
     right: 10px
@@ -152,4 +176,19 @@ $localfactions: map.merge($localfactions, (uef: color.adjust(map.get($localfacti
     @each $name, $color in $localfactions
       &_#{$name}
         fill: color.adjust($color, $alpha: -0.1)
+  &__unitID
+    position: absolute
+    right: 5px
+    width: 53px
+    text-align: center
+    top: -5px
+    font-size: 12px
+    font-weight: 600
+    color: white
+    opacity: 0.3
+    z-index: 10
+    text-decoration: none
+    &:hover
+      opacity: 1
+      text-decoration: underline
 </style>

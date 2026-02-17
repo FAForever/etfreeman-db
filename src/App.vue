@@ -80,7 +80,7 @@ body
   object-fit: cover
   object-position: center
 
-a
+a:not(.new)
   text-decoration: none
   color: white
   &:not(.calm)
