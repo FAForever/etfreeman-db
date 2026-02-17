@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { addBr, round, roundIfPossible, shorten } from '../../composables/helpers/common';
-import { getDetailedCycle } from '../../stores/utils/unitDecorator/dps2.js';
+import { getDetailedCycle, getDoTBreakdown, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps2.js';
 
 const { weapons, category, columns, mass } = defineProps(['weapons', 'category', 'columns', 'mass'])
 
@@ -51,15 +51,22 @@ const getStat = (weapon, stat) => {
 
 const getCycleTextFromVal = (val, weapon) => {
   const isNukeWithNullCycle = weapon?.NukeInnerRingDamage && val[1] === null
+  const hasDoT = (weapon?.DoTPulses || 1) > 1
+  const isSpecialCategory = ['Kamikaze', 'Death', 'Teleport'].includes(category)
+  const isDoTNeedingTooltip = hasDoT && (weapon?.FireOnDeath || isSpecialCategory || val[1] === null)
   const dmgPart = shorten(val[0], false).toUpperCase() + (["Defense"].includes(category) ? '&nbsp;proj.' : `&nbsp;dmg`)
 
-  return isNukeWithNullCycle
-    ? `<div class="underline-dotted">${dmgPart}</div>`
-    : dmgPart + (!['Kamikaze', 'Death', 'Teleport'].includes(category) && (val[1] !== null) ? `<br><div class="underline-dotted"> every&nbsp;${round(val[1], 1)}s</div>` : '')
+  if (isNukeWithNullCycle || isDoTNeedingTooltip) {
+    return `<div class="underline-dotted">${dmgPart}</div>`
+  }
+  return dmgPart + (!isSpecialCategory && (val[1] !== null) ? `<br><div class="underline-dotted"> every&nbsp;${round(val[1], 1)}s</div>` : '')
 }
 
 const getStatText = (weapon, stat, value) => {
-  const val = value ?? (getStat(weapon, stat) || '-')
+  let val = value ?? getStat(weapon, stat)
+  if (val == null) {
+    val = '-'
+  }
   if (stat == 'DoT')
     return (val && !isNaN(val)) ? round(val, 1) + 's' : val
   if (stat == 'cycle' || stat == 'cycle to shields')
@@ -67,7 +74,7 @@ const getStatText = (weapon, stat, value) => {
   if (['range', 'AoE'].includes(stat) && Array.isArray(val))
     return `${val[0]}&#8209;${shorten(val[1])}`
   if (typeof (val) == 'number') {
-    const decimals = val < 1000 ? 2 : 1
+    const decimals = val >= 1000 ? 0 : (val >= 100 ? 1 : 2)
     return round(val, decimals)
   }
   return val
@@ -79,10 +86,43 @@ const getCycleTooltip = (weapon, stat) => {
   }
 
   if (weapon.NukeInnerRingDamage) {
-    return `${shorten(weapon.NukeInnerRingDamage)}\u00A0damage\u00A0in\u00A0${weapon.NukeInnerRingRadius}\u00A0radius, ${shorten(weapon.NukeOuterRingDamage)}\u00A0damage\u00A0in\u00A0${weapon.NukeOuterRingRadius}\u00A0radius`
+    return `${shorten(weapon.NukeInnerRingDamage)} damage in ${weapon.NukeInnerRingRadius} radius,\n${shorten(weapon.NukeOuterRingDamage)} damage in ${weapon.NukeOuterRingRadius} radius`
   }
 
-  return getDetailedCycle(weapon, false)
+  const detailed = getDetailedCycle(weapon, false)
+  if (detailed) return detailed
+
+  const dot = getDoTBreakdown(weapon)
+  if (dot.hasDoT) {
+    const { cycleProjs } = simulateFiringCycle(weapon)
+    const instant = Math.round(dot.instant * cycleProjs)
+    const dotDmg = Math.round(dot.dotTotal * cycleProjs)
+
+    // No cycle time to show - just damage breakdown
+    if (weapon.FireOnDeath || ['Kamikaze', 'Death', 'Teleport'].includes(category)) {
+      return `${instant}dmg + ${dotDmg} DoT dmg`
+    }
+
+    const plural = cycleProjs > 1 ? 's' : ''
+    const cycleTime = weapon.__cycleTime
+    const cycleTimeText = cycleTime === 1 ? '' : cycleTime?.toFixed(1)
+    return `${instant}dmg + ${dotDmg} DoT dmg\n${cycleProjs} shot${plural} / ${cycleTimeText}s`
+  }
+
+  return null
+}
+
+const getDoTTooltip = (weapon) => {
+  const dot = getDoTBreakdown(weapon)
+  if (!dot.hasDoT) return undefined
+
+  const { cycleProjs } = simulateFiringCycle(weapon)
+  if (cycleProjs > 1) {
+    const totalDot = dot.dotTotal * cycleProjs
+    return `Each of ${cycleProjs} projectiles:\n${dot.ticks} ticks of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${cycleProjs} × ${dot.dotTotal} = ${totalDot}dmg`
+  }
+
+  return `${dot.ticks} ticks of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${dot.dotTotal}dmg`
 }
 
 const getGroupStatText = computed(() => {
@@ -104,7 +144,9 @@ const getGroupStatText = computed(() => {
       case 'dps/mass':
       case 'DPS to shields':
       case 'DPS to shields / mass':
-        stats[key] = round(stats[key].reduce((acc, val) => acc + (val ?? 0), 0), key == 'DPS' || key == 'DPS to shields' ? 2 : 3)
+        const total = stats[key].reduce((acc, val) => acc + (val ?? 0), 0)
+        const decimals = total >= 1000 ? 0 : (total >= 100? 1 : 2)
+        stats[key] = round(total, decimals)
         break
       case 'cycle':
       case 'cycle to shields':
@@ -173,13 +215,13 @@ const getDisplayName = (group) => {
 }
 
 const hasTractor = weapons.some(w => w.TractorDamage)
-const tractorTooltip = hasTractor ? 'Tractor only deals damage once the target is fully pulled in' : undefined
+const tractorTooltip = hasTractor ? 'Tractor only deals damage \nonce the target is fully pulled in' : undefined
 
 </script>
 
 <template>
   <tr v-if="weapons.length == 1">
-    <td v-for="col in columns" :key="col" :class="(col === 'cycle' || col === 'cycle to shields') ? 'not-dotted' : ''" :data-tooltip-big="(col === 'cycle' || col === 'cycle to shields') ? getCycleTooltip(weapons[0], col) : undefined" :data-tooltip-right="(col === 'cycle' || col === 'cycle to shields') ? '' : undefined" v-html="getStatText(weapons[0], col) ?? '-'" />
+    <td v-for="col in columns" :key="col" :class="(col === 'cycle' || col === 'cycle to shields') ? 'not-dotted' : ''" :data-tooltip-big="(col === 'cycle' || col === 'cycle to shields') ? getCycleTooltip(weapons[0], col) : (col === 'DoT' ? getDoTTooltip(weapons[0]) : undefined)" :data-tooltip-right="(col === 'cycle' || col === 'cycle to shields' || col === 'DoT') ? '' : undefined" v-html="getStatText(weapons[0], col) ?? '-'" />
   </tr>
   <template v-else>
     <tr class="weaponGroup" :class="{ active: isExpanded }" @click="toggleExpanded" style="cursor: pointer">
@@ -195,7 +237,7 @@ const tractorTooltip = hasTractor ? 'Tractor only deals damage once the target i
     </tr>
     <template v-if="isExpanded">
       <tr v-for="group, index in groupedWeapons" :key="group.signature" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
-        <td v-for="col, colIndex in columns" :key="col" :class="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? 'not-dotted' : ''" :data-tooltip-big="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? getCycleTooltip(group.weapons[0], col) : undefined" :data-tooltip-right="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? '' : undefined" v-html="colIndex ? (getStatText(group.weapons[0], col) ?? '-') : getDisplayName(group)"></td>
+        <td v-for="col, colIndex in columns" :key="col" :class="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? 'not-dotted' : ''" :data-tooltip-big="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? getCycleTooltip(group.weapons[0], col) : (colIndex && col === 'DoT' ? getDoTTooltip(group.weapons[0]) : undefined)" :data-tooltip-right="(colIndex && (col === 'cycle' || col === 'cycle to shields' || col === 'DoT')) ? '' : undefined" v-html="colIndex ? (getStatText(group.weapons[0], col) ?? '-') : getDisplayName(group)"></td>
       </tr>
     </template>
   </template>

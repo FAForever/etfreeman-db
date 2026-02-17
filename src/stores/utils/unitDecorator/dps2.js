@@ -51,6 +51,26 @@ export const getBeamDamageTicks = (weapon) => {
   return 1 + Math.floor(beamTicks / (collisionTicks + 1))
 }
 
+export const getDoTBreakdown = (weapon) => {
+  if (weapon.BeamLifetime !== undefined) return { hasDoT: false }
+
+  const hasDoT = (weapon.DoTPulses || 1) > 1
+  if (!hasDoT) return { hasDoT: false }
+
+  const ticks = (weapon.DoTPulses || 1) - 1
+  const instant = weapon.Damage + (weapon.InitialDamage || 0)
+  const dotTotal = weapon.Damage * ticks
+
+  return {
+    hasDoT: true,
+    instant,
+    dotTotal,
+    ticks,
+    interval: weapon.DoTTime / ticks,
+    totalTime: weapon.DoTTime
+  }
+}
+
 export const simulateFiringCycle = (weapon) => {
   let cycleProjs = 0
   let cycleTime = 0
@@ -244,9 +264,9 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
     const combinedPerTick = perBeamPerTick * cycleProjs
     const totalDamage = combinedPerTick * damageTicks
 
-    let result = `${damageTicks} times / 0.1 sec ${Math.round(combinedPerTick)} dmg`
     const reloadTime = Math.max(0, cycleTime - damageTicks * 0.1)
-    if (reloadTime > 0.1) result += ` + ${reloadTime.toFixed(1)}s reload`
+    let result = `${damageTicks} times / 0.1 sec ${Math.round(combinedPerTick)} dmg` + (reloadTime > 0.1? ' +\n ':'')
+    if (reloadTime > 0.1) result += `${reloadTime.toFixed(1)}s reload`
     result += ` = ${Math.round(totalDamage)} dmg total`
 
     return result
@@ -261,6 +281,13 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
   // Non-beam weapons - custom format showing damage per projectile instead of count
   const perProjDamage = calculateProjectileDamage(weapon)
   const totalDamage = perProjDamage * cycleProjs
+  const dot = getDoTBreakdown(weapon)
+  const formatDmg = (dmg) => {
+    if (!dot.hasDoT) return `${Math.round(dmg)} dmg total`
+    const instantPart = Math.round(dot.instant * (dmg / perProjDamage))
+    const dotPart = Math.round(dot.dotTotal * (dmg / perProjDamage))
+    return `${instantPart}dmg + ${dotPart} DoT dmg`
+  }
   const hasMuzzleSalvo = (weapon.MuzzleSalvoDelay || 0) > 0
   const hasMultiRackSequential = (weapon.RackBones?.length > 1) && !weapon.RackFireTogether
   const hasMultiMuzzleSingleRack = weapon.RackBones?.length === 1 &&
@@ -282,7 +309,7 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
       const hasReload = actualReload > 0.1
       const displaySalvoTime = salvoTime
       const displayReload = actualReload
-      return `${cycleProjs} times ${Math.round(perProjDamage)}dmg in ${displaySalvoTime.toFixed(1)}s${displayReload > 0 ? ` + ${displayReload.toFixed(1)}s reload` : ''} = ${cycleTime.toFixed(1)}s total, ${Math.round(totalDamage)} dmg total`
+      return `${cycleProjs} times ${Math.round(perProjDamage)}dmg in ${displaySalvoTime.toFixed(1)}s${displayReload > 0 ? ` +\n${displayReload.toFixed(1)}s reload` : ''} = ${cycleTime.toFixed(1)}s total,\n${formatDmg(totalDamage)}`
     }
 
     const rackCount = weapon.RackBones?.length || 1
@@ -292,7 +319,7 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
     const actualFiringTime = hasMultiMuzzleSingleRack ? cycleProjs * (weapon.MuzzleChargeDelay || 0) : firingTime
     const actualCycleTime = hasMultiMuzzleSingleRack ? cycleTime : cycleTime
     const actualReloadTime = hasMultiMuzzleSingleRack ? cycleTime - actualFiringTime : cycleTime - firingTime
-    return `${shots} times ${Math.round(dmgPerShot)}dmg in ${actualFiringTime.toFixed(1)}s${actualReloadTime > 0 ? ` + ${actualReloadTime.toFixed(1)}s reload` : ''} = ${actualCycleTime.toFixed(1)}s total, ${Math.round(totalDamage)} dmg total`
+    return `${shots} times ${Math.round(dmgPerShot)}dmg in ${actualFiringTime.toFixed(1)}s${actualReloadTime > 0 ? ` +\n ${actualReloadTime.toFixed(1)}s reload` : ''} = ${actualCycleTime.toFixed(1)}s total,\n${formatDmg(totalDamage)}`
   }
 
   // Simple shots (no salvo) - return null or format based on nullIfSimple parameter
@@ -300,7 +327,7 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
 
   const plural = cycleProjs > 1 ? 's' : ''
   const cycleTimeText = cycleTime === 1 ? '' : cycleTime.toFixed(1)
-  return `${cycleProjs} shot${plural} / ${cycleTimeText}s ${Math.round(totalDamage)} dmg total`
+  return `${formatDmg(totalDamage)}\n${cycleProjs} shot${plural} / ${cycleTimeText}s`
 }
 
 export const getShotsAmount = (weapon) => {

@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 
-const { unit } = defineProps(['unit'])
+const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 
 const economy = unit.Economy || {}
 
@@ -21,10 +21,14 @@ const economyItems = economyConfig
   .map(item => ({ text: item.label, value: economy[item.key] }))
 
 const isCompact = computed(() => economyItems.length <= 3)
+const isShown = computed(() => economyItems.length > 0)
+const expandScore = computed(() => economyItems.length / 3)
+
+defineExpose({ isCompact, isShown, expandScore })
 </script>
 
 <template>
-  <div class="u2economy uc__section" v-if="economyItems.length" :class="{ 'uc__section_compact': isCompact }">
+  <div class="u2economy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
       <h2 class="uc__section-title">
         <Icon class="u2economy__header-icon" name="growth" width="18" />
@@ -39,7 +43,7 @@ const isCompact = computed(() => economyItems.length <= 3)
 
 <style lang="sass">
 .u2economy
-  @container (max-width: 350px)
+  @container (max-width: 330px)
     .uc__section-line
       --columncount: 6
   &__header-icon

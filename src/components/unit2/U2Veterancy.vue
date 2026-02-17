@@ -5,7 +5,7 @@ import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 import { useUnitData } from '../../composables/useUnitData'
 
-const { unit } = defineProps(['unit'])
+const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const { unitDefauls } = useUnitData()
 
 const isACU = computed(() => unit.Categories?.includes('COMMAND'))
@@ -45,12 +45,22 @@ const showMassLine = computed(() => {
 })
 
 const isCompact = computed(() => !unit.VeteranMass)
+const expandScore = computed(() => unit.VeteranMass ? 5 : 1)
+
+const canGetVeterancy = computed(() =>
+  unit.Weapon?.some(w =>
+    !w.FireOnDeath && !['Teleport', 'Kamikaze', 'Death'].includes(w.WeaponCategory) && !(w.Label == "DeathWeapon") && (w.Damage || w.NukeInnerRingDamage)
+  )
+)
+const isShown = computed(() => canGetVeterancy.value && !!unit.Defense)
+
+defineExpose({ isCompact, isShown, expandScore })
 
 const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 </script>
 
 <template>
-  <div class="u2veterancy uc__section" :class="{ 'uc__section_compact': isCompact }" v-if="unit.Defense">
+  <div class="u2veterancy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <h2 class="uc__section-title u2veterancy__header">
       <Icon class="u2veterancy__header-icon" :class="`u2veterancy__header-icon_${unit.faction}`" name="medal" width="14" />
       <span class="u2veterancy__header-text">Veterancy</span>

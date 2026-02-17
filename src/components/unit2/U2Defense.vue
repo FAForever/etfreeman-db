@@ -23,10 +23,16 @@ const shieldType = computed(() => {
 })
 
 const isShieldAndHpUnited = ref(false)
+
+const isShown = computed(() => true)
+const isCompact = computed(() => false)
+const expandScore = computed(() => 0)
+
+defineExpose({ isCompact, isShown, expandScore })
 </script>
 
 <template>
-  <div class="u2defense uc__section">
+  <div class="u2defense uc__section" v-if="isShown">
     <h2 class="uc__section-title u2defense__header" v-if="false">
       <Icon class="u2defense__header-icon" name="shield" width="20" />
       Defense

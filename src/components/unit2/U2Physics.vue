@@ -4,7 +4,7 @@ import { round } from '../../composables/helpers/common';
 import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 
-const { unit } = defineProps(['unit'])
+const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 
 const physics = unit.Physics || {}
 const air = unit.Air || {}
@@ -19,6 +19,10 @@ const isFirst3SmallLand = computed(() => {
 })
 
 const isCompact = computed(() => physicsItems.length <= 3)
+const isShown = computed(() => physicsItems.length > 0)
+const expandScore = computed(() => physicsItems.length / 3)
+
+defineExpose({ isCompact, isShown, expandScore })
 
 const formatTime = (val) => {
   const m = Math.floor(val / 60)
@@ -61,21 +65,13 @@ if (physics.SniperModeSpeedMultiplier) {
 </script>
 
 <template>
-  <div class="u2physics uc__section" v-if="physicsItems.length" :class="{ 'uc__section_compact': isCompact }">
+  <div class="u2physics uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
       <h2 class="uc__section-title">
         <Icon class="u2physics__header-icon" name="speed" width="18" />
         <span>Physics</span>
       </h2>
-      <template v-if="isFirst3SmallLand">
-        <div class="uc__section-line uc__section-line_flex">
-          <LineItem v-for="item in physicsItems.slice(0, 3)" :key="item.text" :text="item.text + ':'" :value="item.value" />
-        </div>
-        <div class="uc__section-line">
-          <LineItem v-for="item in physicsItems.slice(3)" :key="item.text" :text="item.text + ':'" :value="item.value" />
-        </div>
-      </template>
-      <div class="uc__section-line" v-else>
+      <div class="uc__section-line">
         <LineItem v-for="item in physicsItems" :key="item.text" :text="item.text + ':'" :value="item.value" />
       </div>
     </div>

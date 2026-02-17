@@ -81,10 +81,14 @@ const factionFilter = computed(() => {
     default: return `${base} saturate(500%) `
   }
 })
+
+const isShown = computed(() => !!unit.Enhancements)
+
+defineExpose({ isShown })
 </script>
 
 <template>
-  <div class="u2enhancements uc__section" v-if="unit.Enhancements">
+  <div class="u2enhancements uc__section" v-if="isShown">
     <svg style="width:0;height:0;position:absolute;">
       <defs>
         <filter :id="filterId">

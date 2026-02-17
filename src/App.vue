@@ -150,7 +150,9 @@ math
   text-underline-offset: 4px
   &:hover::after
     content: attr(data-tooltip)
-    white-space: normal
+    line-height: 1.25
+    white-space: pre-line
+    font-size: var(--tooltipfontsize)
     position: absolute
     top: calc(100% + 5px)
     left: 50%
@@ -162,7 +164,9 @@ math
     z-index: 100
 [data-tooltip-big]:hover::after
   content: attr(data-tooltip-big) !important
-  min-width: 200px
+  width: max-content
+  max-width: 250px
+  padding: 8px
   left: 0 !important
   transform: none !important
   bottom: calc(100% + 5px)

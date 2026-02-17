@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 
-const { unit } = defineProps(['unit'])
+const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 
 const intel = unit.Intel || {}
 
@@ -24,10 +24,14 @@ const intelItems = intelConfig
   .map(item => ({ text: item.label, value: intel[item.key] }))
 
 const isCompact = computed(() => intelItems.length <= 3)
+const isShown = computed(() => intelItems.length > 0)
+const expandScore = computed(() => intelItems.length / 3)
+
+defineExpose({ isCompact, isShown, expandScore })
 </script>
 
 <template>
-  <div class="u2intel uc__section" v-if="intelItems.length" :class="{ 'uc__section_compact': isCompact }">
+  <div class="u2intel uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
       <h2 class="uc__section-title">
         <Icon class="u2intel__header-icon" name="eye" width="22" />
@@ -43,7 +47,7 @@ const isCompact = computed(() => intelItems.length <= 3)
 <style lang="sass">
 
 .u2intel
-  @container (max-width: 350px)
+  @container (max-width: 330px)
     .uc__section-line
       --columncount: 6
   &__header-icon

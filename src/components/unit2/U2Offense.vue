@@ -6,7 +6,7 @@ import LineItem from './LineItem.vue';
 import WeaponGroup from './WeaponGroup.vue';
 import { getShotsAmount, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps2';
 
-const { unit, weapons } = defineProps(['unit', 'weapons'])
+const { unit, weapons, compactOverride } = defineProps(['unit', 'weapons', 'compactOverride'])
 
 const categoriesMap = {
   'Direct Fire': 'Direct',
@@ -84,7 +84,7 @@ const weaponColumns = computed(() => {
       present.add('DPS to shields / mass')
       present.add('cycle to shields')
     }
-    if (weapon.MuzzleVelocity !== undefined || weapon.BeamLifetime !== undefined) {
+    if (weapon.MuzzleVelocity != null || weapon.BeamLifetime !== undefined) {
       present.add('muzzleVel')
     }
     if (weapon.FiringRandomness) {
@@ -109,6 +109,10 @@ const weaponColumns = computed(() => {
 })
 
 const isCompact = computed(() => weaponColumns.value.length <= 3)
+const isShown = computed(() => Object.keys(weaponGroups.value).length > 0)
+const expandScore = computed(() => weaponColumns.value.length / 3)
+
+defineExpose({ isCompact, isShown, expandScore })
 
 const headReplacements = {
   'dps/mass': `<math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mi>DPS</mi><mi>mass</mi> </mfrac></math>`,
@@ -167,8 +171,7 @@ onMounted(optimizeFontSize)
 </script>
 
 <template>
-  <div class="u2offense uc__section" v-if="Object.keys(weaponGroups).length"
-    :class="{ 'uc__section_compact': isCompact }">
+  <div class="u2offense uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <h2 class="uc__section-title u2offense__header">
       <Icon class="u2offense__header-icon" :class="`u2offense__header-icon_${unit.faction}`" name="sword" width="18" />
       <span class="u2offense__header-text">Offense</span>
@@ -192,6 +195,7 @@ onMounted(optimizeFontSize)
 <style lang="sass">
 
 .u2offense
+  --tooltipfontsize: 14.5px
   flex-grow: 1
   width: 100%
   .uc__section-title svg
@@ -219,18 +223,20 @@ onMounted(optimizeFontSize)
           --cellpadding: 2.5px
         @if $level >= 9
           font-size: 12px
+          --customspacing: -0.01em
         @if $level >= 10
           --cellpadding: 2px
+          --customspacing: -0.015em
         @if $level >= 11
           font-size: 11.5px
+          --customspacing: -0.02em
         .shrinkable-param
           width: min-content
     &-wrap
-      width: calc(100% + 6px)
-      margin: 0 -3px
-      &:has(.u2offense__table[data-shrink="9"],.u2offense__table[data-shrink="10"], .u2offense__table[data-shrink="11"])
-        width: calc(100% + 16px)
-        margin: 0 -8px
+      width: calc(100% + 16px)
+      margin: 0 -8px
+    td:not(:first-child,:last-child)
+      letter-spacing: var(--customspacing)
     tr.active td
       background: rgba(0,0,0,.3)
     td, th

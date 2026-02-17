@@ -55,6 +55,7 @@ const blueprintUrl = computed(() => {
 $localfactions: colors.$factions2
 $localfactions: map.merge($localfactions, (uef: color.adjust(map.get($localfactions, uef), $alpha: +0.15)))
 .u2header
+  align-self: start
   flex-grow: 1
   padding: 0 10px
   order: -3

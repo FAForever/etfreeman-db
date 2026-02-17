@@ -5,7 +5,7 @@ import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 import { useUnitData } from '../../composables/useUnitData'
 
-const props = defineProps(['unit'])
+const props = defineProps(['unit', 'compactOverride'])
 const { unitDefauls } = useUnitData()
 
 const techMassMult = computed(() => {
@@ -32,10 +32,16 @@ const canBeOnLand = computed(()=>props.unit.General.Icon != 'sea')
 const canBeInWater = computed(()=>{
   return !(props.unit.General.Icon == 'land' && props.unit.Categories.includes('STRUCTURE'))
 })
+
+const isShown = computed(() => !!props.unit.Wreckage?.HealthMult)
+const isCompact = computed(() => true)
+const expandScore = computed(() => 1)
+
+defineExpose({ isShown, isCompact, expandScore })
 </script>
 
 <template>
-  <div class="u2wreckage uc__section uc__section_compact" v-if="unit.Wreckage?.HealthMult">
+  <div class="u2wreckage uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <h2 class="uc__section-title u2wreckage__header">
       <Icon class="u2wreckage__header-icon" :class="`u2wreckage__header-icon_${unit.faction}`" name="recycle" width="20" />
       <span>Wreckage</span>
