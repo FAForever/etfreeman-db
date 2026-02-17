@@ -15,20 +15,7 @@
     <link rel="preload" href="/etfreeman-db/fonts/zeroes_3-webfont.woff" as="font" type="font/woff" crossorigin>
     <script type="module" crossorigin src="/etfreeman-db/assets/main-C4rNxXLe.js"></script>
     <link rel="stylesheet" crossorigin href="/etfreeman-db/assets/main-mjEe6kot.css">
-  
-<script>
-(() => {
-  const send = (type, args) => fetch('/__browser_log__', {
-    method: 'POST',
-    body: JSON.stringify({ type, args: args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)) })
-  }).catch(() => {})
-  ;['log','warn','error','info'].forEach(m => {
-    const orig = console[m]
-    console[m] = (...args) => { send(m, args); orig.apply(console, args) }
-  })
-  window.onerror = (msg, url, line) => send('error', [msg, 'at', url + ':' + line])
-})()
-</script></head>
+  </head>
   <body>
     <div id="app"></div>
   </body>
