@@ -58,7 +58,7 @@ defineExpose({ isCompact, isShown, expandScore })
     height: 100%
   .uc__section-line
     margin-bottom: auto
-  @container (max-width: 330px)
+  @container (max-width: 300px)
     .uc__section-line
       --columncount: 6
   &__header-icon

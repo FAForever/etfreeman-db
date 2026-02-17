@@ -4,9 +4,11 @@ import { round } from '../../composables/helpers/common';
 import Icon from '../Icon.vue';
 import LineItem from './LineItem.vue';
 import { useUnitData } from '../../composables/useUnitData';
+import { useCompareStore } from '../../stores/compare.js';
 
 const { unit } = defineProps(['unit'])
 const { unitDefauls } = useUnitData()
+const compareStore = useCompareStore()
 
 const health = computed(() => unit.Defense.Health)
 const shield = computed(() => unit.Defense.Shield && unit.Defense.Shield.ShieldMaxHealth ? unit.Defense.Shield : null)
@@ -20,6 +22,22 @@ const shieldType = computed(() => {
   if (shield.value.PersonalBubble)
     return 'Personal*'
   return 'Bubble'
+})
+
+const divisor = computed(() => {
+  switch (compareStore.calcUnitMode) {
+    case 'hp/energy': return unit.Economy.BuildCostEnergy
+    case 'hp/BT': return unit.Economy.BuildTime
+    default: return unit.Economy.BuildCostMass
+  }
+})
+
+const divisorLabel = computed(() => {
+  switch (compareStore.calcUnitMode) {
+    case 'hp/energy': return 'energy'
+    case 'hp/BT': return 'BT'
+    default: return 'mass'
+  }
 })
 
 const isShieldAndHpUnited = ref(false)
@@ -37,21 +55,21 @@ defineExpose({ isCompact, isShown, expandScore })
       <Icon class="u2defense__header-icon" name="shield" width="20" />
       Defense
     </h2>
-    <div class="uc__section-line" v-if="!isShieldAndHpUnited">
+    <div class="uc__section-line uc__section-line_close" v-if="!isShieldAndHpUnited">
       <LineItem span="8" :type="['bar', 'bar-hp']" :value="hpBarValue" />
-      <LineItem span="4" :value="round(health / unit.Economy.BuildCostMass, 3) + ' / mass'" />
+      <LineItem span="4" :value="round(health / divisor, 3) + ' / ' + divisorLabel" />
     </div>
     <button v-if="shield" class="u2defense__merge" :class="{'u2defense__merge_merged': isShieldAndHpUnited}" @click="isShieldAndHpUnited = !isShieldAndHpUnited">{{isShieldAndHpUnited? '-' : '+'}}</button>
     <template v-if="shield">
-      <div class="uc__section-line" v-if="!isShieldAndHpUnited">
+      <div class="uc__section-line uc__section-line_close" v-if="!isShieldAndHpUnited">
         <LineItem span="8" :type="['bar', 'bar-shield']" :value="shieldBarValue" />
         <LineItem span="4"
-          :value="round(shield.ShieldMaxHealth / unit.Economy.BuildCostMass, 3) + ' / mass'" />
+          :value="round(shield.ShieldMaxHealth / divisor, 3) + ' / ' + divisorLabel" />
       </div>
-      <div class="uc__section-line" v-if="isShieldAndHpUnited">
+      <div class="uc__section-line uc__section-line_close" v-if="isShieldAndHpUnited">
         <LineItem span="8" :type="['bar', 'bar-hp-and-shield']" :value="mergedBarValue" />
         <LineItem span="4"
-          :value="round((health + shield.ShieldMaxHealth) / unit.Economy.BuildCostMass, 3) + ' / mass'" />
+          :value="round((health + shield.ShieldMaxHealth) / divisor, 3) + ' / ' + divisorLabel" />
       </div>
       <div class="uc__section-line">
         <LineItem text="Shield regen delay:" :value="shield.ShieldRegenStartTime + 's'" />

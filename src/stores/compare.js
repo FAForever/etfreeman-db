@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 
 const STORAGE_KEY = 'faf-compare-v3'
 
@@ -20,12 +20,14 @@ const defaultSettings = {
   enhancementsTabs: true,
   highlightGroupedWeapons: true,
   compactSections: true,
-  linedUpSections: true,
+  linedUpSections: window.innerWidth < 700 ? false : true,
   minorWeaponStats: {
-    MuzzleVelocity: true,
-    FiringTolerance: true,
+    MuzzleVelocity: window.innerWidth < 700 ? false : true,
+    FiringTolerance: false,
     Yaw: false
-  }
+  },
+  calcUnitMode: 'hp/mass',
+  calcWeaponMode: 'DPS/mass'
 }
 
 export const useCompareStore = defineStore('compare', () => {
@@ -39,11 +41,24 @@ export const useCompareStore = defineStore('compare', () => {
   const compactSections = ref(defaultSettings.compactSections)
   const linedUpSections = ref(defaultSettings.linedUpSections)
 
-  const minorWeaponStats = {
-    MuzzleVelocity: ref(defaultSettings.minorWeaponStats.MuzzleVelocity),
-    FiringTolerance: ref(defaultSettings.minorWeaponStats.FiringTolerance),
-    Yaw: ref(defaultSettings.minorWeaponStats.Yaw)
-  }
+  const minorWeaponStats = reactive({
+    MuzzleVelocity: defaultSettings.minorWeaponStats.MuzzleVelocity,
+    FiringTolerance: defaultSettings.minorWeaponStats.FiringTolerance,
+    Yaw: defaultSettings.minorWeaponStats.Yaw
+  })
+
+  const calcUnitMode = ref(defaultSettings.calcUnitMode)
+  const calcWeaponMode = ref(defaultSettings.calcWeaponMode)
+
+  const gap = ref(8)
+
+  const unitWidth = computed(() => {
+    const count = (minorWeaponStats.MuzzleVelocity ? 1 : 0) + (minorWeaponStats.FiringTolerance ? 1 : 0) + (minorWeaponStats.Yaw ? 1 : 0)
+    if (count === 3) return 400
+    if (count === 2 && minorWeaponStats.Yaw) return 385
+    if (!count) return 350
+    return 370
+  })
 
   const toggleSection = (section) => {
     showedSections.value[section] = !showedSections.value[section]
@@ -66,10 +81,12 @@ export const useCompareStore = defineStore('compare', () => {
       compactSections: compactSections.value,
       linedUpSections: linedUpSections.value,
       minorWeaponStats: {
-        MuzzleVelocity: minorWeaponStats.MuzzleVelocity.value,
-        FiringTolerance: minorWeaponStats.FiringTolerance.value,
-        Yaw: minorWeaponStats.Yaw.value
-      }
+        MuzzleVelocity: minorWeaponStats.MuzzleVelocity,
+        FiringTolerance: minorWeaponStats.FiringTolerance,
+        Yaw: minorWeaponStats.Yaw
+      },
+      calcUnitMode: calcUnitMode.value,
+      calcWeaponMode: calcWeaponMode.value
     }))
   }
 
@@ -85,10 +102,12 @@ export const useCompareStore = defineStore('compare', () => {
       if (data.compactSections !== undefined) compactSections.value = data.compactSections
       if (data.linedUpSections !== undefined) linedUpSections.value = data.linedUpSections
       if (data.minorWeaponStats) {
-        if (data.minorWeaponStats.MuzzleVelocity !== undefined) minorWeaponStats.MuzzleVelocity.value = data.minorWeaponStats.MuzzleVelocity
-        if (data.minorWeaponStats.FiringTolerance !== undefined) minorWeaponStats.FiringTolerance.value = data.minorWeaponStats.FiringTolerance
-        if (data.minorWeaponStats.Yaw !== undefined) minorWeaponStats.Yaw.value = data.minorWeaponStats.Yaw
+        if (data.minorWeaponStats.MuzzleVelocity !== undefined) minorWeaponStats.MuzzleVelocity = data.minorWeaponStats.MuzzleVelocity
+        if (data.minorWeaponStats.FiringTolerance !== undefined) minorWeaponStats.FiringTolerance = data.minorWeaponStats.FiringTolerance
+        if (data.minorWeaponStats.Yaw !== undefined) minorWeaponStats.Yaw = data.minorWeaponStats.Yaw
       }
+      if (data.calcUnitMode !== undefined) calcUnitMode.value = data.calcUnitMode
+      if (data.calcWeaponMode !== undefined) calcWeaponMode.value = data.calcWeaponMode
     } catch (e) {
       console.error('Failed to parse compare settings', e)
     }
@@ -97,8 +116,7 @@ export const useCompareStore = defineStore('compare', () => {
   loadStored()
 
   watch(
-    [showedSections, showUnitId, enhancementsTabs, highlightGroupedWeapons, compactSections, linedUpSections,
-     minorWeaponStats.MuzzleVelocity, minorWeaponStats.FiringTolerance, minorWeaponStats.Yaw],
+    [showedSections, showUnitId, enhancementsTabs, highlightGroupedWeapons, compactSections, linedUpSections, minorWeaponStats, calcUnitMode, calcWeaponMode],
     saveToStorage,
     { deep: true }
   )
@@ -106,6 +124,6 @@ export const useCompareStore = defineStore('compare', () => {
   return {
     showedSections, filterOpen, settingsOpen, toggleSection, toggleFilter, toggleSettings,
     showUnitId, enhancementsTabs, highlightGroupedWeapons, compactSections, linedUpSections,
-    minorWeaponStats
+    minorWeaponStats, gap, unitWidth, calcUnitMode, calcWeaponMode
   }
 })

@@ -1,5 +1,5 @@
 <template>
-  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }">
+  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }" :class="{ 'compare__unitlist-line--no-align': !compareStore.linedUpSections }">
     <UnitComponent2
       v-for="(u, colIndex) in units"
       :ref="el => setUnitRef(el, colIndex)"
@@ -8,6 +8,7 @@
       :showedSections="showedSections"
       :sectionOrder="sectionOrder"
       :compactOverrides="compactOverrides"
+      :linedUp="compareStore.linedUpSections"
       :style="{ gridColumn: colIndex + 1 }"
       :class="{ 'uc--initializing': !isReady }"
     />
@@ -16,9 +17,11 @@
 
 <script setup>
 import { computed, ref, nextTick, watch } from 'vue'
+import { useCompareStore } from '../stores/compare.js'
 import UnitComponent2 from './UnitComponent2.vue'
 
 const props = defineProps(['units', 'showedSections'])
+const compareStore = useCompareStore()
 
 const DEFAULT_ORDER = ['header', 'defense', 'economy', 'offense', 'physics',
   'abilities', 'intel', 'transport', 'veterancy', 'wreckage', 'enhancements']
@@ -55,6 +58,7 @@ const sectionOrder = computed(() => {
 })
 
 const compactOverrides = computed(() => {
+  if (!compareStore.linedUpSections) return {}
   if (props.units.length <= 1) return {}
   if (unitRefs.value.some(r => !r?.sections)) return {}
 
@@ -97,11 +101,15 @@ watch(() => unitRefs.value.length, (len) => {
 <style lang="sass">
 .compare__unitlist-line
   display: grid
-  grid-template-columns: repeat(var(--units-per-row, 4), 370px)
-  grid-auto-rows: auto
-  gap: 0 8px
+  grid-template-columns: repeat(var(--units-per-row, 4), var(--unitwidth))
+  grid-template-rows: 1fr
+  @include from(400px)
+    grid-template-columns: minmax(100%, var(--unitwidth))
+  gap: 0 var(--unitgap)
   &:not(:last-child)
-    margin-bottom: 8px
+    margin-bottom: var(--unitgap)
+  &--no-align
+    align-items: start
 
 .uc--initializing
   visibility: hidden

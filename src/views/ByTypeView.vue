@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <HomeTop />
-    <MasonryWall class="home__byclass" :items="sections" :column-width="320" :gap="10" :padding="10">
+    <MasonryWall class="home__byclass" :items="sections" :column-width="350" :gap="10" :padding="10">
       <template #default="{ item: section }">
         <div class="home__byclass-base">
           <h1 class="home__byclass-base-title">{{ section.name }}</h1>

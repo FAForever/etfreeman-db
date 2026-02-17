@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useCompareStore } from '../../stores/compare.js'
 import { round } from '../../composables/helpers/common';
 import Icon from '../Icon.vue';
 import LineItem from './LineItem.vue';
@@ -7,6 +8,7 @@ import WeaponGroup from './WeaponGroup.vue';
 import { getShotsAmount, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps2';
 
 const { unit, weapons, compactOverride } = defineProps(['unit', 'weapons', 'compactOverride'])
+const compareStore = useCompareStore()
 
 const categoriesMap = {
   'Direct Fire': 'Direct',
@@ -63,7 +65,7 @@ const weaponGroups = computed(() => {
 
 const COLUMN_ORDER = [
   'type', 'DPS', 'dps/mass', 'HP', 'DPS to shields', 'DPS to shields / mass', 'range', 'AoE', 'DoT',
-  'muzzleVel', 'firingTol', 'randomness', 'randomnessMove',
+  'muzzleVel', 'firingTol', 'yaw', 'randomness', 'randomnessMove',
   'cycle', 'cycle to shields'
 ]
 
@@ -84,7 +86,7 @@ const weaponColumns = computed(() => {
       present.add('DPS to shields / mass')
       present.add('cycle to shields')
     }
-    if (weapon.MuzzleVelocity != null || weapon.BeamLifetime !== undefined) {
+    if (compareStore.minorWeaponStats.MuzzleVelocity && (weapon.MuzzleVelocity != null || weapon.BeamLifetime !== undefined)) {
       present.add('muzzleVel')
     }
     if (weapon.FiringRandomness) {
@@ -102,8 +104,11 @@ const weaponColumns = computed(() => {
   if (visibleWeapons.value.some(w => w.MaxRadius != null)) {
     present.add('range')
   }
-  if (visibleWeapons.value.some(w => w.FiringTolerance != null)) {
+  if (compareStore.minorWeaponStats.FiringTolerance && visibleWeapons.value.some(w => w.FiringTolerance != null)) {
     present.add('firingTol')
+  }
+  if (compareStore.minorWeaponStats.Yaw && visibleWeapons.value.some(w => w.TurretYawRange != null)) {
+    present.add('yaw')
   }
   if (visibleWeapons.value.some(w => w.Projectile?.Health > 0 && !['Defense','Anti-Navy'].includes(w.WeaponCategory))) {
     present.add('HP')
@@ -117,16 +122,24 @@ const expandScore = computed(() => weaponColumns.value.length / 3)
 
 defineExpose({ isCompact, isShown, expandScore })
 
-const headReplacements = {
-  'dps/mass': `<math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mi>DPS</mi><mi>mass</mi> </mfrac></math>`,
+const getEfficiencyHeader = (isShields = false) => {
+  const mode = compareStore.calcWeaponMode
+  const [rate, divisor] = mode.split('/')
+  const rateLabel = isShields ? ('DP' + rate[2] + 'tS') : rate
+  return `<math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mi>${rateLabel}</mi><mi>${divisor}</mi></mfrac></math>`
+}
+
+const headReplacements = computed(() => ({
+  'dps/mass': getEfficiencyHeader(),
   'DPS to shields': `<span data-tooltip="dps to shields">DPStS</span>`,
-  'DPS to shields / mass': `<math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mi>DPStS</mi><mi>mass</mi></mfrac></math>`,
+  'DPS to shields / mass': getEfficiencyHeader(true),
   'cycle to shields': `cycle<br>to shields`,
   'muzzleVel': `<span data-tooltip="muzzle velocity">MV</span>`,
   'randomness': `<span data-tooltip="fire randomness">RNG</span>`,
   'randomnessMove': `fire<br>random.<br>while<br>moving`,
-  'firingTol': `<span data-tooltip="firing tolerance">FT</span>`
-}
+  'firingTol': `<span data-tooltip="firing tolerance">FT</span>`,
+  'yaw': 'angle'
+}))
 
 const tableWrapRef = ref(null)
 const tableRef = ref(null)
@@ -159,8 +172,16 @@ const findShrinkLevel = async (initial) => {
 }
 
 const optimizeFontSize = async () => {
-  weaponsShrinkLevel.value = await findShrinkLevel()  
-  const refs = weaponGroupRefs.value.filter(r => r)
+  opacity.value = '0'
+  const notExpanded = weaponGroupRefs.value.filter(r => !r.isExpanded)
+  for (const groupRef of notExpanded) {
+    groupRef.toggleExpanded()
+  }
+  if (notExpanded.length) {
+    await nextTick()
+  }
+  weaponsShrinkLevel.value = await findShrinkLevel()
+  const refs = weaponGroupRefs.value
   for (const groupRef of refs) {
     groupRef.toggleExpanded()
   }
@@ -170,6 +191,8 @@ const optimizeFontSize = async () => {
 }
 
 onMounted(optimizeFontSize)
+
+watch(weaponColumns, optimizeFontSize)
 
 </script>
 
@@ -188,7 +211,7 @@ onMounted(optimizeFontSize)
         </thead>
         <tbody>
           <WeaponGroup v-for="(weapons, category, index) in weaponGroups" :key="category" :ref="(el) => { if (el) weaponGroupRefs[index] = el }" :columns="weaponColumns"
-            :category="category" :weapons="weapons" :mass="unit.Economy.BuildCostMass" />
+            :category="category" :weapons="weapons" :mass="unit.Economy.BuildCostMass" :energy="unit.Economy.BuildCostEnergy" :buildTime="unit.Economy.BuildTime" />
         </tbody>
       </table>
     </div>

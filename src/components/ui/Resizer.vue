@@ -22,4 +22,10 @@ defineProps({
   &__inner
     overflow: hidden
     min-height: 0
+  &--open &__inner
+    animation: showOverflow 0s ease 0.3s forwards
+
+@keyframes showOverflow
+  to
+    overflow: visible
 </style>

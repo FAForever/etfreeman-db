@@ -1,13 +1,25 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { useCompareStore } from '../../stores/compare.js'
 import { addBr, round, roundIfPossible, shorten } from '../../composables/helpers/common';
 import { getDetailedCycle, getDoTBreakdown, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps2.js';
 
-const { weapons, category, columns, mass } = defineProps(['weapons', 'category', 'columns', 'mass'])
+const { weapons, category, columns, mass, energy, buildTime } = defineProps(['weapons', 'category', 'columns', 'mass', 'energy', 'buildTime'])
+const compareStore = useCompareStore()
 
 const isExpanded = ref(true)
 const toggleExpanded = () => { isExpanded.value = !isExpanded.value }
 defineExpose({ toggleExpanded, isExpanded })
+
+const getEfficiencyValue = (dpsValue) => {
+  if (dpsValue === null || dpsValue === undefined) return null
+  const mode = compareStore.calcWeaponMode
+  const [rate, divisorKey] = mode.split('/')
+  const isPerMinute = rate === 'DPM'
+  const divisor = { mass, energy, BT: buildTime }[divisorKey]
+  return (dpsValue * (isPerMinute ? 60 : 1)) / divisor
+}
+
 const getStat = (weapon, stat) => {
   if (!weapon)
     return null
@@ -22,11 +34,11 @@ const getStat = (weapon, stat) => {
     case 'DPS':
       return weapon.dps
     case 'dps/mass':
-      return weapon.dps !== null? weapon.dps / mass : null
+      return getEfficiencyValue(weapon.dps)
     case 'DPS to shields':
       return weapon.dpsShields
     case 'DPS to shields / mass':
-      return weapon.dpsShields !== null && weapon.dpsShields !== undefined? weapon.dpsShields / mass : null
+      return getEfficiencyValue(weapon.dpsShields)
     case 'DoT':
       return weapon.DoTTime || null
     case 'muzzleVel':
@@ -38,6 +50,8 @@ const getStat = (weapon, stat) => {
       return weapon.FiringRandomnessWhileMoving
     case 'firingTol':
       return weapon.FiringTolerance
+    case 'yaw':
+      return weapon.TurretYawRange
     case 'HP':
       return weapon.Projectile?.Health || null
     case 'cycle':
@@ -181,6 +195,12 @@ const getGroupStatText = computed(() => {
           stats[key] = `<div class="shrinkable-param">${stats[key].map(el => getStatText(null, key, el)).join(', ')}</div>`
         }
         break
+      case 'yaw':
+        if (stats[key].length == 1) stats[key] = `<div class="shrinkable-param">${getStatText(null, key, stats[key][0])}</div>`
+        else {
+          stats[key] = `<div class="shrinkable-param">${stats[key].map(el => getStatText(null, key, el)).join(', ')}</div>`
+        }
+        break
       default:
         if (stats[key].length == 1) stats[key] = roundIfPossible(stats[key][0], 2)
         else {
@@ -222,6 +242,10 @@ const getDisplayName = (group) => {
 const hasTractor = weapons.some(w => w.TractorDamage)
 const tractorTooltip = hasTractor ? 'Tractor only deals damage \nonce the target is fully pulled in' : undefined
 
+const shouldHighlightCollapsed = computed(() =>
+  compareStore.highlightGroupedWeapons && !isExpanded.value && weapons.length > 1
+)
+
 </script>
 
 <template>
@@ -229,7 +253,7 @@ const tractorTooltip = hasTractor ? 'Tractor only deals damage \nonce the target
     <td v-for="col in columns" :key="col" :class="(col === 'cycle' || col === 'cycle to shields') ? 'not-dotted' : ''" :data-tooltip-big="(col === 'cycle' || col === 'cycle to shields') ? getCycleTooltip(weapons[0], col) : (col === 'DoT' ? getDoTTooltip(weapons[0]) : undefined)" :data-tooltip-right="(col === 'cycle' || col === 'cycle to shields' || col === 'DoT') ? '' : undefined" v-html="getStatText(weapons[0], col) ?? '-'" />
   </tr>
   <template v-else>
-    <tr class="weaponGroup" :class="{ active: isExpanded }" @click="toggleExpanded" style="cursor: pointer">
+    <tr class="weaponGroup" :class="{ active: isExpanded, highlighted: shouldHighlightCollapsed }" @click="toggleExpanded" style="cursor: pointer">
       <template v-for="col, index in columns" :key="col" v-html="index? (getGroupStatText[col] || '-' ): null">
         <td v-if="index" :class="(col === 'cycle' || col === 'cycle to shields') ? 'not-dotted' : ''" :data-tooltip-big="undefined" :data-tooltip-right="undefined" v-html="getGroupStatText[col] || '-'" />
         <td v-else :data-tooltip-big="tractorTooltip">
@@ -254,7 +278,15 @@ const tractorTooltip = hasTractor ? 'Tractor only deals damage \nonce the target
   &.active td
     border-top: 1px solid rgba(255,255,255,.5)
     padding-top: 5px
-  &:hover:not(.active) td
+  &.highlighted td
+    background: rgba(0,0,0,.3)
+    border-top: 1px solid rgba(255,255,255,.5) !important
+    border-bottom: 1px solid rgba(255,255,255,.5) !important
+    padding-top: 5px
+    padding-bottom: 5px
+  &.highlighted:hover td
+    background: rgba(0,0,0,.3)
+  &:hover:not(.active):not(.highlighted) td
     background: rgba(0,0,0,.1)
 .lastWeapon.active td:nth-child(n)
   border-bottom: 1px solid rgba(255,255,255,.5)

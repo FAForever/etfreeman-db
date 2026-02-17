@@ -47,7 +47,7 @@ defineExpose({ isCompact, isShown, expandScore })
 <style lang="sass">
 
 .u2intel
-  @container (max-width: 330px)
+  @container (max-width: 300px)
     .uc__section-line
       --columncount: 6
   &__header-icon

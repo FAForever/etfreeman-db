@@ -94,11 +94,15 @@ const hasStats = computed(() => stats.value.length > 0)
   &__heading
     padding: 5px 10px 5px
     display: flex
-    justify-content: space-between
     align-items: flex-start
-    gap: 10px
+    justify-content: space-between
+    gap: 4px 10px
     border-top: 1px solid var(--factioncolor)
     background: var(--titlebg)
+  &_chained + & &__heading
+    border-top-color: var(--factioncolortrans)
+  &:not(&_chained) + & &__heading
+    border-top-color: var(--factioncolorsol)
   &__title
     font-family: var(--titlefont)
     font-weight: 600

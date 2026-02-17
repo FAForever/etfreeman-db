@@ -89,7 +89,7 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
           </thead>
           <tbody>
             <tr>
-              <td>Mass to kill / lvl</td>
+              <td>Mass to<br> kill / lvl</td>
               <td v-for="(mass, i) in unit.VeteranMass" :key="i">{{ mass.toLocaleString() }}</td>
             </tr>
           </tbody>
@@ -115,6 +115,8 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
     td, th
       padding: 4px 8px
       border: 1px solid rgba(255,255,255,.1)
+      @include for-mob
+        padding: 4px 6px
       &:first-child
         border-left: none
       &:last-child

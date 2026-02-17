@@ -10,7 +10,7 @@
       </button>
     </header>
 
-    <input class="filters__input" autocomplete="off" id="filter" type="text" placeholder="filter" v-model="filterSearch" />
+    <Input class="filters__input" id="filter" placeholder="filter" v-model="filterSearch" />
 
     <div class="filter-icons">
       <div class="icon-column">
@@ -40,6 +40,7 @@ import { storeToRefs } from 'pinia'
 import { useUnitData } from '../composables/useUnitData.js'
 import { useFilterStore } from '../stores/filterStore.js'
 import Icon from './Icon.vue'
+import Input from './ui/Input.vue'
 
 const { row } = defineProps(['row'])
 
@@ -147,21 +148,6 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
     div
       transition: transform .1s ease-out
       transform: translateY(-0.5px)
-
-  &__input
-    width: 100%
-    height: 30px
-    border-radius: 5px
-    padding: 5px 10px
-    color: white
-    border: 1px solid #333
-    background: #111 !important
-    opacity: 0.5
-    &::placeholder
-      color: #aaa
-    &:focus
-      opacity: 1
-      border: 1px solid white
 
   a
     display: block

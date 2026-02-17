@@ -15,3 +15,6 @@ src/public/img/units.png
 
 # Generator cache
 tools/generator/cached_blueprints/
+
+# Browser console logs
+browser_console.log
