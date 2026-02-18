@@ -85,6 +85,7 @@ const factionFilter = computed(() => {
 })
 
 const isShown = computed(() => !!unit.Enhancements)
+const rowSpan = computed(() => compareStore.enhancementsTabs ? 1 : 3)
 
 const slotLabels = { RCH: 'Right Arm', Back: 'Back', LCH: 'Left Arm' }
 const slotOrder = ['RCH', 'Back', 'LCH']
@@ -102,11 +103,11 @@ const groupedBySlot = computed(() => {
   return groups
 })
 
-defineExpose({ isShown })
+defineExpose({ isShown, rowSpan })
 </script>
 
 <template>
-  <div class="u2enhancements uc__section" v-if="isShown">
+  <div class="u2enhancements uc__section" :class="{ 'u2enhancements_subgrid': !compareStore.enhancementsTabs }" v-if="isShown">
     <svg style="width:0;height:0;position:absolute;">
       <defs>
         <filter :id="filterId">
@@ -114,11 +115,12 @@ defineExpose({ isShown })
         </filter>
       </defs>
     </svg>
-    <div class="uc__section-query">
+    <!-- TAB MODE -->
+    <template v-if="compareStore.enhancementsTabs">
       <h2 class="u2enhancements__title uc__section-title">
         <span>Enhancements</span>
       </h2>
-      <div v-if="compareStore.enhancementsTabs" class="u2enhancements__tabs">
+      <div class="u2enhancements__tabs">
         <button
           v-for="tab in tabs"
           :key="tab.key"
@@ -128,46 +130,64 @@ defineExpose({ isShown })
           <img :src="tab.icon" :style="{ '--factionFilter': activeTab === tab.key ? factionFilter : 'none' }">
         </button>
       </div>
-      <template v-if="compareStore.enhancementsTabs">
-        <div class="u2enhancements__content">
+      <div class="u2enhancements__content">
+        <U2Enhancement
+          v-for="({ enhancement, nextIsChained }, index) in activeEnhancements"
+          :key="enhancement.Name + ' :: ' + index"
+          :enhancement="enhancement"
+          :nextIsChained="nextIsChained"
+        />
+      </div>
+    </template>
+
+    <!-- NO-TAB MODE: nested subgrid -->
+    <template v-else>
+      <div class="u2enhancements__row">
+        <h2 class="u2enhancements__title uc__section-title">Enhancements</h2>
+        <div class="u2enhancements__slot">
+          <div v-if="groupedBySlot[slotOrder[0]]?.length" class="u2enhancements__slot-header">
+            <img :src="tabByKey[slotOrder[0]]?.icon" :style="{ '--factionFilter': factionFilter }">
+            <span>{{ slotLabels[slotOrder[0]] }}</span>
+          </div>
           <U2Enhancement
-            v-for="{ enhancement, nextIsChained } in activeEnhancements"
-            :key="enhancement.Name"
+            v-for="({ enhancement, nextIsChained }, index) in groupedBySlot[slotOrder[0]]"
+            :key="enhancement.Name + ' :: ' + index"
             :enhancement="enhancement"
             :nextIsChained="nextIsChained"
+            type="calm"
           />
         </div>
-      </template>
-      <template v-else>
-        <div class="u2enhancements__content">
-          <div v-for="slot in slotOrder" :key="slot" class="u2enhancements__content-slot">
-            <div v-if="groupedBySlot[slot]?.length" class="u2enhancements__slot-header">
-              <img :src="tabByKey[slot]?.icon" :style="{ '--factionFilter': factionFilter }">
-              <span>{{ slotLabels[slot] }}</span>
-            </div>
-            <U2Enhancement
-              v-for="{ enhancement, nextIsChained } in groupedBySlot[slot]"
-              :key="enhancement.Name"
-              :enhancement="enhancement"
-              :nextIsChained="nextIsChained"
-            />
-          </div>
+      </div>
+      <div v-for="(slot, index) in slotOrder.slice(1)" :key="slot" class="u2enhancements__slot" :style="{ gridRow: index + 2 }">
+        <div v-if="groupedBySlot[slot]?.length" class="u2enhancements__slot-header">
+          <img :src="tabByKey[slot]?.icon" :style="{ '--factionFilter': factionFilter }">
+          <span>{{ slotLabels[slot] }}</span>
         </div>
-      </template>
-    </div>
+        <U2Enhancement
+          v-for="({ enhancement, nextIsChained }, index) in groupedBySlot[slot]"
+          :key="enhancement.Name + ' :: ' + index"
+          :enhancement="enhancement"
+          :nextIsChained="nextIsChained"
+          type="calm"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
 <style lang="sass">
 .u2enhancements
   position: relative
-  padding-bottom: 0 !important
+  padding: 0 !important
+  container-type: initial !important
+  &_subgrid
+    display: grid
+    grid-template-rows: subgrid
+    grid-row: span 3 !important
   &__title
-    margin-bottom: 0 !important
+    margin: 0 !important
   &__tabs
     display: flex
-    width: calc(100% + 20px)
-    margin: 0 -10px
   &__tab
     flex: 1
     display: flex
@@ -195,9 +215,6 @@ defineExpose({ isShown })
       background: rgba(0,0,0,0.3)
       img
         filter: var(--factionFilter)
-  &__content
-    width: calc(100% + 20px)
-    margin: 0 -10px
   &__slot-header
     border-top: 1px solid var(--factioncolorsol)
     display: flex

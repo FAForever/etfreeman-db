@@ -45,6 +45,8 @@ const close = (e) => {
 
 onMounted(() => document.addEventListener('click', close))
 onUnmounted(() => document.removeEventListener('click', close))
+
+defineExpose({ open })
 </script>
 
 <template>
@@ -81,8 +83,13 @@ onUnmounted(() => document.removeEventListener('click', close))
   user-select: none
 
   &_size-small .select-trigger
-    height: 26px
-    padding: 3px 8px
+    height: 22px
+    padding: 2px 8px 0px
+    font-size: 14px
+  &_size-small .select-dropdown
+    font-size: 14px
+    li
+      padding: 4px 8px
 
 .select-trigger
   width: 100%
@@ -92,7 +99,6 @@ onUnmounted(() => document.removeEventListener('click', close))
   background: #111
   color: white
   border: 1px solid #333
-  opacity: 0.5
   display: flex
   justify-content: space-between
   align-items: center
@@ -100,7 +106,6 @@ onUnmounted(() => document.removeEventListener('click', close))
   transition: all 0.2s
 
   &:hover, &:focus, &.open
-    opacity: 1
     border-color: white
 
   &:focus-visible
@@ -116,6 +121,7 @@ onUnmounted(() => document.removeEventListener('click', close))
 
 .select-value
   overflow: hidden
+  color: white
   text-overflow: ellipsis
   white-space: nowrap
 
@@ -128,6 +134,7 @@ onUnmounted(() => document.removeEventListener('click', close))
   color: #aaa
   flex-shrink: 0
   margin-left: 8px
+  transform-origin: 50% 42%
 
 .select-dropdown
   position: absolute

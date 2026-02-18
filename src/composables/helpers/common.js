@@ -1,5 +1,13 @@
+export const formatNum = (val) => {
+  const num = typeof val === 'number' ? val : (typeof val === 'string' && val.trim() && !isNaN(val) ? Number(val) : null)
+  if (num === null) return val
+  const parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F')
+  return parts.join('.')
+}
+
 export const shorten = (num, locale = true) => {
-  let short, localed = locale? num.toLocaleString() : (num + '')
+  let short, localed = locale ? formatNum(num) : (num + '')
   if (num > 1e9 - 1) short =  num / 1e9 + 'B'
   else if (num > 1e6 - 1) short = num / 1e6 + 'M'
   else if (num > 999) short = num / 1000 + 'k'

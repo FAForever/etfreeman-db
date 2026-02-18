@@ -50,17 +50,17 @@ const enhancementsRef = ref(null)
 const sections = computed(() => {
   const s = props.showedSections || {}
   return [
-    { key: 'header', show: true, compact: false, expandScore: 0 },
-    { key: 'defense', show: s.Defense && defenseRef.value?.isShown, compact: defenseRef.value?.isCompact, expandScore: defenseRef.value?.expandScore || 0 },
-    { key: 'economy', show: s.Economy && economyRef.value?.isShown, compact: economyRef.value?.isCompact, expandScore: economyRef.value?.expandScore || 0 },
-    { key: 'offense', show: s.Offense && offenseRef.value?.isShown, compact: offenseRef.value?.isCompact, expandScore: offenseRef.value?.expandScore || 0 },
-    { key: 'physics', show: s.Physics && physicsRef.value?.isShown, compact: physicsRef.value?.isCompact, expandScore: physicsRef.value?.expandScore || 0 },
-    { key: 'abilities', show: s.Abilities && abilitiesRef.value?.isShown, compact: abilitiesRef.value?.isCompact, expandScore: abilitiesRef.value?.expandScore || 0 },
-    { key: 'intel', show: s.Intel && intelRef.value?.isShown, compact: intelRef.value?.isCompact, expandScore: intelRef.value?.expandScore || 0 },
-    { key: 'transport', show: s.Transport && transportRef.value?.isShown, compact: transportRef.value?.isCompact, expandScore: transportRef.value?.expandScore || 0 },
-    { key: 'veterancy', show: s.Veterancy && veterancyRef.value?.isShown, compact: veterancyRef.value?.isCompact, expandScore: veterancyRef.value?.expandScore || 0 },
-    { key: 'wreckage', show: s.Wreckage && wreckageRef.value?.isShown, compact: true, expandScore: wreckageRef.value?.expandScore || 0 },
-    { key: 'enhancements', show: s.Enhancements && enhancementsRef.value?.isShown, compact: false, expandScore: 0 },
+    { key: 'header', show: true, compact: false, expandScore: 0, rowSpan: 1 },
+    { key: 'defense', show: s.Defense && defenseRef.value?.isShown, compact: defenseRef.value?.isCompact, expandScore: defenseRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'economy', show: s.Economy && economyRef.value?.isShown, compact: economyRef.value?.isCompact, expandScore: economyRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'offense', show: s.Offense && offenseRef.value?.isShown, compact: offenseRef.value?.isCompact, expandScore: offenseRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'physics', show: s.Physics && physicsRef.value?.isShown, compact: physicsRef.value?.isCompact, expandScore: physicsRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'abilities', show: s.Abilities && abilitiesRef.value?.isShown, compact: abilitiesRef.value?.isCompact, expandScore: abilitiesRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'intel', show: s.Intel && intelRef.value?.isShown, compact: intelRef.value?.isCompact, expandScore: intelRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'transport', show: s.Transport && transportRef.value?.isShown, compact: transportRef.value?.isCompact, expandScore: transportRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'veterancy', show: s.Veterancy && veterancyRef.value?.isShown, compact: veterancyRef.value?.isCompact, expandScore: veterancyRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'wreckage', show: s.Wreckage && wreckageRef.value?.isShown, compact: true, expandScore: wreckageRef.value?.expandScore || 0, rowSpan: 1 },
+    { key: 'enhancements', show: s.Enhancements && enhancementsRef.value?.isShown, compact: false, expandScore: 0, rowSpan: enhancementsRef.value?.rowSpan || 1 },
   ]
 })
 
@@ -107,6 +107,9 @@ const rowCount = computed(() => {
       total += sec.compact ? 0.5 : 1.5
     } else {
       total += sec.compact ? 0.5 : 1
+    }
+    if (sec.rowSpan > 1) {
+      total += (sec.rowSpan - 1)
     }
   }
   return Math.ceil(total)

@@ -27,7 +27,9 @@ const defaultSettings = {
     Yaw: false
   },
   calcUnitMode: 'hp/mass',
-  calcWeaponMode: 'DPS/mass'
+  calcWeaponMode: 'DPS/mass',
+  calcUnitInvert: false,
+  calcWeaponInvert: false
 }
 
 export const useCompareStore = defineStore('compare', () => {
@@ -49,6 +51,8 @@ export const useCompareStore = defineStore('compare', () => {
 
   const calcUnitMode = ref(defaultSettings.calcUnitMode)
   const calcWeaponMode = ref(defaultSettings.calcWeaponMode)
+  const calcUnitInvert = ref(defaultSettings.calcUnitInvert)
+  const calcWeaponInvert = ref(defaultSettings.calcWeaponInvert)
 
   const gap = ref(8)
 
@@ -86,7 +90,9 @@ export const useCompareStore = defineStore('compare', () => {
         Yaw: minorWeaponStats.Yaw
       },
       calcUnitMode: calcUnitMode.value,
-      calcWeaponMode: calcWeaponMode.value
+      calcWeaponMode: calcWeaponMode.value,
+      calcUnitInvert: calcUnitInvert.value,
+      calcWeaponInvert: calcWeaponInvert.value
     }))
   }
 
@@ -108,6 +114,8 @@ export const useCompareStore = defineStore('compare', () => {
       }
       if (data.calcUnitMode !== undefined) calcUnitMode.value = data.calcUnitMode
       if (data.calcWeaponMode !== undefined) calcWeaponMode.value = data.calcWeaponMode
+      if (data.calcUnitInvert !== undefined) calcUnitInvert.value = data.calcUnitInvert
+      if (data.calcWeaponInvert !== undefined) calcWeaponInvert.value = data.calcWeaponInvert
     } catch (e) {
       console.error('Failed to parse compare settings', e)
     }
@@ -116,7 +124,7 @@ export const useCompareStore = defineStore('compare', () => {
   loadStored()
 
   watch(
-    [showedSections, showUnitId, enhancementsTabs, highlightGroupedWeapons, compactSections, linedUpSections, minorWeaponStats, calcUnitMode, calcWeaponMode],
+    [showedSections, showUnitId, enhancementsTabs, highlightGroupedWeapons, compactSections, linedUpSections, minorWeaponStats, calcUnitMode, calcWeaponMode, calcUnitInvert, calcWeaponInvert],
     saveToStorage,
     { deep: true }
   )
@@ -124,6 +132,6 @@ export const useCompareStore = defineStore('compare', () => {
   return {
     showedSections, filterOpen, settingsOpen, toggleSection, toggleFilter, toggleSettings,
     showUnitId, enhancementsTabs, highlightGroupedWeapons, compactSections, linedUpSections,
-    minorWeaponStats, gap, unitWidth, calcUnitMode, calcWeaponMode
+    minorWeaponStats, gap, unitWidth, calcUnitMode, calcWeaponMode, calcUnitInvert, calcWeaponInvert
   }
 })

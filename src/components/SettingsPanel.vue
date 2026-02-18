@@ -1,76 +1,109 @@
 <script setup>
+import { ref, computed } from 'vue'
 import { useCompareStore } from '../stores/compare.js'
 import ToggleSwitch from './ui/ToggleSwitch.vue'
 import Select from './ui/Select.vue'
 
 const store = useCompareStore()
 
-const unitModeOptions = [
+const unitSelect = ref(null)
+const weaponSelect = ref(null)
+
+const unitModeOptions = computed(() => store.calcUnitInvert ? [
+  { value: 'hp/mass', label: 'mass / HP' },
+  { value: 'hp/energy', label: 'energy / HP' },
+  { value: 'hp/BT', label: 'BuildTime / HP' }
+] : [
   { value: 'hp/mass', label: 'HP / mass' },
   { value: 'hp/energy', label: 'HP / energy' },
   { value: 'hp/BT', label: 'HP / BuildTime' }
-]
+])
 
-const weaponModeOptions = [
+const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
+  { value: 'DPS/mass', label: 'mass / DPS' },
+  { value: 'DPM/mass', label: 'mass / DPM' },
+  { value: 'DPS/energy', label: 'energy / DPS' },
+  { value: 'DPM/energy', label: 'energy / DPM' },
+  { value: 'DPS/BT', label: 'BuildTime / DPS' },
+  { value: 'DPM/BT', label: 'BuildTime / DPM' }
+] : [
   { value: 'DPS/mass', label: 'DPS / mass' },
   { value: 'DPM/mass', label: 'DPM / mass' },
   { value: 'DPS/energy', label: 'DPS / energy' },
   { value: 'DPM/energy', label: 'DPM / energy' },
   { value: 'DPS/BT', label: 'DPS / BuildTime' },
   { value: 'DPM/BT', label: 'DPM / BuildTime' }
-]
+])
 </script>
 
 <template>
   <div class="settings-panel">
     <div class="settings-panel__group">
       <div class="settings-panel__group-title">General</div>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.showUnitId" />
-        <span class="panel__toggle-text">Show unit ID</span>
-      </label>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.linedUpSections" />
-        <span class="panel__toggle-text">Line up sections</span>
-      </label>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.compactSections" />
-        <span class="panel__toggle-text">Compact sections</span>
-      </label>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.enhancementsTabs" />
-        <span class="panel__toggle-text">Enhancements: tabs</span>
-      </label>
+      <div class="settings-panel__group-body">
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.showUnitId" />
+          <span class="panel__toggle-text">Show unit ID</span>
+        </label>
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.linedUpSections" />
+          <span class="panel__toggle-text">Line up sections</span>
+        </label>
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.compactSections" />
+          <span class="panel__toggle-text">Compact sections</span>
+        </label>
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.enhancementsTabs" />
+          <span class="panel__toggle-text">Enhancements: tabs</span>
+        </label>
+      </div>
     </div>
     <div class="settings-panel__group">
       <div class="settings-panel__group-title">Offense</div>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.highlightGroupedWeapons" />
-        <span class="panel__toggle-text">Highlight grouped weapons</span>
-      </label>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.minorWeaponStats.MuzzleVelocity" />
-        <span class="panel__toggle-text">Show muzzle velocity</span>
-      </label>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.minorWeaponStats.FiringTolerance" />
-        <span class="panel__toggle-text">Show firing tolerance</span>
-      </label>
-      <label class="panel__toggle">
-        <ToggleSwitch v-model="store.minorWeaponStats.Yaw" />
-        <span class="panel__toggle-text">Show turret yaw (angle)</span>
-      </label>
+      <div class="settings-panel__group-body">
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.highlightGroupedWeapons" />
+          <span class="panel__toggle-text">Highlight grouped weapons</span>
+        </label>
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.minorWeaponStats.MuzzleVelocity" />
+          <span class="panel__toggle-text">Show muzzle velocity</span>
+        </label>
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.minorWeaponStats.FiringTolerance" />
+          <span class="panel__toggle-text">Show firing tolerance</span>
+        </label>
+        <label class="panel__toggle">
+          <ToggleSwitch v-model="store.minorWeaponStats.Yaw" />
+          <span class="panel__toggle-text">Show turret yaw (angle)</span>
+        </label>
+      </div>
     </div>
     <div class="settings-panel__group">
       <div class="settings-panel__group-title">Calculations</div>
-      <label class="panel__select">
-        <span class="panel__select-label">Health:</span>
-        <Select v-model="store.calcUnitMode" :options="unitModeOptions" />
-      </label>
-      <label class="panel__select">
-        <span class="panel__select-label">Damage:</span>
-        <Select v-model="store.calcWeaponMode" :options="weaponModeOptions" />
-      </label>
+      <div class="settings-panel__group-body">
+        <label class="panel__select">
+          <span class="panel__select-label" :class="{ 'fade-out': unitSelect?.open }">Health:</span>
+          <div class="panel__select-toggle" :class="{ visible: unitSelect?.open }">
+            <label class="panel__toggle" @mousedown.stop @click.stop @pointerdown.stop>
+              <ToggleSwitch v-model="store.calcUnitInvert" />
+              <span class="panel__toggle-text">Invert</span>
+            </label>
+          </div>
+          <Select ref="unitSelect" v-model="store.calcUnitMode" :options="unitModeOptions" size="small"/>
+        </label>
+        <label class="panel__select">
+          <span class="panel__select-label" :class="{ 'fade-out': weaponSelect?.open }">Damage:</span>
+          <div class="panel__select-toggle" :class="{ visible: weaponSelect?.open }">
+            <label class="panel__toggle" @mousedown.stop @click.stop @pointerdown.stop>
+              <ToggleSwitch v-model="store.calcWeaponInvert" />
+              <span class="panel__toggle-text">Invert</span>
+            </label>
+          </div>
+          <Select ref="weaponSelect" v-model="store.calcWeaponMode" :options="weaponModeOptions" size="small" />
+        </label>
+      </div>
     </div>
   </div>
 </template>
@@ -93,13 +126,18 @@ const weaponModeOptions = [
   &__group
     display: flex
     flex-direction: column
-    gap: 8px
+    gap: 4px
 
-  &__group-title
-    font-weight: 600
-    font-size: 13px
-    color: rgba(255,255,255,.7)
-    margin-bottom: 2px
+    &-title
+      font-weight: 600
+      font-size: 13px
+      color: rgba(255,255,255,.7)
+
+    &-body
+      display: grid
+      gap: 8px
+      grid-template-columns: 1fr
+      grid-auto-rows: 18px
 
 .panel__toggle
   width: fit-content
@@ -110,12 +148,41 @@ const weaponModeOptions = [
   cursor: pointer
 
 .panel__select
+  position: relative
+  grid-row: span 2
   display: flex
   flex-direction: column
-  gap: 2px
+  justify-content: space-between
   cursor: pointer
+  color: white
+
+  &:hover &-toggle
+    z-index: 1
+    opacity: 1
+    transform: translateY(0)
+
+  &:hover &-label
+    opacity: 0
 
   &-label
-    font-size: 12px
-    color: rgba(255,255,255,.7)
+    padding-top: 2px
+    font-size: 14px
+    transition: opacity 0.2s
+
+    &.fade-out
+      opacity: 0
+
+  &-toggle
+    position: absolute
+    top: 0
+    left: 0
+    z-index: -1
+    opacity: 0
+    transform: translateY(20px)
+    transition: opacity 0.2s, transform 0.2s
+
+    &.visible
+      z-index: 1
+      opacity: 1
+      transform: translateY(0)
 </style>

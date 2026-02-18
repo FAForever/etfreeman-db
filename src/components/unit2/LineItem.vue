@@ -33,7 +33,7 @@ const { mods } = useMods(props, 'lineItem', { type: 'basic', span: '', column: '
   &_type-basic &-text
     display: block
     font-size: 14px
-    font-weight: 500
+    font-weight: 400
     flex-shrink: 1
   &_type-basic &-value
     font-weight: 700

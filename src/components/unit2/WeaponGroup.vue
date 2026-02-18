@@ -1,23 +1,25 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useCompareStore } from '../../stores/compare.js'
+import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 import { addBr, round, roundIfPossible, shorten } from '../../composables/helpers/common';
 import { getDetailedCycle, getDoTBreakdown, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps2.js';
 
-const { weapons, category, columns, mass, energy, buildTime } = defineProps(['weapons', 'category', 'columns', 'mass', 'energy', 'buildTime'])
+const { weapons, category, columns, economy } = defineProps(['weapons', 'category', 'columns', 'economy'])
 const compareStore = useCompareStore()
+const { getDivisor, calculate, mode } = useCalcEfficiency('weapon')
 
 const isExpanded = ref(true)
 const toggleExpanded = () => { isExpanded.value = !isExpanded.value }
 defineExpose({ toggleExpanded, isExpanded })
 
 const getEfficiencyValue = (dpsValue) => {
-  if (dpsValue === null || dpsValue === undefined) return null
-  const mode = compareStore.calcWeaponMode
-  const [rate, divisorKey] = mode.split('/')
+  if (dpsValue == null) return null
+  const [rate] = mode.value.split('/')
   const isPerMinute = rate === 'DPM'
-  const divisor = { mass, energy, BT: buildTime }[divisorKey]
-  return (dpsValue * (isPerMinute ? 60 : 1)) / divisor
+  const divisor = getDivisor(economy)
+  const adjustedDps = dpsValue * (isPerMinute ? 60 : 1)
+  return calculate(adjustedDps, divisor)
 }
 
 const getStat = (weapon, stat) => {
@@ -148,7 +150,11 @@ const getGroupStatText = computed(() => {
   const stats = Object.fromEntries(columns.map(col => [col, ['DPS', 'dps/mass', 'DPS to shields', 'DPS to shields / mass', 'cycle', 'cycle to shields'].includes(col) ? [] : new Set()]))
   for (const weapon of weapons)
     for (const stat of columns) {
-      if (['DPS', 'dps/mass', 'DPS to shields', 'DPS to shields / mass', 'cycle', 'cycle to shields'].includes(stat))
+      if (stat === 'dps/mass')
+        stats[stat].push(weapon.dps)
+      else if (stat === 'DPS to shields / mass')
+        stats[stat].push(weapon.dpsShields)
+      else if (['DPS', 'DPS to shields', 'cycle', 'cycle to shields'].includes(stat))
         stats[stat].push(getStat(weapon, stat))
       else if (stat == 'range')
         stats[stat].add(JSON.stringify(getStat(weapon, stat)))
@@ -160,12 +166,17 @@ const getGroupStatText = computed(() => {
       stats[key] = Array.from(stats[key])
     switch (key) {
       case 'DPS':
-      case 'dps/mass':
       case 'DPS to shields':
-      case 'DPS to shields / mass':
         const total = stats[key].reduce((acc, val) => acc + (val ?? 0), 0)
-        const decimals = total >= 1000 ? 0 : (total >= 100? 1 : 2)
+        const decimals = total >= 1000 ? 0 : (total >= 100 ? 1 : 2)
         stats[key] = round(total, decimals)
+        break
+      case 'dps/mass':
+      case 'DPS to shields / mass':
+        const totalDps = stats[key].reduce((acc, val) => acc + (val ?? 0), 0)
+        const efficiency = getEfficiencyValue(totalDps)
+        const effDecimals = efficiency >= 1000 ? 0 : (efficiency >= 100 ? 1 : 2)
+        stats[key] = round(efficiency, effDecimals)
         break
       case 'cycle':
       case 'cycle to shields':

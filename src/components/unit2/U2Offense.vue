@@ -1,14 +1,13 @@
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useCompareStore } from '../../stores/compare.js'
-import { round } from '../../composables/helpers/common';
+import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 import Icon from '../Icon.vue';
-import LineItem from './LineItem.vue';
 import WeaponGroup from './WeaponGroup.vue';
-import { getShotsAmount, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps2';
 
 const { unit, weapons, compactOverride } = defineProps(['unit', 'weapons', 'compactOverride'])
 const compareStore = useCompareStore()
+const { getMathMLHeader } = useCalcEfficiency('weapon')
 
 const categoriesMap = {
   'Direct Fire': 'Direct',
@@ -122,17 +121,10 @@ const expandScore = computed(() => weaponColumns.value.length / 3)
 
 defineExpose({ isCompact, isShown, expandScore })
 
-const getEfficiencyHeader = (isShields = false) => {
-  const mode = compareStore.calcWeaponMode
-  const [rate, divisor] = mode.split('/')
-  const rateLabel = isShields ? ('DP' + rate[2] + 'tS') : rate
-  return `<math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mi>${rateLabel}</mi><mi>${divisor}</mi></mfrac></math>`
-}
-
 const headReplacements = computed(() => ({
-  'dps/mass': getEfficiencyHeader(),
+  'dps/mass': getMathMLHeader(),
   'DPS to shields': `<span data-tooltip="dps to shields">DPStS</span>`,
-  'DPS to shields / mass': getEfficiencyHeader(true),
+  'DPS to shields / mass': getMathMLHeader(true),
   'cycle to shields': `cycle<br>to shields`,
   'muzzleVel': `<span data-tooltip="muzzle velocity">MV</span>`,
   'randomness': `<span data-tooltip="fire randomness">RNG</span>`,
@@ -211,7 +203,7 @@ watch(weaponColumns, optimizeFontSize)
         </thead>
         <tbody>
           <WeaponGroup v-for="(weapons, category, index) in weaponGroups" :key="category" :ref="(el) => { if (el) weaponGroupRefs[index] = el }" :columns="weaponColumns"
-            :category="category" :weapons="weapons" :mass="unit.Economy.BuildCostMass" :energy="unit.Economy.BuildCostEnergy" :buildTime="unit.Economy.BuildTime" />
+            :category="category" :weapons="weapons" :economy="unit.Economy" />
         </tbody>
       </table>
     </div>

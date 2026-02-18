@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { round } from '../../composables/helpers/common'
+import { round, formatNum } from '../../composables/helpers/common'
 import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 import { useUnitData } from '../../composables/useUnitData'
@@ -48,9 +48,9 @@ defineExpose({ isShown, isCompact, expandScore })
     </h2>
 
     <div class="uc__section-line">
-      <LineItem v-if="canBeOnLand" text="Mass:" :value="round(massValue).toLocaleString()" />
-      <LineItem v-if="canBeInWater" text="Mass (in water):" :value="round(massWaterValue).toLocaleString()" />
-      <LineItem text="Health:" :value="round(healthValue).toLocaleString()" />
+      <LineItem v-if="canBeOnLand" text="Mass:" :value="formatNum(round(massValue))" />
+      <LineItem v-if="canBeInWater" text="Mass (in water):" :value="formatNum(round(massWaterValue))" />
+      <LineItem text="Health:" :value="formatNum(round(healthValue))" />
     </div>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { formatNum } from '../../composables/helpers/common'
 import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 import U2Projectile from './U2Projectile.vue'
@@ -43,7 +44,7 @@ defineExpose({ isCompact, isShown, expandScore })
         <span>Economy</span>
       </h2>
       <div class="uc__section-line">
-        <LineItem v-for="item in economyItems" :key="item.text" :text="item.text + ':'" :value="item.value.toLocaleString()" />
+        <LineItem v-for="item in economyItems" :key="item.text" :text="item.text + ':'" :value="formatNum(item.value)" />
       </div>
       <U2Projectile v-for="(proj, i) in projectiles" :key="i" :projectile="proj" />
     </div>

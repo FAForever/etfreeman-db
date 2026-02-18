@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { round } from '../../composables/helpers/common'
+import { round, formatNum } from '../../composables/helpers/common'
 import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 import { useUnitData } from '../../composables/useUnitData'
@@ -68,15 +68,15 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 
     <template v-if="!unit.VeteranMass">
       <div class="uc__section-line">
-        <LineItem text="HP / lvl:" :value="hpPerLevel.toLocaleString()" />
+        <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
         <LineItem text="Regen / lvl:" :value="'+' +regenPerLevel + '/s'" v-if="regenPerLevel" />
-        <LineItem text="Mass to kill / lvl:" :value="standardMassPerLevel.toLocaleString()" v-if="showMassLine" />
+        <LineItem text="Mass to kill / lvl:" :value="formatNum(standardMassPerLevel)" v-if="showMassLine" />
       </div>
     </template>
 
     <template v-else>
       <div class="uc__section-line">
-        <LineItem text="HP / lvl:" :value="hpPerLevel.toLocaleString()" />
+        <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
         <LineItem text="Regen / lvl:" :value="'+' + regenPerLevel + '/s'" v-if="regenPerLevel" />
       </div>
       <div class="u2veterancy__table-wrap">
@@ -90,7 +90,7 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
           <tbody>
             <tr>
               <td>Mass to<br> kill / lvl</td>
-              <td v-for="(mass, i) in unit.VeteranMass" :key="i">{{ mass.toLocaleString() }}</td>
+              <td v-for="(mass, i) in unit.VeteranMass" :key="i">{{ formatNum(mass) }}</td>
             </tr>
           </tbody>
         </table>
@@ -115,7 +115,7 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
     td, th
       padding: 4px 8px
       border: 1px solid rgba(255,255,255,.1)
-      @include for-mob
+      @container (max-width: 338px)
         padding: 4px 6px
       &:first-child
         border-left: none

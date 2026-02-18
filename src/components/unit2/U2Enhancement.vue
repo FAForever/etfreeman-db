@@ -1,13 +1,15 @@
 <script setup>
 import { computed } from 'vue'
 import { shorten } from '../../composables/helpers/common.js'
+import { useMods } from '../../composables/useMods.js'
 import MassIcon from '../ui/MassIcon.vue'
 import EnergyIcon from '../ui/EnergyIcon.vue'
 import BuildtimeIcon from '../ui/BuildtimeIcon.vue'
 import LineItem from './LineItem.vue'
 import Icon from '../Icon.vue'
 
-const props = defineProps(['enhancement', 'nextIsChained'])
+const props = defineProps(['enhancement', 'nextIsChained', 'type'])
+const { mods } = useMods(props, 'u2enhancement', { type: null })
 
 const stats = computed(() => {
   const e = props.enhancement
@@ -40,7 +42,7 @@ const hasStats = computed(() => stats.value.length > 0)
 </script>
 
 <template>
-  <div class="u2enhancement" :class="{ 'u2enhancement_chained': nextIsChained, 'u2enhancement_has-stats': hasStats }">
+  <div class="u2enhancement" :class="[mods, { 'u2enhancement_chained': nextIsChained, 'u2enhancement_has-stats': hasStats }]">
     <div class="u2enhancement__heading">
       <span class="u2enhancement__title">{{ enhancement.Name }}</span>
       <div class="u2enhancement__costs">
@@ -105,8 +107,10 @@ const hasStats = computed(() => stats.value.length > 0)
     border-top-color: var(--factioncolorsol)
   &__title
     font-family: var(--titlefont)
-    font-weight: 600
+    font-weight: 500
     font-size: 14px
+  &_type-calm &__title
+    font-weight: 400
   &__costs
     display: flex
     gap: 10px
