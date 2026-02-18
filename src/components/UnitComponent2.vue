@@ -1,15 +1,15 @@
 <template>
   <div class="uc faction" :class="[unit.faction.toLowerCase(), { 'uc--no-subgrid': !linedUp }]" :style="{ gridRow: `span ${rowCount}` }">
     <U2Header ref="headerRef" :unit="unit" :style="{ order: getOrder('header') }" />
-    <U2Defense ref="defenseRef" v-if="showedSections?.Defense" :unit="unit" :compactOverride="getCompactOverride('defense')" :style="{ order: getOrder('defense') }" />
-    <U2Economy ref="economyRef" v-if="showedSections?.Economy" :unit="unit" :compactOverride="getCompactOverride('economy')" :style="{ order: getOrder('economy') }" :class="getOrder('economy') == sortedSections.length - 1? 'last':''" />
-    <U2Offense ref="offenseRef" v-if="showedSections?.Offense" :unit="unit" :weapons="unit.Weapon" :compactOverride="getCompactOverride('offense')" :style="{ order: getOrder('offense') }" />
-    <U2Physics ref="physicsRef" v-if="showedSections?.Physics" :unit="unit" :compactOverride="getCompactOverride('physics')" :style="{ order: getOrder('physics') }" />
-    <U2Abilities ref="abilitiesRef" v-if="showedSections?.Abilities" :unit="unit" :compactOverride="getCompactOverride('abilities')" :style="{ order: getOrder('abilities') }" />
-    <U2Intel ref="intelRef" v-if="showedSections?.Intel" :unit="unit" :compactOverride="getCompactOverride('intel')" :style="{ order: getOrder('intel') }" />
-    <U2Transport ref="transportRef" v-if="showedSections?.Transport" :unit="unit" :compactOverride="getCompactOverride('transport')" :style="{ order: getOrder('transport') }" />
-    <U2Veterancy ref="veterancyRef" v-if="showedSections?.Veterancy" :unit="unit" :compactOverride="getCompactOverride('veterancy')" :style="{ order: getOrder('veterancy') }" />
-    <U2Wreckage ref="wreckageRef" v-if="showedSections?.Wreckage" :unit="unit" :compactOverride="getCompactOverride('wreckage')" :style="{ order: getOrder('wreckage') }" />
+    <U2Defense ref="defenseRef" v-if="showedSections?.Defense" :unit="unit" :compactOverride="getCompactOverride('defense')" :class="getColumnClass('defense')" :style="{ order: getOrder('defense') }" />
+    <U2Economy ref="economyRef" v-if="showedSections?.Economy" :unit="unit" :compactOverride="getCompactOverride('economy')" :class="[getOrder('economy') == sortedSections.length - 1 ? 'last' : '', getColumnClass('economy')]" :style="{ order: getOrder('economy') }" />
+    <U2Offense ref="offenseRef" v-if="showedSections?.Offense" :unit="unit" :weapons="unit.Weapon" :compactOverride="getCompactOverride('offense')" :class="getColumnClass('offense')" :style="{ order: getOrder('offense') }" />
+    <U2Physics ref="physicsRef" v-if="showedSections?.Physics" :unit="unit" :compactOverride="getCompactOverride('physics')" :class="getColumnClass('physics')" :style="{ order: getOrder('physics') }" />
+    <U2Abilities ref="abilitiesRef" v-if="showedSections?.Abilities" :unit="unit" :compactOverride="getCompactOverride('abilities')" :class="getColumnClass('abilities')" :style="{ order: getOrder('abilities') }" />
+    <U2Intel ref="intelRef" v-if="showedSections?.Intel" :unit="unit" :compactOverride="getCompactOverride('intel')" :class="getColumnClass('intel')" :style="{ order: getOrder('intel') }" />
+    <U2Transport ref="transportRef" v-if="showedSections?.Transport" :unit="unit" :compactOverride="getCompactOverride('transport')" :class="getColumnClass('transport')" :style="{ order: getOrder('transport') }" />
+    <U2Veterancy ref="veterancyRef" v-if="showedSections?.Veterancy" :unit="unit" :compactOverride="getCompactOverride('veterancy')" :class="getColumnClass('veterancy')" :style="{ order: getOrder('veterancy') }" />
+    <U2Wreckage ref="wreckageRef" v-if="showedSections?.Wreckage" :unit="unit" :compactOverride="getCompactOverride('wreckage')" :class="getColumnClass('wreckage')" :style="{ order: getOrder('wreckage') }" />
     <U2Enhancements ref="enhancementsRef" v-if="showedSections?.Enhancements" :unit="unit" :style="{ order: getOrder('enhancements') }" />
   </div>
 </template>
@@ -76,44 +76,40 @@ const sortedSections = computed(() => {
     .sort((a, b) => (orderIndex[a.key] ?? 99) - (orderIndex[b.key] ?? 99))
 })
 
-const expandedKeys = computed(() => {
+const layoutInfo = computed(() => {
+  const columns = {}
   const expanded = new Set()
-  const secs = sortedSections.value
   let total = 0
+  const secs = sortedSections.value
 
   for (let i = 0; i < secs.length; i++) {
     const sec = secs[i]
+    const column = total % 1 ? 2 : 1
+    columns[sec.key] = sec.compact ? column : null
 
     if (total % 1) {
       total += sec.compact ? 0.5 : 1.5
     } else {
       total += sec.compact ? 0.5 : 1
     }
+    if (sec.rowSpan > 1) total += (sec.rowSpan - 1)
 
     if (total % 1) {
       const nextSec = secs[i + 1]
-      if (!nextSec || !nextSec.compact) {
-        expanded.add(sec.key)
-      }
+      if (!nextSec || !nextSec.compact) expanded.add(sec.key)
     }
   }
-  return expanded
+
+  return { columns, expanded, rowCount: Math.ceil(total) }
 })
 
-const rowCount = computed(() => {
-  let total = 0
-  for (const sec of sortedSections.value) {
-    if (total % 1) {
-      total += sec.compact ? 0.5 : 1.5
-    } else {
-      total += sec.compact ? 0.5 : 1
-    }
-    if (sec.rowSpan > 1) {
-      total += (sec.rowSpan - 1)
-    }
-  }
-  return Math.ceil(total)
-})
+const expandedKeys = computed(() => layoutInfo.value.expanded)
+const rowCount = computed(() => layoutInfo.value.rowCount)
+const getColumn = (key) => layoutInfo.value.columns[key]
+const getColumnClass = (key) => {
+  const col = getColumn(key)
+  return col ? `uc__section_column-${col}` : null
+}
 
 const sectionOrderIndex = computed(() => {
   const map = {}
@@ -158,9 +154,9 @@ defineExpose({ sections })
   position: relative
   border-radius: 5px
   display: grid
+  gap: 0 var(--uccolumngap)
   grid-template-columns: repeat(2, 1fr)
   grid-template-rows: subgrid
-  grid-auto-flow: dense
   &--no-subgrid
     grid-template-rows: auto
   @supports (corner-shape: bevel)
@@ -192,6 +188,18 @@ defineExpose({ sections })
     container-type: inline-size
     &_compact
       grid-column: span 1
+    &_column-1
+      padding-right: 0
+      .uc__section-title
+        padding-right: var(--uccolumngap)
+        margin-right: calc(var(--uccolumngap) * -1)
+        width: calc(100% + 10px + var(--uccolumngap))
+    &_column-2
+      padding-left: 0
+      .uc__section-title
+        width: calc(100% + 10px)
+        padding-left: 0
+        margin-left: 0
     &::before, &::after
       content: ''
       position: absolute
@@ -230,16 +238,11 @@ defineExpose({ sections })
       display: grid
       grid-template-columns: repeat(var(--columncount), 1fr)
       padding: 3px 0
-      gap: 6px 20px
+      gap: 6px var(--uccolumngap)
       &_close 
         gap: 6px 5px
       >*
         grid-column: span 6
-      &_flex
-        display: flex
-        justify-content: space-between
-        flex-wrap: wrap
-        gap: var(--flexgap, 10px)
       &-item
         display: flex
   &__li
@@ -260,7 +263,6 @@ defineExpose({ sections })
   @container (max-width: 300px)
     .uc__section-line
       --columncount: 6
-      --flexgap: 6px 5px
       display: grid
 
 </style>

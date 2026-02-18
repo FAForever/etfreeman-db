@@ -60,7 +60,7 @@ export const useCompareStore = defineStore('compare', () => {
     const count = (minorWeaponStats.MuzzleVelocity ? 1 : 0) + (minorWeaponStats.FiringTolerance ? 1 : 0) + (minorWeaponStats.Yaw ? 1 : 0)
     if (count === 3) return 400
     if (count === 2 && minorWeaponStats.Yaw) return 385
-    if (!count) return 350
+    if (!count) return 356
     return 370
   })
 

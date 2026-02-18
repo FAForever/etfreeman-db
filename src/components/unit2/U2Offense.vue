@@ -117,7 +117,7 @@ const weaponColumns = computed(() => {
 
 const isCompact = computed(() => weaponColumns.value.length <= 3)
 const isShown = computed(() => Object.keys(weaponGroups.value).length > 0)
-const expandScore = computed(() => weaponColumns.value.length / 3)
+const expandScore = computed(() => weaponColumns.value.length / 3 * 1.9)
 
 defineExpose({ isCompact, isShown, expandScore })
 

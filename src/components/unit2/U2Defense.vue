@@ -6,7 +6,7 @@ import LineItem from './LineItem.vue';
 import { useUnitData } from '../../composables/useUnitData';
 import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 
-const { unit } = defineProps(['unit'])
+const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const { unitDefauls } = useUnitData()
 const { getDivisor, calculate, denominatorLabel, invert } = useCalcEfficiency('unit')
 

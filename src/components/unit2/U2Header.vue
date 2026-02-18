@@ -166,6 +166,7 @@ $localfactions: map.merge($localfactions, (uef: color.adjust(map.get($localfacti
     height: 50px
     right: 5px
   &__faction
+    z-index: -1
     position: absolute
     right: 10px
     top: 0
