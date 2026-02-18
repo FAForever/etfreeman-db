@@ -232,7 +232,7 @@ export const fireCycle = (weapon) => {
     const muzzleChargeDelay = weapon.MuzzleChargeDelay || 0
 
     if (hasMuzzleSalvo) {
-      const muzzleDelay = weapon.MuzzleSalvoDelay || 0
+      const muzzleDelay = Math.max(0.1, MATH_IRound(10 * (weapon.MuzzleSalvoDelay || 0)) / 10)
       const salvoTime = muzzleChargeDelay > 0
         ? muzzleChargeDelay + (cycleProjs - 1) * (muzzleDelay + muzzleChargeDelay)
         : (cycleProjs - 1) * muzzleDelay + 0.1
@@ -301,7 +301,7 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
     const muzzleChargeDelay = weapon.MuzzleChargeDelay || 0
 
     if (hasMuzzleSalvo) {
-      const muzzleDelay = weapon.MuzzleSalvoDelay || 0
+      const muzzleDelay = Math.max(0.1, MATH_IRound(10 * (weapon.MuzzleSalvoDelay || 0)) / 10)
       const salvoTime = muzzleChargeDelay > 0
         ? muzzleChargeDelay + (cycleProjs - 1) * (muzzleDelay + muzzleChargeDelay)
         : (cycleProjs - 1) * muzzleDelay + 0.1
