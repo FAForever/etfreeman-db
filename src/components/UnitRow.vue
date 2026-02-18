@@ -33,6 +33,11 @@ const setUnitRef = (el, index) => {
   if (el) unitRefs.value[index] = el
 }
 
+watch(() => props.units, () => {
+  unitRefs.value = []
+  isReady.value = false
+})
+
 const sectionOrder = computed(() => {
   if (unitRefs.value.length !== props.units.length) return DEFAULT_ORDER
   if (unitRefs.value.some(r => !r?.sections)) return DEFAULT_ORDER

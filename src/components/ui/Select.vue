@@ -1,12 +1,16 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useMods } from '../../composables/useMods.js'
 
 const props = defineProps({
   modelValue: [String, Number],
   options: { type: Array, default: () => [] },
   placeholder: { type: String, default: 'Select...' },
-  disabled: Boolean
+  disabled: Boolean,
+  size: String
 })
+
+const { mods } = useMods(props, 'select', { size: null })
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -44,7 +48,7 @@ onUnmounted(() => document.removeEventListener('click', close))
 </script>
 
 <template>
-  <div class="select" ref="selectRef">
+  <div class="select" :class="mods" ref="selectRef">
     <button
       type="button"
       class="select-trigger"
@@ -75,6 +79,10 @@ onUnmounted(() => document.removeEventListener('click', close))
   position: relative
   width: 100%
   user-select: none
+
+  &_size-small .select-trigger
+    height: 26px
+    padding: 3px 8px
 
 .select-trigger
   width: 100%
