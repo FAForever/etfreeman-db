@@ -164,6 +164,7 @@ const findShrinkLevel = async (initial) => {
 }
 
 const optimizeFontSize = async () => {
+  await document.fonts.ready
   opacity.value = '0'
   const notExpanded = weaponGroupRefs.value.filter(r => !r.isExpanded)
   for (const groupRef of notExpanded) {
@@ -183,7 +184,6 @@ const optimizeFontSize = async () => {
 }
 
 onMounted(optimizeFontSize)
-
 watch(weaponColumns, optimizeFontSize)
 
 </script>
