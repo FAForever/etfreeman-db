@@ -128,9 +128,9 @@ math
   font-size: 1.1em
   padding-bottom: .1em
   mi
-    padding-bottom: .3em
+    padding-bottom: .1em
   mi:last-child
-    padding-top: .3em
+    padding-top: .2em
 
 .not-dotted
   text-decoration: none !important  
