@@ -130,7 +130,7 @@ math
   mi
     padding-bottom: .1em
   mi:last-child
-    padding-top: .2em
+    padding-top: .3em
 
 .not-dotted
   text-decoration: none !important  
