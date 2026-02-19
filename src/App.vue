@@ -1,6 +1,9 @@
 <template>
   <SvgSprite :icons="icons" />
-  <img class="app-bg" src="/img/background.jpg" />
+  <picture>
+    <source srcset="/img/background.avif" type="image/avif">
+    <img class="app-bg" src="/img/background.jpg" />
+  </picture>
   <RouterView />
 </template>
 

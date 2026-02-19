@@ -22,7 +22,7 @@ const blueprintUrl = computed(() => {
   <div class="u2header uc__section" :class="`u2header_${unit.faction}`">
     <a v-if="showUnitId" class="u2header__unitID new" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
     <a class="u2header__img calm" :href="blueprintUrl" target="_blank">
-      <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.png`">
+      <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
       <div class="u2header__img-main-wrap">
         <span :class="['u2header__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></span>
       </div>
