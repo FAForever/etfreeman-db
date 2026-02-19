@@ -33,10 +33,7 @@ defineExpose({ isCompact, isShown, expandScore })
 <template>
   <div class="u2intel uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
-      <h2 class="uc__section-title">
-        <Icon class="u2intel__header-icon" name="eye" width="22" />
-        <span>Intel</span>
-      </h2>
+      <h2 class="uc__section-title">Intel</h2>
       <div class="uc__section-line">
         <LineItem v-for="item in intelItems" :key="item.text" :text="item.text + ':'" :value="item.value" />
       </div>

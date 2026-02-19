@@ -186,6 +186,7 @@ defineExpose({ isShown, rowSpan })
     grid-row: span 3 !important
   &__title
     margin: 0 !important
+    padding: 0 var(--sectionpadding)
   &__tabs
     display: flex
   &__tab

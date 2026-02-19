@@ -42,11 +42,7 @@ defineExpose({ isShown, isCompact, expandScore })
 
 <template>
   <div class="u2wreckage uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
-    <h2 class="uc__section-title u2wreckage__header">
-      <Icon class="u2wreckage__header-icon" :class="`u2wreckage__header-icon_${unit.faction}`" name="recycle" width="20" />
-      <span>Wreckage</span>
-    </h2>
-
+    <h2 class="uc__section-title u2wreckage__header">Wreckage</h2>
     <div class="uc__section-line">
       <LineItem v-if="canBeOnLand" text="Mass:" :value="formatNum(round(massValue))" />
       <LineItem v-if="canBeInWater" text="Mass (in water):" :value="formatNum(round(massWaterValue))" />

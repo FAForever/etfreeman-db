@@ -100,6 +100,10 @@ const layoutInfo = computed(() => {
     }
   }
 
+  for (const key of expanded) {
+    columns[key] = null
+  }
+
   return { columns, expanded, rowCount: Math.ceil(total) }
 })
 
@@ -139,22 +143,25 @@ defineExpose({ sections })
     --factioncolorsol: #{color.adjust($color, $alpha:.1)}
     --factioncolorsolid: #{color.adjust($color, $alpha:1)}
     --factioncolorsoliddark: #{color.adjust($color, $alpha:1, $lightness: -30%)}
-    .uc__li::before
-      background: color.adjust($color, $alpha: 1)
-    .uc__section::before,&::after
-      background: color.adjust($color, $alpha: -0.1)
     .uc__section-title
-      svg
-        display: none
-      background: var(--titlebg)
-      border-top: 2px solid var(--factioncolor)
+      position: relative
+      &::before
+        content: ''
+        position: absolute
+        z-index: -1
+        background: var(--titlebg)
+        top: 0
+        bottom: 0
+        right: calc(var(--rightpadding, var(--sectionpadding)) * (-1))
+        left: calc(var(--leftpadding, var(--sectionpadding)) * (-1))
+        border-top: 2px solid var(--factioncolor)
 .uc
   overflow: hidden
   padding: 10px 0 3px
   position: relative
   border-radius: 5px
   display: grid
-  gap: 0 var(--uccolumngap)
+  gap: 0
   grid-template-columns: repeat(2, 1fr)
   grid-template-rows: subgrid
   &--no-subgrid
@@ -179,39 +186,20 @@ defineExpose({ sections })
       outline: 1px solid transparent
       transition: border .1s, box-shadow .1s, outline .1s, transform .1s
   &__section
+    --sectionpadding: 10px
     position: relative
-    padding-left: 10px
-    padding-right: 10px
-    padding-bottom: 5px
+    padding-bottom: var(--bottompadding, 5px)
+    padding-left: var(--leftpadding, var(--sectionpadding))
+    padding-right: var(--rightpadding, var(--sectionpadding))
     grid-column: span 2
     grid-row: span 1
     container-type: inline-size
     &_compact
       grid-column: span 1
     &_column-1
-      padding-right: 0
-      .uc__section-title
-        padding-right: var(--uccolumngap)
-        margin-right: calc(var(--uccolumngap) * -1)
-        width: calc(100% + 10px + var(--uccolumngap))
+      --rightpadding: calc(var(--uccolumngap) / 2)
     &_column-2
-      padding-left: 0
-      .uc__section-title
-        width: calc(100% + 10px)
-        padding-left: 0
-        margin-left: 0
-    &::before, &::after
-      content: ''
-      position: absolute
-      left: -2px
-      top: 2px
-      z-index: 50
-      display: none
-      height: calc(100% - 2px)
-      width: 2px
-    &::after
-      right: -2px
-      left: initial
+      --leftpadding: calc(var(--uccolumngap) / 2)
     &-query
       container-type: inline-size
       width: 100%
@@ -223,12 +211,10 @@ defineExpose({ sections })
       display: flex
       gap: 3px
       height: 31px
-      margin: 0 -10px 5px
-      padding: 0 10px
+      margin: 0 0 5px
       align-items: center
       text-align: left
       justify-content: flex-start
-      width: calc(100% + 20px)
       color: white
       svg
         --color1: transparent        
@@ -258,6 +244,7 @@ defineExpose({ sections })
       height: .5em
       margin: 4px 4px 4px 0px
       border-radius: 50%
+      background: var(--factioncolorsolid)
 
 .uc
   @container (max-width: 300px)

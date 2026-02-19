@@ -47,10 +47,7 @@ defineExpose({ isCompact, isShown, expandScore })
 
 <template>
   <div class="u2defense uc__section" v-if="isShown">
-    <h2 class="uc__section-title u2defense__header" v-if="false">
-      <Icon class="u2defense__header-icon" name="shield" width="20" />
-      Defense
-    </h2>
+    <h2 class="uc__section-title u2defense__header" v-if="false">Defense</h2>
     <div class="uc__section-line uc__section-line_close" v-if="!isShieldAndHpUnited">
       <LineItem :span="invert ? 7 : 8" :type="['bar', 'bar-hp']" :value="hpBarValue" />
       <LineItem span="4" :value="getEfficiencyDisplay(health)" />
@@ -90,9 +87,8 @@ defineExpose({ isCompact, isShown, expandScore })
   --mergedopacity-merged: .2
 .u2defense
   position: relative
-  margin-top: -5px
+  padding-top: 3px !important
   padding-bottom: 3px !important
-  order: -3
   &:hover
     --mergedopacity-merged: .75
   &__merge

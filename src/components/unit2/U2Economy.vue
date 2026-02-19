@@ -39,10 +39,7 @@ defineExpose({ isCompact, isShown, expandScore })
 <template>
   <div class="u2economy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact, 'u2economy_withweapons': projectiles.length }">
     <div class="uc__section-query">
-      <h2 class="uc__section-title">
-        <Icon class="u2economy__header-icon" name="growth" width="18" />
-        <span>Economy</span>
-      </h2>
+      <h2 class="uc__section-title">Economy</h2>
       <div class="uc__section-line">
         <LineItem v-for="item in economyItems" :key="item.text" :text="item.text + ':'" :value="formatNum(item.value)" />
       </div>

@@ -190,10 +190,7 @@ watch(weaponColumns, optimizeFontSize)
 
 <template>
   <div class="u2offense uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
-    <h2 class="uc__section-title u2offense__header">
-      <Icon class="u2offense__header-icon" :class="`u2offense__header-icon_${unit.faction}`" name="sword" width="18" />
-      <span class="u2offense__header-text">Offense</span>
-    </h2>
+    <h2 class="uc__section-title u2offense__header">Offense</h2>
     <div class="u2offense__table-wrap" ref="tableWrapRef">
       <table class="u2offense__table" ref="tableRef" :data-shrink="currentShrinkLevel" :style="{ '--opacity': opacity }">
         <thead>

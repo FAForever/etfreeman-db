@@ -2,9 +2,7 @@
 import { computed } from 'vue'
 import { shorten } from '../../composables/helpers/common.js'
 import { useMods } from '../../composables/useMods.js'
-import MassIcon from '../ui/MassIcon.vue'
-import EnergyIcon from '../ui/EnergyIcon.vue'
-import BuildtimeIcon from '../ui/BuildtimeIcon.vue'
+import CostsList from '../ui/CostsList.vue'
 import LineItem from './LineItem.vue'
 import Icon from '../Icon.vue'
 
@@ -45,28 +43,12 @@ const hasStats = computed(() => stats.value.length > 0)
   <div class="u2enhancement" :class="[mods, { 'u2enhancement_chained': nextIsChained, 'u2enhancement_has-stats': hasStats }]">
     <div class="u2enhancement__heading">
       <span class="u2enhancement__title">{{ enhancement.Name }}</span>
-      <div class="u2enhancement__costs">
-        <div class="u2enhancement__cost">
-          <MassIcon />
-          <span class="u2enhancement__cost-value">{{ shorten(enhancement.BuildCostMass) }}</span>
-        </div>
-        <div class="u2enhancement__cost">
-          <EnergyIcon />
-          <span class="u2enhancement__cost-value">{{ shorten(enhancement.BuildCostEnergy) }}</span>
-        </div>
-        <div class="u2enhancement__cost">
-          <BuildtimeIcon />
-          <span class="u2enhancement__cost-value">{{ shorten(enhancement.BuildTime) }}</span>
-        </div>
-      </div>
+      <CostsList :item="enhancement" :size="14" />
     </div>
     <div class="u2enhancement__body" v-if="hasStats">
       <div class="uc__section-line">
         <LineItem v-for="stat in stats" :key="stat.label" :text="stat.label + ':'" :value="stat.value" />
       </div>
-    </div>
-    <div class="u2enhancement__arrow" v-if="nextIsChained">
-      <Icon name="arrow_down" class="u2enhancement__arrow-icon" />
     </div>
   </div>
 </template>
@@ -74,33 +56,14 @@ const hasStats = computed(() => stats.value.length > 0)
 <style lang="sass">
 .u2enhancement
   position: relative
-  &__arrow
-    position: absolute
-    color: white
-    top: 100%
-    left: 50%
-    transform: translate(-50%, -50%)
-    display: flex
-    align-items: center
-    justify-content: center
-    padding: 3px
-    z-index: 1
-    display: none
-    //background: var(--factioncolorsoliddark)
-    border-radius: 5px
-    &-icon
-      stroke-linecap: round
-      width: 12px
-      stroke: white
-      stroke-width: 2
   &__heading
-    padding: 5px 10px 5px
     display: flex
     align-items: flex-start
     justify-content: space-between
-    gap: 4px 10px
-    border-top: 1px solid var(--factioncolor)
+    gap: 4px 8px
     background: var(--titlebg)
+    border-top: 1px solid var(--factioncolor)
+    padding: 5px var(--sectionpadding)
   &_chained + & &__heading
     border-top-color: var(--factioncolortrans)
   &:not(&_chained) + & &__heading
@@ -109,18 +72,9 @@ const hasStats = computed(() => stats.value.length > 0)
     font-family: var(--titlefont)
     font-weight: 500
     font-size: 14px
+    align-self: center
   &_type-calm &__title
     font-weight: 400
-  &__costs
-    display: flex
-    gap: 10px
-  &__cost
-    display: flex
-    align-items: center
-    gap: 3px
-  &__cost-value
-    font-weight: 600
-    font-size: 14px
   &__body
-    padding: 5px 10px
+    padding: 5px var(--sectionpadding)
 </style>

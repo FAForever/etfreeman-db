@@ -130,7 +130,6 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
 
   &__compare
     font-size: 18px
-    font-weight: 800
     color: white
     height: 30px
     width: 200px
@@ -144,7 +143,6 @@ const techLevels = ref(['T1', 'T2', 'T3', 'EXP'])
     span
       font-weight: 800
       font-size: .92em
-      display: inline-block
     div
       transition: transform .1s ease-out
       transform: translateY(-0.5px)

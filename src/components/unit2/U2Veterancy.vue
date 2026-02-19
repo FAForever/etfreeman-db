@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue'
 import { round, formatNum } from '../../composables/helpers/common'
-import Icon from '../Icon.vue'
 import LineItem from './LineItem.vue'
 import { useUnitData } from '../../composables/useUnitData'
 
@@ -61,11 +60,7 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 
 <template>
   <div class="u2veterancy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
-    <h2 class="uc__section-title u2veterancy__header">
-      <Icon class="u2veterancy__header-icon" :class="`u2veterancy__header-icon_${unit.faction}`" name="medal" width="14" />
-      <span class="u2veterancy__header-text">Veterancy</span>
-    </h2>
-
+    <h2 class="uc__section-title u2veterancy__header">Veterancy</h2>
     <template v-if="!unit.VeteranMass">
       <div class="uc__section-line">
         <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />

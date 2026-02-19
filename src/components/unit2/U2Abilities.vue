@@ -16,10 +16,7 @@ defineExpose({ isCompact, isShown, expandScore })
 <template>
   <div class="u2abilities uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
-      <h2 class="uc__section-title">
-        <Icon class="u2abilities__header-icon" name="abilities" width="20" />
-        <span>Abilities</span>
-      </h2>
+      <h2 class="uc__section-title">Abilities</h2>
       <ul :class="['uc__section-line']" style="justify-content: flex-start;">
         <li v-for="ability in abilities" :key="ability" class="uc__li" v-html="ability" />
       </ul>

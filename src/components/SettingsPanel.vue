@@ -84,24 +84,26 @@ const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
       <div class="settings-panel__group-title">Calculations</div>
       <div class="settings-panel__group-body">
         <label class="panel__select">
-          <span class="panel__select-label" :class="{ 'fade-out': unitSelect?.open }">Health:</span>
+          <Select class="panel__select-select" ref="unitSelect" v-model="store.calcUnitMode" :options="unitModeOptions"
+            size="small" />
           <div class="panel__select-toggle" :class="{ visible: unitSelect?.open }">
             <label class="panel__toggle" @mousedown.stop @click.stop @pointerdown.stop>
               <ToggleSwitch v-model="store.calcUnitInvert" />
               <span class="panel__toggle-text">Invert</span>
             </label>
           </div>
-          <Select ref="unitSelect" v-model="store.calcUnitMode" :options="unitModeOptions" size="small"/>
+          <span class="panel__select-label" :class="{ 'fade-out': unitSelect?.open }">Health:</span>
         </label>
         <label class="panel__select">
-          <span class="panel__select-label" :class="{ 'fade-out': weaponSelect?.open }">Damage:</span>
+          <Select class="panel__select-select" ref="weaponSelect" v-model="store.calcWeaponMode"
+            :options="weaponModeOptions" size="small" />
           <div class="panel__select-toggle" :class="{ visible: weaponSelect?.open }">
             <label class="panel__toggle" @mousedown.stop @click.stop @pointerdown.stop>
               <ToggleSwitch v-model="store.calcWeaponInvert" />
               <span class="panel__toggle-text">Invert</span>
             </label>
           </div>
-          <Select ref="weaponSelect" v-model="store.calcWeaponMode" :options="weaponModeOptions" size="small" />
+          <span class="panel__select-label" :class="{ 'fade-out': weaponSelect?.open }">Damage:</span>
         </label>
       </div>
     </div>
@@ -156,12 +158,16 @@ const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
   cursor: pointer
   color: white
 
-  &:hover &-toggle
+  &-select
+    order: 2
+    &:hover
+      z-index: 2
+      position: relative
+  &-select:hover ~ &-toggle
     z-index: 1
     opacity: 1
     transform: translateY(0)
-
-  &:hover &-label
+  &-select:hover ~ &-label, &-toggle:hover ~ &-label
     opacity: 0
 
   &-label
@@ -173,14 +179,19 @@ const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
       opacity: 0
 
   &-toggle
+    padding-bottom: 20px
     position: absolute
     top: 0
+    right: 0
     left: 0
-    z-index: -1
+    z-index: -2
     opacity: 0
     transform: translateY(20px)
     transition: opacity 0.2s, transform 0.2s
-
+    &:hover
+      z-index: 1
+      opacity: 1
+      transform: translateY(0)
     &.visible
       z-index: 1
       opacity: 1

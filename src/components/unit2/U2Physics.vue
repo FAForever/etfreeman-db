@@ -67,10 +67,7 @@ if (physics.SniperModeSpeedMultiplier) {
 <template>
   <div class="u2physics uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
-      <h2 class="uc__section-title">
-        <Icon class="u2physics__header-icon" name="speed" width="18" />
-        <span>Physics</span>
-      </h2>
+      <h2 class="uc__section-title">Physics</h2>
       <div class="uc__section-line">
         <LineItem v-for="item in physicsItems" :key="item.text" :text="item.text + ':'" :value="item.value" />
       </div>

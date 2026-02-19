@@ -41,7 +41,7 @@ body
   min-height: 100dvh
   font-family: 'Nunito', 'Muli', Verdana, Arial, sans-serif
 
-  --titlefont: 'Montserrat', 'Zeroes Three'
+  --titlefont: 'Montserrat'
   --titlespacing: 0
 
   &::-webkit-scrollbar
@@ -89,6 +89,9 @@ a:not(.new)
   &.calm
     &:hover, &:focus, &:active
       color: colors.$orange
+a.new
+  &:hover
+    text-decoration: underline
 
 @each $name, $color in colors.$factions
   .#{$name}
