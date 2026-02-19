@@ -55,11 +55,6 @@
   @include from(#{$res}px)
     #{$property}: calc(#{$min}px + (100vw - 320px)  / #{$res - 320} * (#{$max - $min}))
 
-
-@mixin mobFont($min, $max)
-  @include from(globalvars.$mob)
-    font-size: calc(#{$min}px + (100vw - 320px)  / #{768 - 320} * (#{$max - $min}))
-
 @mixin limitLines($n) 
   overflow: hidden
   text-overflow: ellipsis

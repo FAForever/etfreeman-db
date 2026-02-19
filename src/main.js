@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { useUnitDataStore } from './stores/unitData.js'
 import App from './App.vue'
 import router from './router'
-import { useUnitDataStore } from './stores/unitData.js'
 
 const app = createApp(App)
 const pinia = createPinia()

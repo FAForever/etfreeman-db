@@ -135,7 +135,7 @@ defineExpose({ sections })
 
 <style lang="sass">
 @use 'sass:selector'
-@each $name, $color in colors.$factions2
+@each $name, $color in colors.$factions
   .#{$name}
     --titlebg: #{color.adjust($color, $alpha: -0.1)}
     --factioncolor: #{$color}
@@ -176,7 +176,7 @@ defineExpose({ sections })
 
   &:hover
     z-index: 100
-  @each $name, $color in colors.$factions2
+  @each $name, $color in colors.$factions
     &.#{$name}
       background: linear-gradient(rgba(0,0,0,.37), rgba(0,0,0,.37))
       background-color: color.adjust($color)
@@ -205,7 +205,6 @@ defineExpose({ sections })
       width: 100%
     &-title
       font-family: var(--titlefont)
-      letter-spacing: var(--titlespacing)
       font-weight: 600
       font-size: 16px
       display: flex

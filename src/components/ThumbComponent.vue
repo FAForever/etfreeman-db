@@ -2,7 +2,7 @@
   <a :class="[
     'thumb',
     `thumb_${item.faction.toLowerCase()}`,
-    { selected: item.selected, 'thumb_mini': mini, 'calm': !mini }
+    { selected: item.selected, 'thumb_mini': mini, 'link-highlight': mini }
   ]" :title="`${item.fullName} [${item.id}]`" @click="handleClick">
     <div class="thumb__inner icon_units" :class="`icon-${item.id}`" v-if="!mini">
       <span :class="[
@@ -64,7 +64,7 @@ function handleClick(event) {
     .strategic
       top: 1px
       left: 1px
-    @each $name, $color in colors.$factions2
+    @each $name, $color in colors.$factions
       &.thumb_#{$name}
         background: linear-gradient(rgba(0,0,0,.27), rgba(0,0,0,.27))
         background-color: color.adjust($color, $alpha: -0.1)

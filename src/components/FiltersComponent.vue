@@ -26,10 +26,6 @@
           :class="['icon_ui', `icon-${t}`, { active: filterTech.has(t) }]"></a>
       </div>
     </div>
-
-    <div v-if="false" class="v2-link">
-      <a href="https://faf-unitdb.web.app">try out V2! <small>(wip)</small></a>
-    </div>
   </aside>
 </template>
 

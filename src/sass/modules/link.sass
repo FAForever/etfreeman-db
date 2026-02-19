@@ -1,0 +1,15 @@
+@use '../abstracts/colors.sass'
+
+.link
+  transition: .1s ease-out
+  &-underline
+    &:hover, &:active
+      text-decoration: underline
+  &-orange
+    text-decoration: none
+    color: white
+    &:hover, &:focus, &:active
+      color: colors.$orange
+  &-highlight
+    &:hover, &:focus, &:active, &.active, &.selected
+      background-color: rgba(255,255,255, .4)

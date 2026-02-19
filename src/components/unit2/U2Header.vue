@@ -16,12 +16,17 @@ const blueprintUrl = computed(() => {
   const branch = isNomads ? 'master' : 'deploy/faf'
   return `https://github.com/FAForever/${repo}/blob/${branch}/units/${unit.id}/${unit.id}_unit.bp`
 })
+
+const subtitleProps = computed(() => unit.General.UnitName
+  ? { is: 'div', attrs: {} }
+  : { is: 'a', attrs: { href: blueprintUrl.value, target: '_blank', class: 'link link-underline' } }
+)
 </script>
 
 <template>
   <div class="u2header uc__section" :class="`u2header_${unit.faction}`">
-    <a v-if="showUnitId" class="u2header__unitID new" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
-    <a class="u2header__img calm" :href="blueprintUrl" target="_blank">
+    <a v-if="showUnitId" class="u2header__unitID link link-underline" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
+    <a class="u2header__img" :href="blueprintUrl" target="_blank">
       <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
       <div class="u2header__img-main-wrap">
         <span :class="['u2header__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></span>
@@ -29,11 +34,8 @@ const blueprintUrl = computed(() => {
       <span :class="['u2header__img-strategic', `u2header__img-strategic_${unit.section.toLowerCase()}`, 'strategic', 'icon_strategic', `icon-${unit.faction}_${unit.strategicIcon}`]"></span>
     </a>
     <div class="u2header__content">
-      <a v-if="unit.General.UnitName" class="u2header__title new" :href="blueprintUrl" target="_blank">{{ unit.General.UnitName }}</a>
-      <div class="u2header__subtitle">
-        <a v-if="!unit.General.UnitName" :href="blueprintUrl" target="_blank" class="new">{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</a>
-        <template v-else>{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</template>
-      </div>
+      <a v-if="unit.General.UnitName" class="u2header__title link link-underline" :href="blueprintUrl" target="_blank">{{ unit.General.UnitName }}</a>
+      <component :is="subtitleProps.is" v-bind="subtitleProps.attrs" class="u2header__subtitle">{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</component>
       <CostsList :item="unit.Economy" :size="18" />
     </div>
     <Icon :name="unit.faction" :class="['u2header__faction', `u2header__faction_${unit.faction}`]" />
@@ -86,7 +88,6 @@ const blueprintUrl = computed(() => {
     --costslist-gap: 10px
   &__title
     font-family: var(--titlefont)
-    letter-spacing: var(--titlespacing)
     font-size: 20px
     font-weight: 600
   &__subtitle

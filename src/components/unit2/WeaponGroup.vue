@@ -246,7 +246,7 @@ const groupedWeapons = computed(() => {
 
 const getDisplayName = (group) => {
   const name = addBr(group.weapons[0].DisplayName, 10)
-  if (group.count > 1) return `<b class="important">${group.count}x</b> ${name}`
+  if (group.count > 1) return `<b class="weaponGroup__important">${group.count}x</b> ${name}`
   return name
 }
 
@@ -286,6 +286,8 @@ const shouldHighlightCollapsed = computed(() =>
 
 <style lang="sass">
 .weaponGroup
+  &__important
+    color: rgb(255,255,0)
   &.active td
     border-top: 1px solid rgba(255,255,255,.5)
     padding-top: 5px

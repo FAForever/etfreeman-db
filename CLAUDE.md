@@ -117,7 +117,6 @@ Supreme Commander unit database built with Vue.js 3.
   - `home_B` - Vertical layout with sidebar filters (ByClassView)
 - `--factionCount` CSS variable controls grid column count
 - View preference persisted to localStorage as `faf-last-view`
-- `lastListViewRoute` in store tracks user's last list view for "back" button
 
 **Unit Properties (added by decorator + categorizer):**
 - From `decorator.js`:

@@ -12,7 +12,7 @@
                 @unit-click="handleUnitClick" />
             </div>
             <h2 class="home__byclass-section-title">
-              <a class="calm" @click="toggleUnitsOfTheSameType(unitsByFaction)">
+              <a class="link-orange" @click="toggleUnitsOfTheSameType(unitsByFaction)">
                 {{ typeName }}
               </a>
             </h2>

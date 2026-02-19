@@ -1,65 +1,38 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { useUnitDataStore } from '../stores/unitData.js'
 import HomeView from '../views/HomeView.vue'
 import ByTypeView from '../views/ByTypeView.vue'
 import CompareView from '../views/CompareView.vue'
+
+const PREFERRED_VIEW_KEY = 'preferred-view'
+export const getPreferredView = () => localStorage.getItem(PREFERRED_VIEW_KEY) || '/'
+export const setPreferredView = (path) => localStorage.setItem(PREFERRED_VIEW_KEY, path)
+
+let initialPreferredView = getPreferredView()
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
       path: '/',
-      name: 'home',
       component: HomeView,
-      meta: { isListView: true }
+      beforeEnter: () => setPreferredView('/')
     },
     {
       path: '/by-type',
-      name: 'by-type',
       component: ByTypeView,
-      meta: { isListView: true }
+      beforeEnter: () => setPreferredView('/by-type')
     },
     {
       path: '/:ids',
       name: 'compare',
       component: CompareView,
       props: route => ({ ids: route.params.ids }),
-      beforeEnter: (to, from, next) => {
-        const ids = to.params.ids
-        if (ids && typeof ids === 'string' && ids.match(/^[a-zA-Z0-9,_-]+$/)) {
-          next()
-        } else {
-          next('/')
-        }
-      }
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      redirect: '/'
+      beforeEnter: (to) => /^[a-zA-Z0-9,_-]+$/.test(to.params.ids) || '/'
     }
   ]
 })
 
-router.afterEach(() => {
-  if (window.location.hash && !window.location.hash.startsWith('#/')) {
-    const newHash = '#/' + window.location.hash.substring(1)
-    window.history.replaceState(null, '', newHash)
-  }
-})
+router.isReady().then(() => router.currentRoute.value.name == 'compare' || router.push(initialPreferredView))
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.isListView) {
-    const unitStore = useUnitDataStore()
-    unitStore.lastListViewRoute = to.path
-  }
-  next()
-})
-
-router.isReady().then(() => {
-  const savedView = localStorage.getItem('faf-last-view')
-  if (savedView && router.currentRoute.value.path === '/' && savedView !== '/') {
-    router.replace(savedView)
-  }
-})
-
+export const toPreferredView = () => router.push(getPreferredView())
 export default router

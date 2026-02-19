@@ -81,7 +81,6 @@ export default defineConfig(() => ({
       sass: {
         api: 'modern',
         additionalData: [
-          `@use '@/sass/abstracts/vars.sass'`,
           `@use '@/sass/abstracts/colors.sass'`,
           `@use '@/sass/abstracts/mixins.sass' as *`,
           `@use "sass:color"`,

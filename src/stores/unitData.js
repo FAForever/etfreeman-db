@@ -10,7 +10,6 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const unitsMap = ref({})
   const version = ref(null)
   const unitDefauls = ref(null)
-  const lastListViewRoute = ref('/')
   const filterStore = useFilterStore()
 
   const visibleUnits = computed(() => units.value.filter(u => filterStore.matches(u)))
@@ -55,7 +54,6 @@ export const useUnitDataStore = defineStore('unitData', () => {
     version,
     unitDefauls,
     contenders,
-    lastListViewRoute,
     units,
     unitsMap,
     tierTree,
