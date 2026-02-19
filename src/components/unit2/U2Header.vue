@@ -48,6 +48,7 @@ const blueprintUrl = computed(() => {
   position: relative
   --bottompadding: 0px
   &__img
+    align-self: center
     position: relative
     margin: 2px
     &-main

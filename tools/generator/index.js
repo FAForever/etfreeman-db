@@ -3,16 +3,52 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { fetchDefaults, fetchAllBlueprints, fetchAllProjectiles } from './fetcher.js';
 import { parseBlueprint, parseVersion, parseProjectile, parseShield, parseVeterancyConstants, parseWreckageConstants } from './parser.js';
+import WHITELIST from './whitelist.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.join(__dirname, '../../src/public/data');
 const CACHE_DIR = path.join(__dirname, 'cached_blueprints');
 
-const ESSENTIAL_PROPS = [
-  'Description', 'Categories', 'General', 'Economy', 'Defense', 'Intel', 'Transport',
-  'Weapon', 'Wreckage', 'Veteran', 'VeteranMassMult', 'VeteranMass', 'Display', 'StrategicIconName',
-  'Physics', 'Air', 'Enhancements'
-];
+function distill(obj, schema) {
+  if (!obj || typeof obj !== 'object') return obj
+  const result = {}
+  for (const key of schema) {
+    if (typeof key === 'string') {
+      if (obj[key] !== undefined) result[key] = obj[key]
+    } else {
+      for (const [k, subSchema] of Object.entries(key)) {
+        if (obj[k] !== undefined) {
+          if (Array.isArray(obj[k])) {
+            result[k] = obj[k].map(item => distill(item, subSchema))
+          } else {
+            result[k] = distill(obj[k], subSchema)
+          }
+        }
+      }
+    }
+  }
+  return result
+}
+
+function distillUnit(unit) {
+  const result = {}
+  for (const [section, schema] of Object.entries(WHITELIST)) {
+    if (section === 'root') {
+      for (const k of schema) if (unit[k] !== undefined) result[k] = unit[k]
+    } else if (section === 'Weapon' && Array.isArray(unit.Weapon)) {
+      result.Weapon = unit.Weapon.map(w => distill(w, schema))
+    } else if (section === 'Enhancements' && unit.Enhancements) {
+      result.Enhancements = Object.fromEntries(
+        Object.entries(unit.Enhancements)
+          .map(([k, v]) => [k, distill(v, schema)])
+          .filter(([_, v]) => Object.keys(v).length)
+      )
+    } else if (unit[section]) {
+      result[section] = distill(unit[section], schema)
+    }
+  }
+  return result
+}
 
 function deriveClassification(categories) {
   if (!categories) return null;
@@ -189,6 +225,11 @@ async function generate() {
 
   console.log(`  ✓ Parsed ${parsedCount}/${projectilesRaw.length} projectiles with fragment data`);
 
+  // Distill units to only whitelisted properties
+  console.log('\nDistilling units to whitelisted properties...')
+  const slimUnits = units.map(distillUnit)
+  console.log(`  ✓ Distilled ${slimUnits.length} units`)
+
   // Calculate total fragment multiplier including nested fragments
   function getTotalFragmentMultiplier(fragmentId) {
     let multiplier = 1;
@@ -205,12 +246,12 @@ async function generate() {
     return multiplier;
   }
 
-  // Embed projectile data into weapon objects
+  // Embed projectile data into distilled weapon objects
   console.log('\nEmbedding projectile data into weapons...')
   let weaponsWithFragments = 0
   let weaponsWithCost = 0
 
-  for (const unit of units) {
+  for (const unit of slimUnits) {
     if (!unit.Weapon || !Array.isArray(unit.Weapon)) continue
 
     for (const weapon of unit.Weapon) {
@@ -262,7 +303,6 @@ async function generate() {
     console.log(`  ✓ index.fat.json`);
   }
 
-  const slimUnits = units.map(u => filterProps(u, ESSENTIAL_PROPS));
   const slimData = { ...config, units: slimUnits };
   fs.writeFileSync(
     path.join(OUTPUT_DIR, 'index.json'),
@@ -276,7 +316,7 @@ async function generate() {
   );
   console.log(`  ✓ version.json`);
 
-  console.log(`\n✓ Generated ${units.length} units (${weaponsWithFragments} fragment weapons, ${weaponsWithCost} cost weapons)`)
+  console.log(`\n✓ Generated ${slimUnits.length} units (${weaponsWithFragments} fragment weapons, ${weaponsWithCost} cost weapons)`)
 }
 
 function loadFromCache() {
@@ -321,26 +361,6 @@ function loadProjectilesFromCache() {
   console.log(`  ✓ Loaded ${projectiles.length} projectiles from cache`);
 
   return projectiles;
-}
-
-function filterProps(obj, props) {
-  const filtered = {};
-  for (const prop of props) {
-    if (obj.hasOwnProperty(prop)) {
-      if (prop === 'Weapon' && Array.isArray(obj[prop])) {
-        filtered[prop] = obj[prop].map(cleanWeapon);
-      } else {
-        filtered[prop] = obj[prop];
-      }
-    }
-  }
-  if (obj.Id) filtered.Id = obj.Id;
-  return filtered;
-}
-
-function cleanWeapon(weapon) {
-  const { Audio, Effects, WeaponUnpacks, ...rest } = weapon;
-  return rest;
 }
 
 generate().catch(error => {
