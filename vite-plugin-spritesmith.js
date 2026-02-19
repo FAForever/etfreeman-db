@@ -10,6 +10,7 @@ import chokidar from 'chokidar'
 export default function viteSpritesmith(options = {}) {
   const sprites = options.sprites || []
   let isWatching = false
+  let isProduction = false
 
   async function generateSprite(sprite) {
     const { name, src, imgDest, cssDest, cssImageRef, modifier } = sprite
@@ -65,7 +66,10 @@ export default function viteSpritesmith(options = {}) {
       fs.mkdirSync(path.dirname(cssDest), { recursive: true })
 
       // Create transparent canvas and composite images
-      const canvas = sharp({
+      const compositeOps = items.map(item => ({ input: item.file, left: item.x, top: item.y }))
+
+      // Generate PNG
+      await sharp({
         create: {
           width: packed.width,
           height: packed.height,
@@ -73,10 +77,25 @@ export default function viteSpritesmith(options = {}) {
           background: { r: 0, g: 0, b: 0, alpha: 0 }
         }
       })
-      await canvas
-        .composite(items.map(item => ({ input: item.file, left: item.x, top: item.y })))
+        .composite(compositeOps)
         .png({ quality: 100 })
         .toFile(imgDest)
+
+      // Generate AVIF for units sprite
+      if (modifier === 'units') {
+        const avifDest = imgDest.replace('.png', '.avif')
+        await sharp({
+          create: {
+            width: packed.width,
+            height: packed.height,
+            channels: 4,
+            background: { r: 0, g: 0, b: 0, alpha: 0 }
+          }
+        })
+          .composite(compositeOps)
+          .avif({ quality: 45, effort: isProduction ? 9 : 2 })
+          .toFile(avifDest)
+      }
 
       let cssContent = ''
 
@@ -84,6 +103,7 @@ export default function viteSpritesmith(options = {}) {
 
       if (modifier === 'units') {
         const columnCount = 23
+        const avifRef = cssImageRef.replace('.png', '.avif')
 
         // Find undefined.png position to use as default
         const undefinedItem = items.find(item => path.basename(item.file, '.png') === 'undefined')
@@ -96,9 +116,13 @@ export default function viteSpritesmith(options = {}) {
         }
 
         cssContent += `${iconClass}\n`
-        cssContent += `  background-image: url(${cssImageRef})\n`
+        cssContent += `  background-image: url(${avifRef})\n`
         cssContent += `  background-size: calc(100% * ${columnCount}) auto\n`
         cssContent += `  background-position: ${defaultPosition}\n\n`
+
+        // PNG fallback for browsers without AVIF support
+        cssContent += `.no-avif ${iconClass}\n`
+        cssContent += `  background-image: url(${cssImageRef})\n\n`
 
         items.forEach(item => {
           const iconName = path.basename(item.file, '.png')
@@ -224,7 +248,8 @@ export default function viteSpritesmith(options = {}) {
   return {
     name: 'vite-plugin-spritesmith',
 
-    async configResolved() {
+    async configResolved(config) {
+      isProduction = config.isProduction
       // Generate sprites before server starts
       await generateAllSprites()
     },

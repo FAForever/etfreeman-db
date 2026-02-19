@@ -12,6 +12,7 @@ src/data/projectiles.json
 src/public/img/ui.png
 src/public/img/strategic.png
 src/public/img/units.png
+src/public/img/units.avif
 
 # Generator cache
 tools/generator/cached_blueprints/
