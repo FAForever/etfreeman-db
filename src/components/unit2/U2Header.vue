@@ -29,7 +29,7 @@ const subtitleProps = computed(() => unit.General.UnitName
     <a class="u2header__img" :href="blueprintUrl" target="_blank">
       <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
       <div class="u2header__img-main-wrap">
-        <span :class="['u2header__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></span>
+        <div :class="['u2header__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></div>
       </div>
       <span :class="['u2header__img-strategic', `u2header__img-strategic_${unit.section.toLowerCase()}`, 'strategic', 'icon_strategic', `icon-${unit.faction}_${unit.strategicIcon}`]"></span>
     </a>
@@ -48,9 +48,9 @@ const subtitleProps = computed(() => unit.General.UnitName
   display: flex
   gap: 8px
   position: relative
-  --bottompadding: 0px
-  &:not(:last-child)
-    --bottompadding: 7px
+  --bottompadding: 7px
+  &:last-child
+    --bottompadding: 0px
   &__img
     align-self: center
     position: relative

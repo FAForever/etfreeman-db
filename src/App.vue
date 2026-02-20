@@ -33,7 +33,7 @@ window.addEventListener('scroll', () => {
 @use './sass/generated/strategic_sprites.sass'
 @use './sass/generated/ui_sprites.sass'
 @use './sass/modules/link.sass'
-@use './sass/modules/math_tag.sass'
+@use './sass/modules/fraction.sass'
 @use './sass/modules/tooltip.sass'
 
 body

@@ -62,7 +62,6 @@ const multipliers = [
   { text: 'Speed (in water)', value: round(physics.MaxSpeed * physics.WaterSpeedMultiplier * physics.WaterSpeedMultiplier, 2) },
   { text: 'Sniper mode speed', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier * physics.SniperModeSpeedMultiplier, 2) }
 ].filter(item => item.value)
-console.log(unit)
 
 physicsItems.splice(1, 0, ...multipliers)
 </script>

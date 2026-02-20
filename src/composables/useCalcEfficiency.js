@@ -47,7 +47,7 @@ export function useCalcEfficiency(type) {
       }
     }
 
-    return `<math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mi>${numLabel}</mi><mi>${denomLabel}</mi></mfrac></math>`
+    return `<math class="fraction" xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mi>${numLabel}</mi><mi>${denomLabel}</mi></mfrac></math>`
   }
 
   return {

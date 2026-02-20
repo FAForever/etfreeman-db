@@ -1,46 +1,31 @@
-.not-dotted
-  text-decoration: none !important  
+[data-tooltip]
+  position: relative
 
-[data-tooltip],[data-tooltip-big]
-  .underline-dotted
+  [data-tooltip-target]
     text-decoration: underline dotted
     text-underline-offset: 3px
     padding-bottom: 4px
 
-[class*="icon_"]
-  display: block
-  background-repeat: no-repeat
+  &:not(:has([data-tooltip-target]))
+    text-decoration: underline dotted
+    text-underline-offset: 4px
 
-[data-tooltip],[data-tooltip-big]
-  position: relative
-  text-decoration: underline dotted
-  text-underline-offset: 4px
   &:hover::after
     content: attr(data-tooltip)
-    line-height: 1.25
-    white-space: pre-line
-    font-size: var(--tooltipfontsize)
     position: absolute
-    top: calc(100% + 5px)
-    left: 50%
-    transform: translateX(-50%)
+    z-index: 100
     background: #333
-    color: #fff
     padding: 5px
     border-radius: 5px
-    z-index: 100
-[data-tooltip-big]:hover::after
-  content: attr(data-tooltip-big) !important
-  width: max-content
-  max-width: 250px
-  padding: 8px
-  left: 0 !important
-  transform: none !important
-  bottom: calc(100% + 5px)
-  top: initial !important
-[data-tooltip-top]:hover::after
-  top: initial !important
-  bottom: calc(100% + 5px)
-[data-tooltip-right]:hover::after
-  left: initial !important
-  right: 0 !important
+    font-size: var(--tooltipfontsize)
+    font-weight: 400
+    color: #fff
+    line-height: 1.25
+    white-space: pre-line
+
+$tooltip-mods: (big: (width: max-content, max-width: 250px, padding: 8px), top: (bottom: calc(100% + 5px)), bottom: (top: calc(100% + 5px)), right: (left: 0), left: (right: 0), center: (left: 50%, transform: translateX(-50%)))
+
+@each $name, $styles in $tooltip-mods
+  [data-tooltip-params*="#{$name}"]:hover::after
+    @each $prop, $val in $styles
+      #{$prop}: $val

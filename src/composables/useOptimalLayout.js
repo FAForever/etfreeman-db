@@ -1,15 +1,16 @@
 import { computed } from 'vue'
 
-export function useOptimalLayout(tierTree, containerWidth, itemWidth = 48, unitGap = 6, sectionGap = 10, tierGap = 14, sectionPadding = 16) {
-  const sectionScores = {
-    'Land': 1e6,
-    'Air': 1e4,
-    'Naval': 1e3,
-    'Structures - Intelligence': -10,
-    'Structures - Support': -1
-  }
+export function useOptimalLayout(tierTree, containerWidth, options = {}) {
+  const {
+    itemWidth = 48,
+    unitGap = 6,
+    sectionGap = 10,
+    tierGap = 14,
+    sectionPadding = 16,
+    sectionSortScores = {}
+  } = options
 
-  const getSectionScore = (sectionName) => sectionScores[sectionName] || 0
+  const getSectionScore = (sectionName) => sectionSortScores[sectionName] || 0
 
   const getSectionWidth = (sectionName, tierData) => {
     let totalWidth = 0

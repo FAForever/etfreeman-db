@@ -15,8 +15,7 @@
     </Resizer>
     <div class="compare__unitlist" ref="containerRef">
       <UnitRow
-        v-for="(row, rowIndex) in unitRows"
-        :key="rowIndex"
+        v-for="row in unitRows"
         :units="row"
         :showedSections="compareStore.showedSections"
       />

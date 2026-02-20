@@ -3,7 +3,7 @@
     'thumb',
     `thumb_${item.faction.toLowerCase()}`,
     { selected: item.selected, 'thumb_mini': mini, 'link-highlight': mini }
-  ]" :title="`${item.fullName} [${item.id}]`" @click="handleClick">
+  ]" :title="`${item.fullName} [${item.id}]`" @click="handleUnitClick(item, $event)">
     <div class="thumb__inner icon_units" :class="`icon-${item.id}`" v-if="!mini">
       <span :class="[
         'strategic',
@@ -21,12 +21,13 @@
 </template>
 
 <script setup>
+import { useUnitData } from '../composables/useUnitData';
+import { useDoubleClickHandler } from '../composables/useDoubleClickHandler';
+import { useRouter } from 'vue-router';
+const router = useRouter()
 const props = defineProps(['item', 'mini'])
-const emit = defineEmits(['unit-click'])
-
-function handleClick(event) {
-  emit('unit-click', props.item, event)
-}
+const { toggleUnitSelection, contenders } = useUnitData()
+const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 </script>
 
 <style lang="sass">
@@ -61,6 +62,7 @@ function handleClick(event) {
   &:not(&_mini)
     width: var(--thumbwidth,48px)
     height: var(--thumbwidth,48px)
+    will-change: box-shadow, border-color, outline-color
     .strategic
       top: 1px
       left: 1px
@@ -75,14 +77,14 @@ function handleClick(event) {
         outline: 1px solid transparent
         transition: border .1s, box-shadow .1s, outline .1s, transform .1s
         &:hover
-          border: 1px solid color.adjust($color, $alpha: .5, $lightness: 30%) !important
+          border-color: color.adjust($color, $alpha: .5, $lightness: 30%) !important
           box-shadow: inset 0 0 6px 0px color.adjust($color, $alpha: .4, $saturation: 700%, $lightness: 20%)
-          outline: 1px solid color.adjust($color, $alpha: .5, $lightness: 30%) !important
+          outline-color: color.adjust($color, $alpha: .5, $lightness: 30%) !important
         &.selected
           background-color: color.adjust($color, $alpha: 0, $lightness: 20%)
           filter: contrast(120%) brightness(120%) saturate(120%)
-          border: 1px solid color.adjust($color, $alpha: 1, $lightness: 30%) !important
-          outline: 1px solid color.adjust($color, $alpha: 1, $lightness: 30%) !important
+          border-color: color.adjust($color, $alpha: 1, $lightness: 30%) !important
+          outline-color: color.adjust($color, $alpha: 1, $lightness: 30%) !important
           box-shadow: inset 0 0 8px 0px color.adjust($color, $alpha: 1, $saturation: 700%, $lightness: 20%), 0 0 5px 2px color.adjust($color, $alpha: 1, $saturation: 700%, $lightness: 20%)
   &__inner
     width: 100%

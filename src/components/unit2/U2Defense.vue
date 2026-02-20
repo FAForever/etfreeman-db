@@ -65,7 +65,7 @@ defineExpose({ isCompact, isShown, expandScore })
       <div class="uc__section-line">
         <LineItem text="Shield regen delay:" :value="shield.ShieldRegenStartTime + 's'" />
         <LineItem text="Shield type:" :value="shieldType"
-          :tooltip="shield.PersonalBubble ? 'PersonalBubble, to be precise' : null" />
+          :tooltip="shield.PersonalBubble ? ['PersonalBubble, to be precise','bottom-left'] : null" />
       </div>
       <div class="uc__section-line" v-if="shieldType == 'Bubble'">
         <LineItem text="Shield size:" :value="shield.ShieldSize" />

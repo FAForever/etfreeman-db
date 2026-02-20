@@ -75,9 +75,9 @@ const getCycleTextFromVal = (val, weapon) => {
   const dmgPart = shorten(val[0], false).toUpperCase() + (["Defense"].includes(category) ? '&nbsp;proj.' : `&nbsp;dmg`)
 
   if (isNukeWithNullCycle || isDoTNeedingTooltip) {
-    return `<div class="underline-dotted">${dmgPart}</div>`
+    return `<div data-tooltip-target>${dmgPart}</div>`
   }
-  return dmgPart + (!isSpecialCategory && (val[1] !== null) ? `<br><div class="underline-dotted"> every&nbsp;${round(val[1], 1)}s</div>` : '')
+  return dmgPart + (!isSpecialCategory && (val[1] !== null) ? `<br><div data-tooltip-target> every&nbsp;${round(val[1], 1)}s</div>` : '')
 }
 
 const getStatText = (weapon, stat, value) => {
@@ -261,13 +261,13 @@ const shouldHighlightCollapsed = computed(() =>
 
 <template>
   <tr v-if="weapons.length == 1">
-    <td v-for="col in columns" :key="col" :class="(col === 'cycle' || col === 'cycle to shields') ? 'not-dotted' : ''" :data-tooltip-big="(col === 'cycle' || col === 'cycle to shields') ? getCycleTooltip(weapons[0], col) : (col === 'DoT' ? getDoTTooltip(weapons[0]) : undefined)" :data-tooltip-right="(col === 'cycle' || col === 'cycle to shields' || col === 'DoT') ? '' : undefined" v-html="getStatText(weapons[0], col) ?? '-'" />
+    <td v-for="col in columns" :key="col" :data-tooltip="(col === 'cycle' || col === 'cycle to shields') ? getCycleTooltip(weapons[0], col) : (col === 'DoT' ? getDoTTooltip(weapons[0]) : undefined)" data-tooltip-params="big-top-left" v-html="getStatText(weapons[0], col) ?? '-'" />
   </tr>
   <template v-else>
     <tr class="weaponGroup" :class="{ active: isExpanded, highlighted: shouldHighlightCollapsed }" @click="toggleExpanded" style="cursor: pointer">
       <template v-for="col, index in columns" :key="col" v-html="index? (getGroupStatText[col] || '-' ): null">
-        <td v-if="index" :class="(col === 'cycle' || col === 'cycle to shields') ? 'not-dotted' : ''" :data-tooltip-big="undefined" :data-tooltip-right="undefined" v-html="getGroupStatText[col] || '-'" />
-        <td v-else :data-tooltip-big="tractorTooltip">
+        <td v-if="index" v-html="getGroupStatText[col] || '-'" />
+        <td v-else :data-tooltip="tractorTooltip" data-tooltip-params="big-top-right">
           <div class="groupToggle" @click.stop="toggleExpanded">
             <div class="groupToggle__triangle" :class="{ active: isExpanded }"></div>
             <div v-html="getGroupStatText[col] || '-'"></div>
@@ -277,7 +277,7 @@ const shouldHighlightCollapsed = computed(() =>
     </tr>
     <template v-if="isExpanded">
       <tr v-for="group, index in groupedWeapons" :key="group.signature" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
-        <td v-for="col, colIndex in columns" :key="col" :class="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? 'not-dotted' : ''" :data-tooltip-big="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? getCycleTooltip(group.weapons[0], col) : (colIndex && col === 'DoT' ? getDoTTooltip(group.weapons[0]) : undefined)" :data-tooltip-right="(colIndex && (col === 'cycle' || col === 'cycle to shields' || col === 'DoT')) ? '' : undefined" v-html="colIndex ? (getStatText(group.weapons[0], col) ?? '-') : getDisplayName(group)"></td>
+        <td v-for="col, colIndex in columns" :key="col" :data-tooltip="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? getCycleTooltip(group.weapons[0], col) : (colIndex && col === 'DoT' ? getDoTTooltip(group.weapons[0]) : undefined)" data-tooltip-params="big-top-left" v-html="colIndex ? (getStatText(group.weapons[0], col) ?? '-') : getDisplayName(group)"></td>
       </tr>
     </template>
   </template>

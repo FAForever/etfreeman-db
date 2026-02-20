@@ -123,13 +123,13 @@ defineExpose({ isCompact, isShown, expandScore })
 
 const headReplacements = computed(() => ({
   'dps/mass': getMathMLHeader(),
-  'DPS to shields': `<span data-tooltip="dps to shields">DPStS</span>`,
+  'DPS to shields': `<span data-tooltip-params="top-center" data-tooltip="dps to shields">DPStS</span>`,
   'DPS to shields / mass': getMathMLHeader(true),
   'cycle to shields': `cycle<br>to shields`,
-  'muzzleVel': `<span data-tooltip="muzzle velocity">MV</span>`,
-  'randomness': `<span data-tooltip="fire randomness">RNG</span>`,
+  'muzzleVel': `<span data-tooltip-params="top-center" data-tooltip="muzzle velocity">MV</span>`,
+  'randomness': `<span data-tooltip-params="top-center" data-tooltip="fire randomness">RNG</span>`,
   'randomnessMove': `fire<br>random.<br>while<br>moving`,
-  'firingTol': `<span data-tooltip="firing tolerance">FT</span>`,
+  'firingTol': `<span data-tooltip-params="top-center" data-tooltip="firing tolerance">FT</span>`,
   'yaw': 'angle'
 }))
 

@@ -8,8 +8,7 @@
           <section v-for="[typeName, unitsByFaction] in Object.entries(section.types)" :key="typeName"
             class="home__byclass-section">
             <div v-for="faction in filterStore.effectiveVisibleFactions" :key="faction" class="home__byclass-faction">
-              <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit" :mini="true"
-                @unit-click="handleUnitClick" />
+              <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit" :mini="true" />
             </div>
             <h2 class="home__byclass-section-title">
               <a class="link-orange" @click="toggleUnitsOfTheSameType(unitsByFaction)">
@@ -25,18 +24,14 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
-import { useDoubleClickHandler } from '../composables/useDoubleClickHandler.js'
 import MasonryWall from '@yeger/vue-masonry-wall'
 import HomeTop from '../components/HomeTop.vue'
 import ThumbComponent from '../components/ThumbComponent.vue'
 import { useFilterStore } from '../stores/filterStore.js'
 
-const router = useRouter()
-const { toggleUnitSelection, contenders, typeTree, smartSelect } = useUnitData()
+const { typeTree, smartSelect } = useUnitData()
 const filterStore = useFilterStore()
-const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
 
 const sections = computed(() => {
   return Object.entries(typeTree.value).map(([name, types]) => ({ name, types }))

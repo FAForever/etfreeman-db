@@ -10,7 +10,7 @@ const { mods } = useMods(props, 'lineItem', { type: 'basic', span: '', column: '
   <div :class="['lineItem', ...mods]">
     <slot />
     <span class="lineItem-text" v-if="text" v-html="text"/>
-    <span class="lineItem-value" :data-tooltip="tooltip" v-html="value"/>
+    <span class="lineItem-value" :data-tooltip="tooltip?.[0]" :data-tooltip-params="tooltip?.[1]" v-html="value"/>
   </div>
 </template>
 

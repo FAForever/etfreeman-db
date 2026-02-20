@@ -79,13 +79,13 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
           <thead>
             <tr>
               <th></th>
-              <th v-for="n in 5" :key="n">{{ romanNumerals[n - 1] }}</th>
+              <th v-for="n in 5">{{ romanNumerals[n - 1] }}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Mass to<br> kill / lvl</td>
-              <td v-for="(mass, i) in unit.VeteranMass" :key="i">{{ formatNum(mass) }}</td>
+              <td v-for="mass in unit.VeteranMass">{{ formatNum(mass) }}</td>
             </tr>
           </tbody>
         </table>
