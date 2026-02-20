@@ -87,8 +87,10 @@ defineExpose({ isCompact, isShown, expandScore })
   --mergedopacity-merged: .2
 .u2defense
   position: relative
-  padding-top: 3px !important
-  padding-bottom: 3px !important
+  margin-top: -4px
+  --bottompadding: 3px
+  &:last-child
+    --bottompadding: 1px
   &:hover
     --mergedopacity-merged: .75
   &__merge

@@ -49,6 +49,8 @@ const subtitleProps = computed(() => unit.General.UnitName
   gap: 8px
   position: relative
   --bottompadding: 0px
+  &:not(:last-child)
+    --bottompadding: 7px
   &__img
     align-self: center
     position: relative
