@@ -18,7 +18,7 @@ const WHITELIST = {
           'MaxVisionRadius', 'MinVisionRadius'],
 
   Physics: ['MaxSpeed', 'TurnRate', 'BackUpDistance', 'Elevation',
-            'FuelUseTime', 'FuelRechargeRate', 'SniperModeSpeedMultiplier'],
+            'FuelUseTime', 'FuelRechargeRate', 'SniperModeSpeedMultiplier','WaterSpeedMultiplier','LandSpeedMultiplier','SubSpeedMultiplier'],
 
   Air: ['MaxAirspeed', 'MinAirspeed', 'TurnSpeed', 'CombatTurnSpeed'],
 

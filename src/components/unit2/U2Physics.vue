@@ -32,7 +32,7 @@ const formatTime = (val) => {
 
 const physicsItems = [
   ...(air.MaxAirspeed != null ? [{ text: 'Speed', value: `${air.MinAirspeed || 0}-${air.MaxAirspeed}` }] :
-      physics.MaxSpeed != null ? [{ text: 'Speed', value: physics.MaxSpeed }] : []),
+    physics.MaxSpeed != null ? [{ text: 'Speed', value: physics.MaxSpeed }] : []),
   { key: 'TurnRate', label: 'Turn rate', src: physics },
   { key: 'TurnSpeed', label: 'Turn speed', src: air },
   { key: 'BackUpDistance', label: 'Backup Distance', src: physics, skipZero: true },
@@ -56,12 +56,15 @@ if (physics.FuelUseTime && physics.FuelRechargeRate) {
   })
 }
 
-if (physics.SniperModeSpeedMultiplier) {
-  physicsItems.splice(1, 0, {
-    text: 'Speed in sniper mode',
-    value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier, 2)
-  })
-}
+const multipliers = [
+  { text: 'Speed (on land)', value: round(physics.MaxSpeed * physics.LandSpeedMultiplier * physics.LandSpeedMultiplier, 2) },
+  { text: 'Speed (submerged)', value: round(physics.MaxSpeed * physics.SubSpeedMultiplier * physics.SubSpeedMultiplier, 2) },
+  { text: 'Speed (in water)', value: round(physics.MaxSpeed * physics.WaterSpeedMultiplier * physics.WaterSpeedMultiplier, 2) },
+  { text: 'Speed (sniper mode)', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier * physics.SniperModeSpeedMultiplier, 2) }
+].filter(item => item.value)
+console.log(unit)
+
+physicsItems.splice(1, 0, ...multipliers)
 </script>
 
 <template>
