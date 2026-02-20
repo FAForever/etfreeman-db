@@ -1,5 +1,5 @@
 <template>
-  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }" :class="{ 'compare__unitlist-line--no-align': !compareStore.linedUpSections }">
+  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }" :class="{ 'compare__unitlist-line_no-align': !compareStore.linedUpSections }">
     <UnitComponent2
       v-for="(u, colIndex) in units"
       :ref="el => setUnitRef(el, colIndex)"
@@ -10,7 +10,7 @@
       :compactOverrides="compactOverrides"
       :linedUp="compareStore.linedUpSections"
       :style="{ gridColumn: colIndex + 1 }"
-      :class="{ 'uc--initializing': !isReady }"
+      :class="{ 'uc_initializing': !isReady }"
     />
   </div>
 </template>
@@ -113,9 +113,9 @@ watch(() => unitRefs.value.length, (len) => {
   gap: 0 var(--unitgap)
   &:not(:last-child)
     margin-bottom: var(--unitgap)
-  &--no-align
+  &_no-align
     align-items: start
 
-.uc--initializing
+.uc_initializing
   visibility: hidden
 </style>

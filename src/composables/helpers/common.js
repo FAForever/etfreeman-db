@@ -50,3 +50,17 @@ export const addBr = (str, limit = 10) => {
   }
   return res.join(' ')
 }
+
+export const throttle = (fn, ms) => {
+  let queued = false
+  let lastArgs
+  return (...args) => {
+    lastArgs = args
+    if (queued) return
+    queued = true
+    setTimeout(() => {
+      queued = false
+      fn(...lastArgs)
+    }, ms)
+  }
+}

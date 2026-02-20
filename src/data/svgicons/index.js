@@ -1,4 +1,5 @@
 export { default as aeon } from './aeon.js'
+export { default as arrow_left } from './arrow_left.js'
 export { default as buildtime } from './buildtime.js'
 export { default as clear } from './clear.js'
 export { default as cog } from './cog.js'

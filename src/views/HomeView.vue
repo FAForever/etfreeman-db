@@ -42,4 +42,5 @@ const { optimalOrder } = useOptimalLayout(tierTree, containerWidth, { sectionSor
     align-content: flex-start
     flex-grow: 1
     width: 100%
+    padding-bottom: 5px
 </style>

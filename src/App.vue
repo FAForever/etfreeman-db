@@ -35,6 +35,7 @@ window.addEventListener('scroll', () => {
 @use './sass/modules/link.sass'
 @use './sass/modules/fraction.sass'
 @use './sass/modules/tooltip.sass'
+@use './sass/modules/tool-btn.sass'
 
 body
   display: flex
@@ -45,6 +46,6 @@ body
   @include specials.thinScrollbar
 
   color: #fff
-  font-family: 'Nunito', 'Muli', Verdana, Arial, sans-serif
-  --titlefont: 'Montserrat'
+  font-family: Nunito
+  --titlefont: Montserrat
 </style>
