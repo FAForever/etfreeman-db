@@ -60,7 +60,7 @@ const multipliers = [
   { text: 'Speed (on land)', value: round(physics.MaxSpeed * physics.LandSpeedMultiplier * physics.LandSpeedMultiplier, 2) },
   { text: 'Speed (submerged)', value: round(physics.MaxSpeed * physics.SubSpeedMultiplier * physics.SubSpeedMultiplier, 2) },
   { text: 'Speed (in water)', value: round(physics.MaxSpeed * physics.WaterSpeedMultiplier * physics.WaterSpeedMultiplier, 2) },
-  { text: 'Speed (sniper mode)', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier * physics.SniperModeSpeedMultiplier, 2) }
+  { text: 'Sniper mode speed', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier * physics.SniperModeSpeedMultiplier, 2) }
 ].filter(item => item.value)
 console.log(unit)
 
