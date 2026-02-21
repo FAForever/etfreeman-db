@@ -7,7 +7,7 @@ export const useFilterStore = defineStore('filters', () => {
   const tech = ref(new Set())
   const search = ref('')
 
-  const matches = (unit) => {
+  const passesFilters = (unit) => {
     const factionMatch = !factions.value.size || factions.value.has(unit.faction)
     const kindMatch = !kinds.value.size || kinds.value.has(unit.kind)
     const techMatch = !tech.value.size || tech.value.has(unit.tech)
@@ -25,5 +25,9 @@ export const useFilterStore = defineStore('filters', () => {
 
   const effectiveVisibleFactions = computed(() => factions.value.size ? [...factions.value] : ['uef', 'cybran', 'aeon', 'seraphim', 'nomads'])
 
-  return { factions, kinds, tech, search, effectiveVisibleFactions, matches, toggleFaction, toggleKind, toggleTech }
+  return { 
+    factions, kinds, tech, search, 
+    effectiveVisibleFactions, 
+    passesFilters, toggleFaction, toggleKind, toggleTech
+  }
 })

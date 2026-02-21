@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUnitData } from '../composables/useUnitData.js'
-import { useCompareStore } from '../stores/compare.js'
+import { useCompareStore } from '../stores/compare'
 import { toPreferredView } from '../router'
 import { useUnitsPerRow } from '../composables/useUnitsPerRow.js'
 import UnitRow from '../components/UnitRow.vue'

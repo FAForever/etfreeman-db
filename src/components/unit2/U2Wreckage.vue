@@ -6,10 +6,10 @@ import LineItem from './LineItem.vue'
 import { useUnitData } from '../../composables/useUnitData'
 
 const props = defineProps(['unit', 'compactOverride'])
-const { unitDefauls } = useUnitData()
+const { unitDefaults } = useUnitData()
 
 const techMassMult = computed(() => {
-  const mults = unitDefauls.value.wreckageTechMassMults || {}
+  const mults = unitDefaults.value.wreckageTechMassMults || {}
   const techKey = 'TECH' + props.unit.tech?.charAt(1)
   return mults[techKey] || mults.EXPERIMENTAL || 1
 })
@@ -20,7 +20,7 @@ const massValue = computed(() => {
 })
 
 const massWaterValue = computed(() => {
-  return massValue.value * unitDefauls.value.wreckageWaterMult
+  return massValue.value * unitDefaults.value.wreckageWaterMult
 })
 
 const healthValue = computed(() => {

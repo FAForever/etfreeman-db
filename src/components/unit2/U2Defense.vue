@@ -7,7 +7,7 @@ import { useUnitData } from '../../composables/useUnitData';
 import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
-const { unitDefauls } = useUnitData()
+const { unitDefaults } = useUnitData()
 const { getDivisor, calculate, denominatorLabel, invert } = useCalcEfficiency('unit')
 
 const health = computed(() => unit.Defense.Health)
@@ -69,11 +69,11 @@ defineExpose({ isCompact, isShown, expandScore })
       </div>
       <div class="uc__section-line" v-if="shieldType == 'Bubble'">
         <LineItem text="Shield size:" :value="shield.ShieldSize" />
-        <LineItem text="Shield overspill:" :value="shield.ShieldSpillOverDamageMod || unitDefauls.shieldDefaultOverspill" />
+        <LineItem text="Shield overspill:" :value="shield.ShieldSpillOverDamageMod || unitDefaults.shieldDefaultOverspill" />
       </div>
       <div class="uc__section-line">
         <LineItem text="Recharge time:" span="12"
-          :value="(shield.ShieldRechargeTime || unitDefauls.shieldDefaultRechargeTime) + `s<span>, so recharges</span> ${round(shield.ShieldMaxHealth / (shield.ShieldRechargeTime || unitDefauls.shieldDefaultRechargeTime), 2)} hp/s`" />
+          :value="(shield.ShieldRechargeTime || unitDefaults.shieldDefaultRechargeTime) + `s<span>, so recharges</span> ${round(shield.ShieldMaxHealth / (shield.ShieldRechargeTime || unitDefaults.shieldDefaultRechargeTime), 2)} hp/s`" />
       </div>
     </template>
   </div>

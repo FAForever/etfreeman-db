@@ -1,13 +1,11 @@
 <script setup>
 import Icon from '../Icon.vue'
 import CostsList from '../ui/CostsList.vue'
-import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import { useCompareStore } from '../../stores/compare.js'
+import { useCompareStore } from '../../stores/compare'
 
 const { unit } = defineProps(['unit'])
 const compareStore = useCompareStore()
-const { showUnitId } = storeToRefs(compareStore)
 
 const baseUrl = import.meta.env.BASE_URL
 const blueprintUrl = computed(() => {
@@ -25,7 +23,7 @@ const subtitleProps = computed(() => unit.General.UnitName
 
 <template>
   <div class="u2header uc__section" :class="`u2header_${unit.faction}`">
-    <a v-if="showUnitId" class="u2header__unitID link link-underline" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
+    <a v-if="compareStore.toggles.showUnitId" class="u2header__unitID link link-underline" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
     <a class="u2header__img" :href="blueprintUrl" target="_blank">
       <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
       <div class="u2header__img-main-wrap">

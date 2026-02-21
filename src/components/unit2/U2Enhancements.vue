@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useCompareStore } from '../../stores/compare.js'
+import { useCompareStore } from '../../stores/compare'
 import leftArm from '@/assets/img/icons/left_arm.png'
 import back from '@/assets/img/icons/back.png'
 import rightArm from '@/assets/img/icons/right_arm.png'
@@ -22,7 +22,7 @@ const activeEnhancements = computed(() => {
 
   const byKey = Object.fromEntries(
     Object.entries(unit.Enhancements)
-      .filter(([_, e]) => !e.RemoveEnhancements && e.Name && (compareStore.enhancementsTabs ? e.Slot === activeTab.value : true))
+      .filter(([_, e]) => !e.RemoveEnhancements && e.Name && (compareStore.toggles.enhancementsTabs ? e.Slot === activeTab.value : true))
   )
 
   const deps = {}
@@ -85,7 +85,7 @@ const factionFilter = computed(() => {
 })
 
 const isShown = computed(() => !!unit.Enhancements)
-const rowSpan = computed(() => compareStore.enhancementsTabs ? 1 : 3)
+const rowSpan = computed(() => compareStore.toggles.enhancementsTabs ? 1 : 3)
 
 const slotLabels = { RCH: 'Right Arm', Back: 'Back', LCH: 'Left Arm' }
 const slotOrder = ['RCH', 'Back', 'LCH']
@@ -93,7 +93,7 @@ const slotOrder = ['RCH', 'Back', 'LCH']
 const tabByKey = Object.fromEntries(tabs.map(t => [t.key, t]))
 
 const groupedBySlot = computed(() => {
-  if (compareStore.enhancementsTabs) return null
+  if (compareStore.toggles.enhancementsTabs) return null
   const groups = { RCH: [], Back: [], LCH: [] }
   for (const { enhancement, nextIsChained } of activeEnhancements.value) {
     if (groups[enhancement.Slot]) {
@@ -107,7 +107,7 @@ defineExpose({ isShown, rowSpan })
 </script>
 
 <template>
-  <div class="u2enhancements uc__section" :class="{ 'u2enhancements_subgrid': !compareStore.enhancementsTabs }" v-if="isShown">
+  <div class="u2enhancements uc__section" :class="{ 'u2enhancements_subgrid': !compareStore.toggles.enhancementsTabs }" v-if="isShown">
     <svg style="width:0;height:0;position:absolute;">
       <defs>
         <filter :id="filterId">
@@ -116,7 +116,7 @@ defineExpose({ isShown, rowSpan })
       </defs>
     </svg>
     <!-- TAB MODE -->
-    <template v-if="compareStore.enhancementsTabs">
+    <template v-if="compareStore.toggles.enhancementsTabs">
       <h2 class="u2enhancements__title uc__section-title">
         <span>Enhancements</span>
       </h2>

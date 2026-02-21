@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useCompareStore } from '../../stores/compare.js'
+import { useCompareStore } from '../../stores/compare'
 import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 import Icon from '../Icon.vue';
 import WeaponGroup from './WeaponGroup.vue';
@@ -85,7 +85,7 @@ const weaponColumns = computed(() => {
       present.add('DPS to shields / mass')
       present.add('cycle to shields')
     }
-    if (compareStore.minorWeaponStats.MuzzleVelocity && (weapon.MuzzleVelocity != null || weapon.BeamLifetime !== undefined)) {
+    if (compareStore.toggles.minorWeaponStats.MuzzleVelocity && (weapon.MuzzleVelocity != null || weapon.BeamLifetime !== undefined)) {
       present.add('muzzleVel')
     }
     if (weapon.FiringRandomness) {
@@ -103,10 +103,10 @@ const weaponColumns = computed(() => {
   if (visibleWeapons.value.some(w => w.MaxRadius != null)) {
     present.add('range')
   }
-  if (compareStore.minorWeaponStats.FiringTolerance && visibleWeapons.value.some(w => w.FiringTolerance != null)) {
+  if (compareStore.toggles.minorWeaponStats.FiringTolerance && visibleWeapons.value.some(w => w.FiringTolerance != null)) {
     present.add('firingTol')
   }
-  if (compareStore.minorWeaponStats.Yaw && visibleWeapons.value.some(w => w.TurretYawRange != null)) {
+  if (compareStore.toggles.minorWeaponStats.Yaw && visibleWeapons.value.some(w => w.TurretYawRange != null)) {
     present.add('yaw')
   }
   if (visibleWeapons.value.some(w => w.Projectile?.Health > 0 && !['Defense','Anti-Navy'].includes(w.WeaponCategory))) {

@@ -9,10 +9,10 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const units = ref([])
   const unitsMap = ref({})
   const version = ref(null)
-  const unitDefauls = ref(null)
+  const unitDefaults = ref(null)
   const filterStore = useFilterStore()
 
-  const visibleUnits = computed(() => units.value.filter(u => filterStore.matches(u)))
+  const visibleUnits = computed(() => units.value.filter(u => filterStore.passesFilters(u)))
 
   const tierTree = computed(() => generateTierTree(visibleUnits.value))
   const typeTree = computed(() => generateTypeTree(visibleUnits.value))
@@ -22,7 +22,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const setData = (json) => {
     units.value = decorateUnits(json.units || [])
     version.value = json.version || null
-    unitDefauls.value = {
+    unitDefaults.value = {
       shieldDefaultOverspill: json.shieldDefaultOverspill,
       shieldDefaultRechargeTime: json.shieldDefaultRechargeTime,
       techToVetMultipliers: json.techToVetMultipliers || {},
@@ -31,10 +31,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
       wreckageWaterMult: json.wreckageWaterMult
     }
 
-    unitsMap.value = {}
-    for (const unit of units.value) {
-      unitsMap.value[unit.Id] = unit
-    }
+    unitsMap.value = Object.fromEntries(units.value.map(u => [u.id, u]))
   }
 
   const loadData = () => {
@@ -42,7 +39,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
     const dataUrl = window.location.search.includes('fat') ? `${baseUrl}data/index.fat.json` : `${baseUrl}data/index.json`
 
     return fetch(dataUrl)
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => setData(data))
       .catch(error => {
         console.error('Failed to load unit data:', error)
@@ -51,20 +48,8 @@ export const useUnitDataStore = defineStore('unitData', () => {
   }
 
   return {
-    version,
-    unitDefauls,
-    contenders,
-    units,
-    unitsMap,
-    tierTree,
-    typeTree,
-    visibleUnits,
-
-    setData,
-    toggleUnitSelection,
-    setUnitSelection,
-    clearSelection,
-    smartSelect,
-    loadData
+    version, units, unitsMap, unitDefaults, contenders,
+    visibleUnits, tierTree, typeTree,
+    loadData, setData, setUnitSelection, toggleUnitSelection, clearSelection, smartSelect,
   }
 })

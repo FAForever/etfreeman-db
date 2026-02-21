@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { useCompareStore } from '@/stores/compare.js'
+import { useCompareStore } from '@/stores/compare'
 
 const compareStore = useCompareStore()
 </script>

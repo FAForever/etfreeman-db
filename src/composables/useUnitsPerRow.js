@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { useCompareStore } from '@/stores/compare.js'
+import { useCompareStore } from '@/stores/compare'
 import { throttle } from './helpers/common.js'
 
 export const useUnitsPerRow = (containerRef) => {

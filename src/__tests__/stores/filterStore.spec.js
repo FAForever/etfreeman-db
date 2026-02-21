@@ -19,14 +19,14 @@ describe('Filter Store', () => {
   it('matches unit when all filters are default', () => {
     const store = useFilterStore()
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Test' }
-    expect(store.matches(unit)).toBe(true)
+    expect(store.passesFilters(unit)).toBe(true)
   })
 
   it('filters out unmatched faction', () => {
     const store = useFilterStore()
     store.toggleFaction('UEF')
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Test' }
-    expect(store.matches(unit)).toBe(false)
+    expect(store.passesFilters(unit)).toBe(false)
   })
 
   it('matches when faction is selected', () => {
@@ -35,7 +35,7 @@ describe('Filter Store', () => {
     store.toggleFaction('Aeon')
     store.toggleFaction('Seraphim')
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Test' }
-    expect(store.matches(unit)).toBe(true)
+    expect(store.passesFilters(unit)).toBe(true)
   })
 
   it('filters by kind', () => {
@@ -43,8 +43,8 @@ describe('Filter Store', () => {
     store.kinds = ['Land']
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Test' }
     const airUnit = { id: 'UEA0101', faction: 'UEF', kind: 'Air', tech: 'T1', name: 'Test' }
-    expect(store.matches(unit)).toBe(true)
-    expect(store.matches(airUnit)).toBe(false)
+    expect(store.passesFilters(unit)).toBe(true)
+    expect(store.passesFilters(airUnit)).toBe(false)
   })
 
   it('filters by tech level', () => {
@@ -52,8 +52,8 @@ describe('Filter Store', () => {
     store.tech = ['T1']
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Test' }
     const t3Unit = { id: 'UEL0303', faction: 'UEF', kind: 'Land', tech: 'T3', name: 'Test' }
-    expect(store.matches(unit)).toBe(true)
-    expect(store.matches(t3Unit)).toBe(false)
+    expect(store.passesFilters(unit)).toBe(true)
+    expect(store.passesFilters(t3Unit)).toBe(false)
   })
 
   it('filters by text search', () => {
@@ -61,22 +61,22 @@ describe('Filter Store', () => {
     store.search = 'striker'
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Striker' }
     const other = { id: 'UEL0202', faction: 'UEF', kind: 'Land', tech: 'T2', name: 'Pillar' }
-    expect(store.matches(unit)).toBe(true)
-    expect(store.matches(other)).toBe(false)
+    expect(store.passesFilters(unit)).toBe(true)
+    expect(store.passesFilters(other)).toBe(false)
   })
 
   it('text search is case insensitive', () => {
     const store = useFilterStore()
     store.search = 'STRIKER'
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Striker' }
-    expect(store.matches(unit)).toBe(true)
+    expect(store.passesFilters(unit)).toBe(true)
   })
 
   it('text search searches across multiple fields', () => {
     const store = useFilterStore()
     store.search = 'uel'
     const unit = { id: 'UEL0201', faction: 'UEF', kind: 'Land', tech: 'T1', name: 'Striker' }
-    expect(store.matches(unit)).toBe(true)
+    expect(store.passesFilters(unit)).toBe(true)
   })
 
   it('toggleFaction removes faction when present', () => {

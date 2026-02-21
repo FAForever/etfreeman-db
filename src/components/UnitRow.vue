@@ -1,5 +1,5 @@
 <template>
-  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }" :class="{ 'compare__unitlist-line_no-align': !compareStore.linedUpSections }">
+  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }" :class="{ 'compare__unitlist-line_no-align': !compareStore.toggles.linedUpSections }">
     <UnitComponent2
       v-for="(u, colIndex) in units"
       :ref="el => setUnitRef(el, colIndex)"
@@ -8,7 +8,7 @@
       :showedSections="showedSections"
       :sectionOrder="sectionOrder"
       :compactOverrides="compactOverrides"
-      :linedUp="compareStore.linedUpSections"
+      :linedUp="compareStore.toggles.linedUpSections"
       :style="{ gridColumn: colIndex + 1 }"
       :class="{ 'uc_initializing': !isReady }"
     />
@@ -17,7 +17,7 @@
 
 <script setup>
 import { computed, ref, nextTick, watch } from 'vue'
-import { useCompareStore } from '../stores/compare.js'
+import { useCompareStore } from '../stores/compare'
 import UnitComponent2 from './UnitComponent2.vue'
 
 const props = defineProps(['units', 'showedSections'])
@@ -63,7 +63,7 @@ const sectionOrder = computed(() => {
 })
 
 const compactOverrides = computed(() => {
-  if (!compareStore.linedUpSections) return {}
+  if (!compareStore.toggles.linedUpSections) return {}
   if (props.units.length <= 1) return {}
   if (unitRefs.value.some(r => !r?.sections)) return {}
 

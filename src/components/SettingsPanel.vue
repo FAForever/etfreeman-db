@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useCompareStore } from '../stores/compare.js'
+import { useCompareStore } from '../stores/compare'
 import ToggleSwitch from './ui/ToggleSwitch.vue'
 import Select from './ui/Select.vue'
 
@@ -9,7 +9,7 @@ const store = useCompareStore()
 const unitSelect = ref(null)
 const weaponSelect = ref(null)
 
-const unitModeOptions = computed(() => store.calcUnitInvert ? [
+const unitModeOptions = computed(() => store.efficiencySettings.unitInvert ? [
   { value: 'hp/mass', label: 'mass / HP' },
   { value: 'hp/energy', label: 'energy / HP' },
   { value: 'hp/BT', label: 'BuildTime / HP' }
@@ -19,7 +19,7 @@ const unitModeOptions = computed(() => store.calcUnitInvert ? [
   { value: 'hp/BT', label: 'HP / BuildTime' }
 ])
 
-const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
+const weaponModeOptions = computed(() => store.efficiencySettings.weaponInvert ? [
   { value: 'DPS/mass', label: 'mass / DPS' },
   { value: 'DPM/mass', label: 'mass / DPM' },
   { value: 'DPS/energy', label: 'energy / DPS' },
@@ -42,19 +42,19 @@ const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
       <div class="settings-panel__group-title">General</div>
       <div class="settings-panel__group-body">
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.showUnitId" />
+          <ToggleSwitch v-model="store.toggles.showUnitId" />
           <span class="panel__toggle-text">Show unit ID</span>
         </label>
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.linedUpSections" />
+          <ToggleSwitch v-model="store.toggles.linedUpSections" />
           <span class="panel__toggle-text">Line up sections</span>
         </label>
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.compactSections" />
+          <ToggleSwitch v-model="store.toggles.compactSections" />
           <span class="panel__toggle-text">Compact sections</span>
         </label>
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.enhancementsTabs" />
+          <ToggleSwitch v-model="store.toggles.enhancementsTabs" />
           <span class="panel__toggle-text">Enhancements: tabs</span>
         </label>
       </div>
@@ -63,19 +63,19 @@ const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
       <div class="settings-panel__group-title">Offense</div>
       <div class="settings-panel__group-body">
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.highlightGroupedWeapons" />
+          <ToggleSwitch v-model="store.toggles.highlightGroupedWeapons" />
           <span class="panel__toggle-text">Highlight grouped weapons</span>
         </label>
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.minorWeaponStats.MuzzleVelocity" />
+          <ToggleSwitch v-model="store.toggles.minorWeaponStats.MuzzleVelocity" />
           <span class="panel__toggle-text">Show muzzle velocity</span>
         </label>
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.minorWeaponStats.FiringTolerance" />
+          <ToggleSwitch v-model="store.toggles.minorWeaponStats.FiringTolerance" />
           <span class="panel__toggle-text">Show firing tolerance</span>
         </label>
         <label class="panel__toggle">
-          <ToggleSwitch v-model="store.minorWeaponStats.Yaw" />
+          <ToggleSwitch v-model="store.toggles.minorWeaponStats.Yaw" />
           <span class="panel__toggle-text">Show turret yaw (angle)</span>
         </label>
       </div>
@@ -84,22 +84,22 @@ const weaponModeOptions = computed(() => store.calcWeaponInvert ? [
       <div class="settings-panel__group-title">Calculations</div>
       <div class="settings-panel__group-body">
         <label class="panel__select">
-          <Select class="panel__select-select" ref="unitSelect" v-model="store.calcUnitMode" :options="unitModeOptions"
+          <Select class="panel__select-select" ref="unitSelect" v-model="store.efficiencySettings.unitMode" :options="unitModeOptions"
             size="small" />
           <div class="panel__select-toggle" :class="{ visible: unitSelect?.open }">
             <label class="panel__toggle" @mousedown.stop @click.stop @pointerdown.stop>
-              <ToggleSwitch v-model="store.calcUnitInvert" />
+              <ToggleSwitch v-model="store.efficiencySettings.unitInvert" />
               <span class="panel__toggle-text">Invert</span>
             </label>
           </div>
           <span class="panel__select-label" :class="{ 'fade-out': unitSelect?.open }">Health:</span>
         </label>
         <label class="panel__select">
-          <Select class="panel__select-select" ref="weaponSelect" v-model="store.calcWeaponMode"
+          <Select class="panel__select-select" ref="weaponSelect" v-model="store.efficiencySettings.weaponMode"
             :options="weaponModeOptions" size="small" />
           <div class="panel__select-toggle" :class="{ visible: weaponSelect?.open }">
             <label class="panel__toggle" @mousedown.stop @click.stop @pointerdown.stop>
-              <ToggleSwitch v-model="store.calcWeaponInvert" />
+              <ToggleSwitch v-model="store.efficiencySettings.weaponInvert" />
               <span class="panel__toggle-text">Invert</span>
             </label>
           </div>

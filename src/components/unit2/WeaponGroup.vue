@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { useCompareStore } from '../../stores/compare.js'
+import { useCompareStore } from '../../stores/compare'
 import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 import { addBr, round, roundIfPossible, shorten } from '../../composables/helpers/common';
 import { getDetailedCycle, getDoTBreakdown, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps2.js';
@@ -254,7 +254,7 @@ const hasTractor = weapons.some(w => w.TractorDamage)
 const tractorTooltip = hasTractor ? 'Tractor only deals damage \nonce the target is fully pulled in' : undefined
 
 const shouldHighlightCollapsed = computed(() =>
-  compareStore.highlightGroupedWeapons && !isExpanded.value && weapons.length > 1
+  compareStore.toggles.highlightGroupedWeapons && !isExpanded.value && weapons.length > 1
 )
 
 </script>

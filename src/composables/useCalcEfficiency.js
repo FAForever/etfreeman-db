@@ -1,14 +1,14 @@
 import { computed } from 'vue'
-import { useCompareStore } from '../stores/compare.js'
+import { useCompareStore } from '../stores/compare'
 
 export function useCalcEfficiency(type) {
   const store = useCompareStore()
 
   const mode = computed(() =>
-    type === 'unit' ? store.calcUnitMode : store.calcWeaponMode
+    type === 'unit' ? store.efficiencySettings.unitMode : store.efficiencySettings.weaponMode
   )
   const invert = computed(() =>
-    type === 'unit' ? store.calcUnitInvert : store.calcWeaponInvert
+    type === 'unit' ? store.efficiencySettings.unitInvert : store.efficiencySettings.weaponInvert
   )
 
   const parsed = computed(() => {

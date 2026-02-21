@@ -16,7 +16,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useCompareStore } from '../stores/compare.js'
+import { useCompareStore } from '../stores/compare'
 import U2Abilities from './unit2/U2Abilities.vue';
 import U2Defense from './unit2/U2Defense.vue';
 import U2Economy from './unit2/U2Economy.vue';
@@ -71,7 +71,7 @@ const sortedSections = computed(() => {
     .filter(s => s.show)
     .map(s => ({
       ...s,
-      compact: compareStore.compactSections ? (props.compactOverrides?.[s.key] ?? s.compact) : false
+      compact: compareStore.toggles.compactSections ? (props.compactOverrides?.[s.key] ?? s.compact) : false
     }))
     .sort((a, b) => (orderIndex[a.key] ?? 99) - (orderIndex[b.key] ?? 99))
 })
@@ -125,7 +125,7 @@ const sectionOrderIndex = computed(() => {
 const getOrder = (key) => sectionOrderIndex.value[key] ?? 99
 
 const getCompactOverride = (key) => {
-  if (!compareStore.compactSections) return false
+  if (!compareStore.toggles.compactSections) return false
   if (expandedKeys.value.has(key)) return false
   return props.compactOverrides?.[key]
 }

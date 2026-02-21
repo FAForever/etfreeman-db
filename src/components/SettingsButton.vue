@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { useCompareStore } from '@/stores/compare.js'
+import { useCompareStore } from '@/stores/compare'
 import Icon from './Icon.vue'
 
 const compareStore = useCompareStore()

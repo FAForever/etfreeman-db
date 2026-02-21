@@ -5,18 +5,18 @@ import LineItem from './LineItem.vue'
 import { useUnitData } from '../../composables/useUnitData'
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
-const { unitDefauls } = useUnitData()
+const { unitDefaults } = useUnitData()
 
 const isACU = computed(() => unit.Categories?.includes('COMMAND'))
 const isSACU = computed(() => unit.Categories?.includes('SUBCOMMANDER'))
 
 const vetMultiplier = computed(() => {
-  if (isACU.value) return unit?.VeteranMassMult || unitDefauls.value.techToVetMultipliers?.COMMAND || 2
-  if (isSACU.value) return unit?.VeteranMassMult || unitDefauls.value.techToVetMultipliers?.SUBCOMMANDER || 2
-  if (unit.tech === 'EXP') return unit?.VeteranMassMult || unitDefauls.value.techToVetMultipliers?.EXPERIMENTAL || 2
+  if (isACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.COMMAND || 2
+  if (isSACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.SUBCOMMANDER || 2
+  if (unit.tech === 'EXP') return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.EXPERIMENTAL || 2
 
   const techKey = 'TECH' + unit.tech?.charAt(1)
-  return unit?.VeteranMassMult || unitDefauls.value.techToVetMultipliers?.[techKey] || 2
+  return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.[techKey] || 2
 })
 
 const regenBuffIndex = computed(() => {
@@ -29,7 +29,7 @@ const regenBuffIndex = computed(() => {
 })
 
 const regenPerLevel = computed(() => {
-  const buffs = unitDefauls.value.veterancyRegenBuffs?.[regenBuffIndex.value]
+  const buffs = unitDefaults.value.veterancyRegenBuffs?.[regenBuffIndex.value]
   return buffs?.[0] || 0
 })
 
