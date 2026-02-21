@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 
+const maxDoubleClickDelay = 200
+
 export function useDoubleClickHandler(toggleUnitSelection, contenders, router) {
   const lastClickTime = ref(0)
   const lastClickUnit = ref(null)
-  const maxDoubleClickDelay = 200
 
   const handleUnitClick = (unit) => {
     const now = performance.now()

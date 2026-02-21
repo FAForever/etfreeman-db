@@ -1,6 +1,7 @@
 export const formatNum = (val) => {
-  const num = typeof val === 'number' ? val : (typeof val === 'string' && val.trim() && !isNaN(val) ? Number(val) : null)
-  if (num === null) return val
+  if (!val) return val
+  const num = +val
+  if (isNaN(num)) return val
   const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F')
   return parts.join('.')
@@ -8,16 +9,11 @@ export const formatNum = (val) => {
 
 export const shorten = (num, locale = true) => {
   let short, localed = locale ? formatNum(num) : (num + '')
-  if (num > 1e9 - 1) short =  num / 1e9 + 'B'
+  if (num > 1e9 - 1) short = num / 1e9 + 'B'
   else if (num > 1e6 - 1) short = num / 1e6 + 'M'
   else if (num > 999) short = num / 1000 + 'k'
   if (short && short.length < localed.length) return short
   return localed
-}
-
-export const shortenIfPossible = (val) => {
-  if (typeof val === 'number') return shorten(val)
-  return val
 }
 
 export const round = (value, decimals = 0) => {
@@ -28,12 +24,6 @@ export const round = (value, decimals = 0) => {
 export const roundIfPossible = (value, decimals) => {
   if (typeof value === 'number') return round(value, decimals)
   return value
-}
-
-export const formatTime = (seconds) => {
-  const mins = Math.floor((seconds % 3600) / 60)
-  const secs = String(Math.floor(seconds % 60)).padStart(2, '0')
-  return `${mins}:${secs}`
 }
 
 export const addBr = (str, limit = 10) => {

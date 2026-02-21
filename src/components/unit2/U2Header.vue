@@ -44,6 +44,7 @@ const subtitleProps = computed(() => unit.General.UnitName
 .u2header
   grid-column: span 2
   display: flex
+  height: fit-content
   gap: 8px
   position: relative
   --bottompadding: 7px
@@ -114,7 +115,7 @@ const subtitleProps = computed(() => unit.General.UnitName
       fill: var(--factioncolor)
   &__unitID
     position: absolute
-    width: 53px
+    min-width: 53px
     top: -5px
     right: 5px
     font-size: 12px

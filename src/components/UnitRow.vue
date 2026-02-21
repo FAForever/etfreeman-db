@@ -1,17 +1,10 @@
 <template>
-  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }" :class="{ 'compare__unitlist-line_no-align': !compareStore.toggles.linedUpSections }">
-    <UnitComponent2
-      v-for="(u, colIndex) in units"
-      :ref="el => setUnitRef(el, colIndex)"
-      :key="u.id"
-      :unit="u"
-      :showedSections="showedSections"
-      :sectionOrder="sectionOrder"
-      :compactOverrides="compactOverrides"
-      :linedUp="compareStore.toggles.linedUpSections"
-      :style="{ gridColumn: colIndex + 1 }"
-      :class="{ 'uc_initializing': !isReady }"
-    />
+  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }"
+    :class="{ 'compare__unitlist-line_no-align': !compareStore.toggles.linedUpSections }">
+    <UnitComponent2 v-for="(u, colIndex) in units" :ref="el => setUnitRef(el, colIndex)" :key="u.id" :unit="u"
+      :showedSections="showedSections" :sectionOrder="sectionOrder" :compactOverrides="compactOverrides"
+      :linedUp="compareStore.toggles.linedUpSections" :style="{ gridColumn: colIndex + 1 }"
+      :class="{ 'uc_initializing': !isReady }" />
   </div>
 </template>
 

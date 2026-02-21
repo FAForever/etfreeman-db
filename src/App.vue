@@ -1,13 +1,13 @@
 <script setup>
+import { provide } from 'vue'
 import { RouterView } from 'vue-router'
 import { useResizeWatcher } from '@/composables/useResizeWatcher'
-import { useIcons } from '@/composables/useIcons'
 import SvgSprite from '@/components/SvgSprite.vue'
 import BackgroundPicture from '@/components/app/BackgroundPicture.vue'
 import * as iconData from '@/data/svgicons/index.js'
 
 const icons = Object.values(iconData)
-useIcons(icons)
+provide('icons', Object.fromEntries(icons.map(i => [i.name, i])))
 useResizeWatcher()
 
 window.addEventListener('scroll', () => {

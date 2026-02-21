@@ -3,13 +3,9 @@ import { onMounted, onUnmounted, provide, ref } from 'vue'
 export function useResizeWatcher(mobileThreshold = 1120) {
   const isMobile = ref(false)
   const resizeFunctions = ref(new Set([() => {
-    if (window.innerWidth < mobileThreshold) {
-      document.body.classList.add('mobile')
-      isMobile.value = true
-    } else {
-      document.body.classList.remove('mobile')
-      isMobile.value = false
-    }
+    const mobile = window.innerWidth < mobileThreshold
+    document.body.classList.toggle('mobile', mobile)
+    isMobile.value = mobile
   }]))
 
   const onResize = () => resizeFunctions.value.forEach(fn => fn())

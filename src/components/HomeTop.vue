@@ -6,7 +6,7 @@ import Header from './Header.vue'
 <template>
   <div class="home__top">
     <Header />
-    <FiltersComponent :row="true" />
+    <FiltersComponent />
   </div>
 </template>
 

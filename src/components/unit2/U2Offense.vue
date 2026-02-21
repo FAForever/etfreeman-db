@@ -7,7 +7,7 @@ import WeaponGroup from './WeaponGroup.vue';
 
 const { unit, weapons, compactOverride } = defineProps(['unit', 'weapons', 'compactOverride'])
 const compareStore = useCompareStore()
-const { getMathMLHeader } = useCalcEfficiency('weapon')
+const { getFractionHTML } = useCalcEfficiency('weapon')
 
 const categoriesMap = {
   'Direct Fire': 'Direct',
@@ -122,9 +122,9 @@ const expandScore = computed(() => weaponColumns.value.length / 3 * 1.9)
 defineExpose({ isCompact, isShown, expandScore })
 
 const headReplacements = computed(() => ({
-  'dps/mass': getMathMLHeader(),
+  'dps/mass': getFractionHTML(),
   'DPS to shields': `<span data-tooltip-params="top-center" data-tooltip="dps to shields">DPStS</span>`,
-  'DPS to shields / mass': getMathMLHeader(true),
+  'DPS to shields / mass': getFractionHTML(true),
   'cycle to shields': `cycle<br>to shields`,
   'muzzleVel': `<span data-tooltip-params="top-center" data-tooltip="muzzle velocity">MV</span>`,
   'randomness': `<span data-tooltip-params="top-center" data-tooltip="fire randomness">RNG</span>`,
