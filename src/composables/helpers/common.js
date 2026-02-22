@@ -42,15 +42,26 @@ export const addBr = (str, limit = 10) => {
 }
 
 export const throttle = (fn, ms) => {
-  let queued = false
+  let lastCall = 0
+  let timeout = null
   let lastArgs
+
   return (...args) => {
     lastArgs = args
-    if (queued) return
-    queued = true
-    setTimeout(() => {
-      queued = false
-      fn(...lastArgs)
-    }, ms)
+    const now = Date.now()
+
+    if (now - lastCall >= ms) {
+      lastCall = now
+      fn(...args)
+      return
+    }
+
+    if (!timeout) {
+      timeout = setTimeout(() => {
+        timeout = null
+        lastCall = Date.now()
+        fn(...lastArgs)
+      }, ms - (now - lastCall))
+    }
   }
 }

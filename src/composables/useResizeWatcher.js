@@ -1,4 +1,5 @@
 import { onMounted, onUnmounted, provide, ref } from 'vue'
+import { throttle } from './helpers/common.js'
 
 export function useResizeWatcher(mobileThreshold = 1120) {
   const isMobile = ref(false)
@@ -8,7 +9,7 @@ export function useResizeWatcher(mobileThreshold = 1120) {
     isMobile.value = mobile
   }]))
 
-  const onResize = () => resizeFunctions.value.forEach(fn => fn())
+  const onResize = throttle(() => resizeFunctions.value.forEach(fn => fn()), 50)
   onResize()
 
   onMounted(() => window.addEventListener('resize', onResize))

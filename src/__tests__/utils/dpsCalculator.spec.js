@@ -1,7 +1,7 @@
 // DPS Calculator Tests - FA-Accurate DPS Calculation
 // Tests critical weapon DPS calculations for accuracy
 import { describe, it, expect } from 'vitest'
-import { calculateDps } from '../../stores/utils/unitDecorator/dps2.js'
+import { calculateDps } from '../../stores/utils/unitDecorator/dps/index.js'
 
 describe('DPS Calculator', () => {
   it('mantis (URL0107)', () => {

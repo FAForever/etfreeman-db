@@ -41,21 +41,6 @@ const weaponGroups = computed(() => {
     const category = getWeaponCategory(weapon)
     if (!acc[category]) acc[category] = []
     acc[category].push(weapon)
-    /*
-    if (!acc[category].rangeData[weapon.MaxRadius]) acc[category].rangeData[weapon.MaxRadius] = { dps: 0, alpha: 0, dotAlpha: 0, aoe: new Set(), dot: new Set() }
-    acc[category].rangeData[weapon.MaxRadius].dps += weapon.dps
-    if (weapon.DamageRadius) acc[category].rangeData[weapon.MaxRadius].aoe.add(weapon.DamageRadius)
-    let multiplier = weapon.ProjectileFragmentMultiplier || 1
-    if (category == 'Bomb') {
-      multiplier *= weapon.MuzzleSalvoSize || 1
-    }
-    if (weapon.DoTTime) {
-      acc[category].rangeData[weapon.MaxRadius].dot.add(round(weapon.DoTTime + 0.1, 2))
-      acc[category].rangeData[weapon.MaxRadius].dotAlpha += multiplier * (weapon.DoTPulses - 1) * (weapon.Damage || 0)
-    }
-    multiplier *= getShotsAmount(weapon) || 1
-    acc[category].rangeData[weapon.MaxRadius].alpha += multiplier * ((weapon.Damage || 0) + (weapon.InitialDamage || 0))
-    */
     return acc
   }, {}) || []
   const sortedGroups = Object.entries(groups).sort((a, b) => b[1].reduce((acc, w) => acc + w.dps, 0) - a[1].reduce((acc, w) => acc + w.dps, 0))

@@ -2,77 +2,61 @@ import { computed } from 'vue'
 
 export function useOptimalLayout(tierTree, containerWidth, options = {}) {
   const {
-    itemWidth = 48,
-    unitGap = 6,
-    sectionGap = 10,
-    tierGap = 14,
-    sectionPadding = 16,
-    sectionSortScores = {}
+    itemWidth = 48, unitGap = 6, sectionGap = 10,
+    tierGap = 14, sectionPadding = 16, sectionSortScores = {}
   } = options
 
-  const getSectionScore = (sectionName) => sectionSortScores[sectionName] || 0
+  const getSectionPriority = (name) => sectionSortScores[name] || 0
+  const getRowPriority = (row, names) => row.reduce((sum, idx) => sum + getSectionPriority(names[idx]), 0)
 
-  const getSectionWidth = (sectionName, tierData) => {
-    let totalWidth = 0
-
+  const calcSectionWidth = (tierData) => {
+    let total = 0
     for (const tier in tierData) {
-      const tierUnits = tierData[tier]
-      const factionCounts = Object.values(tierUnits).map(units => units.length)
-      const maxUnits = Math.max(...factionCounts, 0)
-      totalWidth += maxUnits * (itemWidth + unitGap) - unitGap + tierGap
+      const maxUnits = Math.max(...Object.values(tierData[tier]).map(u => u.length), 0)
+      total += maxUnits * (itemWidth + unitGap) - unitGap + tierGap
     }
-
-    return totalWidth - tierGap + sectionPadding
+    return total - tierGap + sectionPadding
   }
 
-  const enumerateSubsets = (indices, widths, maxWidth) => {
-    const subsets = []
-    const n = indices.length
+  const findAllSectionCombinationsForRow = (indexes, widths, maxWidth, mustContain = null) => {
+    const combos = []
+    const n = indexes.length
+    const mustPos = mustContain !== null ? indexes.indexOf(mustContain) : -1
+    const mustBit = mustPos >= 0 ? (1 << mustPos) : 0
 
-    for (let mask = 1; mask < (1 << n); mask++) {
-      let totalWidth = 0
-      const subset = []
+    for (let mask = mustPos >= 0 ? mustBit : 1; mask < (1 << n); mask = mustPos >= 0 ? (mask + 1) | mustBit : mask + 1) {
+      let width = 0
+      const items = []
 
       for (let i = 0; i < n; i++) {
         if (mask & (1 << i)) {
-          const w = widths[indices[i]]
-          if (totalWidth + w > maxWidth) {
-            totalWidth = Infinity
-            break
-          }
-          totalWidth += w
-          subset.push(indices[i])
+          const w = widths[indexes[i]]
+          if (width + w > maxWidth) { width = Infinity; break }
+          width += w
+          items.push(indexes[i])
         }
       }
 
-      if (totalWidth !== Infinity) {
-        subsets.push({ items: subset, width: totalWidth })
-      }
+      if (width !== Infinity) combos.push({ items, width })
     }
-
-    return subsets
+    return combos
   }
 
-  const ffdRemaining = (remainingIndices, widths, maxWidth) => {
+  const findBestArrangement = (allIndexes, widths, maxWidth, highPriorityIndexes, sectionNames) => {
     const rows = []
-    const sorted = [...remainingIndices].sort((a, b) => widths[b] - widths[a])
+    let remaining = allIndexes
+    let priorityQueue = [...highPriorityIndexes]
 
-    for (const idx of sorted) {
-      let placed = false
-      for (const row of rows) {
-        const newWidth = row.width + widths[idx]
-        if (newWidth <= maxWidth) {
-          row.items.push(idx)
-          row.width = newWidth
-          placed = true
-          break
-        }
-      }
-      if (!placed) {
-        rows.push({ items: [idx], width: widths[idx] })
-      }
+    while (remaining.length) {
+      const mustPlace = priorityQueue.shift() ?? null
+      const combos = findAllSectionCombinationsForRow(remaining, widths, maxWidth, mustPlace)
+      const best = combos.reduce((b, c) => c.width > b.width ? c : b)
+      rows.push(best.items)
+      remaining = remaining.filter(i => !best.items.includes(i))
+      priorityQueue = priorityQueue.filter(idx => !best.items.includes(idx))
     }
 
+    rows.sort((a, b) => getRowPriority(b, sectionNames) - getRowPriority(a, sectionNames))
     return rows
   }
 
@@ -81,68 +65,22 @@ export function useOptimalLayout(tierTree, containerWidth, options = {}) {
     if (!sections) return []
 
     const sectionNames = Object.keys(sections)
-    if (!sectionNames.length) return []
 
     const maxWidth = containerWidth.value + sectionGap
-    const widths = sectionNames.map(s => Math.min(getSectionWidth(s, sections[s]) + sectionGap, maxWidth))
-    const n = sectionNames.length
-    const allIndices = Array.from({ length: n }, (_, i) => i)
-    let bestSolution = null
-    let bestScore = { rows: Infinity, waste: Infinity }
+    const widths = sectionNames.map(s => Math.min(calcSectionWidth(sections[s]) + sectionGap, maxWidth))
+    const allIndexes = Array.from({ length: sectionNames.length }, (_, i) => i)
 
-    const landIdx = sectionNames.indexOf('Land')
+    const highPriorityIndexes = ['Land', 'Air', 'Naval']
+      .map(name => sectionNames.indexOf(name))
+      .filter(idx => idx > -1)
 
-    const row1Subsets = enumerateSubsets(allIndices, widths, maxWidth)
-      .filter(subset => landIdx === -1 || subset.items.includes(landIdx))
+    const bestRows = findBestArrangement(allIndexes, widths, maxWidth, highPriorityIndexes, sectionNames)
 
-    for (const row1 of row1Subsets) {
-      const remaining1 = allIndices.filter(i => !row1.items.includes(i))
+    bestRows.forEach(row => row.sort((a, b) =>
+      getSectionPriority(sectionNames[b]) - getSectionPriority(sectionNames[a]) || widths[b] - widths[a]
+    ))
 
-      if (remaining1.length === 0) {
-        bestSolution = [row1.items]
-        break
-      }
-
-      const row2Subsets = enumerateSubsets(remaining1, widths, maxWidth)
-
-      for (const row2 of row2Subsets) {
-        const remaining2 = remaining1.filter(i => !row2.items.includes(i))
-        const remainingRows = ffdRemaining(remaining2, widths, maxWidth)
-
-        const totalRows = 2 + remainingRows.length
-        const waste1 = maxWidth - row1.width
-        const waste2 = maxWidth - row2.width
-        const totalWaste = waste1 + waste2
-
-        const score = { rows: totalRows, waste: totalWaste }
-
-        if (score.rows < bestScore.rows ||
-            (score.rows === bestScore.rows && score.waste < bestScore.waste)) {
-          bestScore = score
-          bestSolution = [row1.items, row2.items, ...remainingRows.map(r => r.items)]
-        }
-      }
-    }
-
-    const sortedRows = bestSolution.map(row =>
-      [...row].sort((a, b) => widths[b] - widths[a])
-    )
-
-    sortedRows.sort((rowA, rowB) => {
-      const scoreA = rowA.reduce((sum, idx) => sum + getSectionScore(sectionNames[idx]), 0)
-      const scoreB = rowB.reduce((sum, idx) => sum + getSectionScore(sectionNames[idx]), 0)
-      return scoreB - scoreA
-    })
-
-    sortedRows.forEach(row => {
-      row.sort((a, b) => {
-        const scoreA = getSectionScore(sectionNames[a])
-        const scoreB = getSectionScore(sectionNames[b])
-        return scoreB - scoreA
-      })
-    })
-
-    return sortedRows.flat().map(i => ({ name: sectionNames[i], tiers: sections[sectionNames[i]] }))
+    return bestRows.flat().map(i => ({ name: sectionNames[i], tiers: sections[sectionNames[i]] }))
   })
 
   return { optimalOrder }

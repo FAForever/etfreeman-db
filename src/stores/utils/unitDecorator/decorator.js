@@ -1,5 +1,5 @@
 import { getTech, kindMap } from '../categorizer.js'
-import { calculateDps, calculateProjectileDamage, simulateFiringCycle, fireCycle, beamCycle, isTML, formatDotText } from './dps2.js'
+import { calculateDps, calculateProjectileDamage } from './dps/index.js'
 import { categorize } from '../categorizer.js'
 
 export const decorateUnit = (blueprint) => {
@@ -13,8 +13,6 @@ export const decorateUnit = (blueprint) => {
     rawTech: getTech(blueprint, ''),
     strategicIcon: blueprint.StrategicIconName || '',
     icon: blueprint.General?.Icon || '',
-    fireCycle,
-    beamCycle,
     selected: false
   }
 
@@ -28,10 +26,7 @@ export const decorateUnit = (blueprint) => {
       if (weapon.WeaponCategory === 'Anti Navy') weapon.WeaponCategory = 'Anti-Navy'
       weapon.dps = calculateDps(weapon, false)
       weapon.fullDamage = calculateProjectileDamage(weapon, false)
-      weapon.fullSalvoDamage = weapon.fullDamage * simulateFiringCycle(weapon).cycleProjs
-      weapon.projectileDotText = formatDotText(weapon)
       if (weapon.DamageToShields) weapon.dpsShields = calculateDps(weapon, true)
-      weapon.isTML = isTML(weapon)
     }
   }
 
