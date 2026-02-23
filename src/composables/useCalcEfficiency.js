@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useCompareStore } from '../stores/compare'
+import { useCompareStore } from '@/stores/compare'
 
 const divisorKey = { mass: 'BuildCostMass', energy: 'BuildCostEnergy', BT: 'BuildTime' }
 const toShieldLabel = (s) => ['DPS', 'DPM'].includes(s) ? `DP${s[2]}tS` : s

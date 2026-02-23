@@ -9,8 +9,8 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useCompareStore } from '../stores/compare/index.js'
-import { DEFAULT_ORDER } from '../stores/compare/sectionOrder.js'
+import { useCompareStore } from '@/stores/compare/index.js'
+import { DEFAULT_ORDER } from '@/stores/compare/sectionOrder.js'
 import * as SectionComponents from './unit/sections/index.js'
 
 const props = defineProps(['unit', 'sectionOrder', 'compactOverrides'])

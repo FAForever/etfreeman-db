@@ -35,7 +35,7 @@ defineExpose({ name: 'Transport', isCompact, isShown, expandScore })
         <span>Transport</span>
       </h2>
       <div class="uc__section-line">
-        <LineItem v-for="item in transportItems" :key="item.text" :text="item.text + ':'" :value="item.value" />
+        <LineItem v-for="item in transportItems" :text="item.text + ':'" :value="item.value" />
       </div>
     </div>
   </div>

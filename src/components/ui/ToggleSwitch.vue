@@ -1,16 +1,10 @@
 <script setup>
-defineProps({
-  modelValue: Boolean
-})
-
-const emit = defineEmits(['update:modelValue'])
-
-const toggle = (e) => emit('update:modelValue', e.target.checked)
+const modelValue = defineModel()
 </script>
 
 <template>
   <label class="toggle-switch">
-    <input type="checkbox" :checked="modelValue" @change="toggle" />
+    <input type="checkbox" v-model="modelValue" />
     <span class="toggle-slider"></span>
   </label>
 </template>

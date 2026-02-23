@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useCompareStore } from '../stores/compare'
+import { useCompareStore } from '@/stores/compare'
 import ToggleSwitch from './ui/ToggleSwitch.vue'
 import Select from './ui/Select.vue'
 

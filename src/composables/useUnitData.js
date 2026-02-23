@@ -1,5 +1,5 @@
 import { storeToRefs } from 'pinia'
-import { useUnitDataStore } from '../stores/unitData.js'
+import { useUnitDataStore } from '@/stores/unitData.js'
 
 let data
 

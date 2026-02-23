@@ -43,9 +43,9 @@ defineExpose({ name: 'Economy', isCompact, isShown, expandScore })
     <div class="uc__section-query">
       <h2 class="uc__section-title">Economy</h2>
       <div class="uc__section-line">
-        <LineItem v-for="item in economyItems" :key="item.text" :text="item.text + ':'" :value="formatNum(item.value)" />
+        <LineItem v-for="item in economyItems" :text="item.text + ':'" :value="formatNum(item.value)" />
       </div>
-      <UProjectile v-for="(proj, i) in projectiles" :key="i" :projectile="proj" />
+      <UProjectile v-for="proj in projectiles" :projectile="proj" />
     </div>
   </div>
 </template>

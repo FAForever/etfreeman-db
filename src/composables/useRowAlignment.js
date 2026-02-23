@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { DEFAULT_ORDER } from '../stores/compare/sectionOrder.js'
+import { DEFAULT_ORDER } from '@/stores/compare/sectionOrder.js'
 
 export const EXPAND_SCORE_THRESHOLD = 1.9
 const ORDER_INDEX = Object.fromEntries(DEFAULT_ORDER.map((k, i) => [k, i]))

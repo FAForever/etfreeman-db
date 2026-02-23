@@ -8,9 +8,9 @@
 
 <script setup>
 import { ref, toRef } from 'vue'
-import { useCompareStore } from '../stores/compare'
-import { useRowAlignment } from '../composables/useRowAlignment.js'
-import UnitComponent from './UnitComponent.vue'
+import { useCompareStore } from '@/stores/compare'
+import { useRowAlignment } from '@/composables/useRowAlignment.js'
+import UnitComponent from '../UnitComponent.vue'
 
 const props = defineProps(['units'])
 const compareStore = useCompareStore()

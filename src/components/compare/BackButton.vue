@@ -6,7 +6,7 @@
 
 <script setup>
 import { toPreferredView } from '@/router'
-import Icon from './Icon.vue'
+import Icon from '../Icon.vue'
 </script>
 
 <style lang="sass">

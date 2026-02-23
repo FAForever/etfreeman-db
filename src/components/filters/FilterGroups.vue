@@ -16,7 +16,7 @@ const groups = computed(() => [
 <template>
   <div class="filterGroups">
     <div class="filterGroups__row" v-for="group in groups" :key="group.items[0]">
-      <a v-for="item in group.items" :key="item" :title="item" @click.prevent="group.toggle(item)"
+      <a v-for="item in group.items" :title="item" @click.prevent="group.toggle(item)"
         :class="['icon_ui', `icon-${item}`, { active: group.active.has(item) }]"></a>
     </div>
   </div>

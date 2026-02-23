@@ -36,7 +36,7 @@ defineExpose({ name: 'Intel', isCompact, isShown, expandScore })
     <div class="uc__section-query">
       <h2 class="uc__section-title">Intel</h2>
       <div class="uc__section-line">
-        <LineItem v-for="item in intelItems" :key="item.text" :text="item.text + ':'" :value="item.value" />
+        <LineItem v-for="item in intelItems" :text="item.text + ':'" :value="item.value" />
       </div>
     </div>
   </div>

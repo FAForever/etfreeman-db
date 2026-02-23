@@ -13,7 +13,7 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { useUnitData } from '../composables/useUnitData.js'
+import { useUnitData } from '@/composables/useUnitData.js'
 import { inject } from 'vue'
 
 const isMobile = inject('isMobile')

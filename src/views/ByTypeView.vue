@@ -11,7 +11,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useUnitData } from '../composables/useUnitData.js'
+import { useUnitData } from '@/composables/useUnitData.js'
 import MasonryWall from '@yeger/vue-masonry-wall'
 import HomeTop from '../components/HomeTop.vue'
 import ByTypeSection from '../components/bytypeview/ByTypeSection.vue'

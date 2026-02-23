@@ -1,9 +1,9 @@
 <script setup>
 import { ref, inject, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUnitData } from '../composables/useUnitData.js'
-import { useOptimalLayout } from '../composables/useOptimalLayout.js'
-import { useContainerWidth } from '../composables/useContainerWidth.js'
+import { useUnitData } from '@/composables/useUnitData.js'
+import { useOptimalLayout } from '@/composables/useOptimalLayout.js'
+import { useContainerWidth } from '@/composables/useContainerWidth.js'
 import { sectionSortScores } from '../components/homeview/config.js'
 import HomeTop from '../components/HomeTop.vue'
 import HomeSection from '../components/homeview/HomeSection.vue'

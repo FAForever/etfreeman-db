@@ -1,33 +1,25 @@
 <template>
-  <a :class="[
-    'thumb',
-    `thumb_${item.faction.toLowerCase()}`,
-    { selected: item.selected, 'thumb_mini': mini, 'link-highlight': mini }
-  ]" :title="`${item.fullName} [${item.id}]`" @click="handleUnitClick(item, $event)">
-    <div class="thumb__inner icon_units" :class="`icon-${item.id}`" v-if="!mini">
-      <span :class="[
-        'strategic',
-        'icon_strategic',
-        `icon-${item.faction}_${item.strategicIcon}`
-      ]" />
-      <span v-if="item?.fullName?.endsWith('HQ')" :class="['thumb__HQ', `thumb__HQ_-${item.faction}`]">HQ</span>
+  <a :class="thumbClasses" @click="handleUnitClick(item, $event)" :title="item.fullName">
+    <div :class="['thumb__inner', 'icon_units', `icon-${item.id}`]">
+      <span :class="['strategic', 'icon_strategic', `icon-${item.faction}_${item.strategicIcon}`]" />
+      <span v-if="!mini && item.fullName?.endsWith('HQ')" class="thumb__HQ">HQ</span>
     </div>
-    <span v-else :class="[
-      'strategic',
-      'icon_strategic',
-      `icon-${item.faction}_${item.strategicIcon}`
-    ]"/>
   </a>
 </template>
 
 <script setup>
-import { useUnitData } from '../composables/useUnitData';
-import { useDoubleClickHandler } from '../composables/useDoubleClickHandler';
+import { useUnitData } from '@/composables/useUnitData';
+import { useDoubleClickHandler } from '@/composables/useDoubleClickHandler';
 import { useRouter } from 'vue-router';
+import { computed } from 'vue';
 const router = useRouter()
 const props = defineProps(['item', 'mini'])
 const { toggleUnitSelection, contenders } = useUnitData()
 const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
+const thumbClasses = computed(() => [
+  'thumb', `thumb_${props.item.faction.toLowerCase()}`, { selected: props.item.selected },
+  ...(props.mini ? ['thumb_mini', 'link-highlight'] : [])
+])
 </script>
 
 <style lang="sass">
@@ -56,7 +48,7 @@ const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contender
     z-index: 199
     color: white
     display: block
-    text-shadow: -2px -2px 0 #000, 0   -2px 0 #000, 2px -2px 0 #000, 2px  0   0 #000, 2px  2px 0 #000, 0    2px 0 #000, -2px  2px 0 #000,  -2px  0   0 #000
+    text-shadow: -2px -2px 0 #000, 0 -2px 0 #000, 2px -2px 0 #000, 2px 0 0 #000, 2px 2px 0 #000, 0 2px 0 #000, -2px 2px 0 #000, -2px  0 0 #000
     border-radius: 5px
 
   &:not(&_mini)
@@ -99,4 +91,6 @@ const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contender
 
     .strategic
       position: static
+  &_mini &__inner
+    display: contents
 </style>

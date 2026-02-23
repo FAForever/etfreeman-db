@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useFilterStore } from '../stores/filterStore.js'
+import { useFilterStore } from '@/stores/filterStore.js'
 import Input from './ui/Input.vue'
 import FiltersHeader from './filters/FiltersHeader.vue'
 import FilterGroups from './filters/FilterGroups.vue'
