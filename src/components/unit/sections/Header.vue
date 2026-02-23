@@ -21,11 +21,8 @@ const subtitleProps = computed(() => unit.General.UnitName
 )
 
 const isShown = computed(() => compareStore.showedSections['Header'])
-const isCompact = computed(() => false)
-const expandScore = computed(() => 0)
-const rowSpan = computed(() => 1)
 
-defineExpose({ name: 'Header', isShown, isCompact, expandScore, rowSpan })
+defineExpose({ name: 'Header', isShown, isCompact: false })
 </script>
 
 <template>
@@ -49,7 +46,6 @@ defineExpose({ name: 'Header', isShown, isCompact, expandScore, rowSpan })
 
 <style lang="sass">
 .uheader
-  grid-column: span 2
   display: flex
   height: fit-content
   gap: 8px

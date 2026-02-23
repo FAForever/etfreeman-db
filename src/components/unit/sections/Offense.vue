@@ -3,6 +3,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useCompareStore } from '@/stores/compare'
 import { useCalcEfficiency } from '@/composables/useCalcEfficiency';
 import WeaponGroup from '../helpers/WeaponGroup.vue';
+import { EXPAND_SCORE_THRESHOLD } from '../../../composables/useRowAlignment';
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const weapons = unit.Weapon
@@ -102,7 +103,7 @@ const weaponColumns = computed(() => {
 
 const isCompact = computed(() => weaponColumns.value.length <= 3)
 const isShown = computed(() => compareStore.showedSections['Offense'] && Object.keys(weaponGroups.value).length > 0)
-const expandScore = computed(() => weaponColumns.value.length / 3 * 1.9)
+const expandScore = computed(() => weaponColumns.value.length / 3 * EXPAND_SCORE_THRESHOLD)
 
 defineExpose({ name: 'Offense', isCompact, isShown, expandScore })
 

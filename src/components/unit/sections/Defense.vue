@@ -50,7 +50,7 @@ const rechargeText = computed(() => `${rechargeTime.value}s<span>, so recharges<
 
 const isShown = computed(() => showedSections['Defense'])
 
-defineExpose({ name: 'Defense', isCompact: false, isShown, expandScore: 0 })
+defineExpose({ name: 'Defense', isCompact: false, isShown })
 </script>
 
 <template>

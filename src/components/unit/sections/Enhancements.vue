@@ -1,6 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useCompareStore } from '@/stores/compare'
+import { useEnhancementSort } from '@/composables/useEnhancementSort'
+import { useFactionColorFilter } from '@/composables/useFactionColorFilter'
 import leftArm from '@/assets/img/icons/left_arm.png'
 import back from '@/assets/img/icons/back.png'
 import rightArm from '@/assets/img/icons/right_arm.png'
@@ -11,168 +13,55 @@ const compareStore = useCompareStore()
 
 const activeTab = ref('RCH')
 
-const tabs = [
-  { key: 'RCH', icon: rightArm },
-  { key: 'Back', icon: back },
-  { key: 'LCH', icon: leftArm },
+const SLOTS = [
+  { key: 'RCH', icon: rightArm, label: 'Right Arm' },
+  { key: 'Back', icon: back, label: 'Back' },
+  { key: 'LCH', icon: leftArm, label: 'Left Arm' }
 ]
 
-const activeEnhancements = computed(() => {
-  if (!unit.Enhancements) return []
+const { sortedEnhancements: activeEnhancements, groupedBySlot } = useEnhancementSort(
+  unit.Enhancements, SLOTS,
+  computed(() => compareStore.toggles.enhancementsTabs ? activeTab.value : null)
+)
 
-  const byKey = Object.fromEntries(
-    Object.entries(unit.Enhancements)
-      .filter(([_, e]) => !e.RemoveEnhancements && e.Name && (compareStore.toggles.enhancementsTabs ? e.Slot === activeTab.value : true))
-  )
-
-  const deps = {}
-  for (const [key, e] of Object.entries(byKey)) {
-    if (e.Prerequisite && byKey[e.Prerequisite]) {
-      (deps[e.Prerequisite] ??= []).push(key)
-    }
-  }
-
-  const roots = Object.keys(byKey).filter(key => !byKey[key].Prerequisite || !byKey[byKey[key].Prerequisite])
-
-  const sorted = []
-  const seen = new Set()
-
-  const visit = (key) => {
-    if (seen.has(key)) return
-    seen.add(key)
-
-    const e = byKey[key]
-    if (e.Prerequisite && byKey[e.Prerequisite]) {
-      visit(e.Prerequisite)
-    }
-
-    sorted.push({ enhancement: e, key })
-
-    for (const dep of deps[key] || []) {
-      visit(dep)
-    }
-  }
-
-  for (const root of roots) {
-    visit(root)
-  }
-
-  return sorted.map(({ enhancement, key }) => ({
-    enhancement,
-    nextIsChained: deps[key]?.length > 0
-  }))
-})
-
-const colorMatrix = computed(() => {
-  switch (unit.faction?.toLowerCase()) {
-    case 'uef': return `${200/255} 0 0 0 0  ${230/255} 0 0 0 0  ${255/255} 0 0 0 0  0 0 0 1 0`
-    case 'cybran': return `${255/255} 0 0 0 0  ${150/255} 0 0 0 0  ${150/255} 0 0 0 0  0 0 0 1 0`
-    case 'aeon': return `${210/255} 0 0 0 0  ${250/255} 0 0 0 0  ${210/255} 0 0 0 0  0 0 0 1 0`
-    case 'seraphim': return `${255/255} 0 0 0 0  ${230/255} 0 0 0 0  ${205/255} 0 0 0 0  0 0 0 1 0`
-    case 'nomads': return `${255/255} 0 0 0 0  ${80/255} 0 0 0 0  ${0/255} 0 0 0 0  0 0 0 1 0`
-    default: return '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'
-  }
-})
-
-const filterId = computed(() => `colorTint-${unit.id}`)
-
-const factionFilter = computed(() => {
-  const base = `url(#${filterId.value})`
-  switch (unit.faction?.toLowerCase()) {
-    case 'nomads': return `${base} saturate(70%) brightness(150%)`
-    default: return `${base} saturate(500%) `
-  }
-})
+const { factionFilter } = useFactionColorFilter(() => unit.faction)
 
 const isShown = computed(() => compareStore.showedSections['Enhancements'] && !!unit.Enhancements)
 const rowSpan = computed(() => compareStore.toggles.enhancementsTabs ? 1 : 3)
+const useTabs = computed(() => compareStore.toggles.enhancementsTabs)
 
-const slotLabels = { RCH: 'Right Arm', Back: 'Back', LCH: 'Left Arm' }
-const slotOrder = ['RCH', 'Back', 'LCH']
+const displaySlots = computed(() => SLOTS.filter(s => groupedBySlot.value[s.key]?.length))
 
-const tabByKey = Object.fromEntries(tabs.map(t => [t.key, t]))
-
-const groupedBySlot = computed(() => {
-  if (compareStore.toggles.enhancementsTabs) return null
-  const groups = { RCH: [], Back: [], LCH: [] }
-  for (const { enhancement, nextIsChained } of activeEnhancements.value) {
-    if (groups[enhancement.Slot]) {
-      groups[enhancement.Slot].push({ enhancement, nextIsChained })
-    }
-  }
-  return groups
-})
-
-const isCompact = computed(() => false)
-const expandScore = computed(() => 0)
-
-defineExpose({ name: 'Enhancements', isShown, isCompact, expandScore, rowSpan })
+defineExpose({ name: 'Enhancements', isShown, isCompact: false, rowSpan })
 </script>
 
 <template>
-  <div class="uenhancements uc__section" :class="{ 'uenhancements_subgrid': !compareStore.toggles.enhancementsTabs }" v-if="isShown">
-    <svg style="width:0;height:0;position:absolute;">
-      <defs>
-        <filter :id="filterId">
-          <feColorMatrix type="matrix" :values="colorMatrix"/>
-        </filter>
-      </defs>
-    </svg>
-    <!-- TAB MODE -->
-    <template v-if="compareStore.toggles.enhancementsTabs">
-      <h2 class="uenhancements__title uc__section-title">
-        <span>Enhancements</span>
-      </h2>
+  <div class="uenhancements uc__section" :class="{ 'uenhancements_subgrid': !useTabs }"
+    v-if="isShown" :style="{ '--factionFilter': factionFilter }">
+    <template v-if="useTabs">
+      <h2 class="uenhancements__title uc__section-title">Enhancements</h2>
       <div class="uenhancements__tabs">
-        <button
-          v-for="tab in tabs"
-          :key="tab.key"
-          :class="['uenhancements__tab', { active: activeTab === tab.key }]"
-          @click="activeTab = tab.key"
-        >
-          <img :src="tab.icon" :style="{ '--factionFilter': activeTab === tab.key ? factionFilter : 'none' }">
+        <button v-for="{ key, icon } in SLOTS" :class="['uenhancements__tab', { active: activeTab === key }]"
+          @click="activeTab = key">
+          <img :src="icon">
         </button>
       </div>
       <div class="uenhancements__content">
-        <UEnhancement
-          v-for="({ enhancement, nextIsChained }, index) in activeEnhancements"
-          :key="enhancement.Name + ' :: ' + index"
-          :enhancement="enhancement"
-          :nextIsChained="nextIsChained"
-        />
+        <UEnhancement v-for="{ enhancement, hasDependents } in activeEnhancements"
+          :enhancement="enhancement" :hasDependents="hasDependents" />
       </div>
     </template>
 
-    <!-- NO-TAB MODE: nested subgrid -->
     <template v-else>
-      <div class="uenhancements__row">
-        <h2 class="uenhancements__title uc__section-title">Enhancements</h2>
-        <div class="uenhancements__slot">
-          <div v-if="groupedBySlot[slotOrder[0]]?.length" class="uenhancements__slot-header">
-            <img :src="tabByKey[slotOrder[0]]?.icon" :style="{ '--factionFilter': factionFilter }">
-            <span>{{ slotLabels[slotOrder[0]] }}</span>
-          </div>
-          <UEnhancement
-            v-for="({ enhancement, nextIsChained }, index) in groupedBySlot[slotOrder[0]]"
-            :key="enhancement.Name + ' :: ' + index"
-            :enhancement="enhancement"
-            :nextIsChained="nextIsChained"
-            type="calm"
-          />
+      <div v-for="(slot, index) in displaySlots" :style="{ gridRow: index + 1 }"
+        class="uenhancements__row uenhancements__slot">
+        <h2 v-if="!index" class="uenhancements__title uc__section-title">Enhancements</h2>
+        <div class="uenhancements__slot-header">
+          <img :src="slot.icon">
+          <span>{{ slot.label }}</span>
         </div>
-      </div>
-      <div v-for="(slot, index) in slotOrder.slice(1)" :key="slot" class="uenhancements__slot" :style="{ gridRow: index + 2 }">
-        <div v-if="groupedBySlot[slot]?.length" class="uenhancements__slot-header">
-          <img :src="tabByKey[slot]?.icon" :style="{ '--factionFilter': factionFilter }">
-          <span>{{ slotLabels[slot] }}</span>
-        </div>
-        <UEnhancement
-          v-for="({ enhancement, nextIsChained }, index) in groupedBySlot[slot]"
-          :key="enhancement.Name + ' :: ' + index"
-          :enhancement="enhancement"
-          :nextIsChained="nextIsChained"
-          type="calm"
-        />
+        <UEnhancement v-for="{ enhancement, hasDependents } in groupedBySlot[slot.key]"
+          :enhancement="enhancement" :hasDependents="hasDependents" type="calm" />
       </div>
     </template>
   </div>

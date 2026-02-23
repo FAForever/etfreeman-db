@@ -1,75 +1,41 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useMods } from '@/composables/useMods.js'
+import { useClickOutside } from '@/composables/useClickOutside.js'
 
-const props = defineProps({
-  modelValue: [String, Number],
-  options: { type: Array, default: () => [] },
-  placeholder: { type: String, default: 'Select...' },
-  disabled: Boolean,
-  size: String
-})
+const props = defineProps(['options', 'placeholder', 'disabled', 'size'])
+const modelValue = defineModel()
 
 const { mods } = useMods(props, 'select', { size: null })
-
-const emit = defineEmits(['update:modelValue'])
-
 const open = ref(false)
 const selectRef = ref(null)
 
-const normalizedOptions = computed(() =>
-  props.options.map(opt =>
-    typeof opt === 'object' ? opt : { value: opt, label: String(opt) }
-  )
+useClickOutside(selectRef, () => open.value = false)
+
+const normalized = computed(() =>
+  props.options.map(o => typeof o === 'object' ? o : { value: o, label: String(o) })
 )
 
-const selectedLabel = computed(() => {
-  const found = normalizedOptions.value.find(o => o.value === props.modelValue)
-  return found?.label ?? ''
-})
+const selected = computed(() =>
+  normalized.value.find(o => o.value === modelValue.value)
+)
 
-const toggle = () => {
-  if (!props.disabled) open.value = !open.value
-}
-
-const select = (opt) => {
-  emit('update:modelValue', opt.value)
-  open.value = false
-}
-
-const close = (e) => {
-  if (selectRef.value && !selectRef.value.contains(e.target)) {
-    open.value = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', close))
-onUnmounted(() => document.removeEventListener('click', close))
+const toggle = () => !props.disabled && (open.value = !open.value)
+const select = opt => (modelValue.value = opt.value, open.value = false)
 
 defineExpose({ open })
 </script>
 
 <template>
   <div class="select" :class="mods" ref="selectRef">
-    <button
-      type="button"
-      class="select-trigger"
-      :class="{ open, disabled }"
-      @click="toggle"
-      :disabled="disabled"
-    >
-      <span class="select-value" :class="{ placeholder: !selectedLabel }">
-        {{ selectedLabel || placeholder }}
+    <button type="button" class="select-trigger" :class="{ open }" :disabled @click="toggle">
+      <span class="select-value" :class="{ placeholder: !selected }">
+        {{ selected?.label || props.placeholder }}
       </span>
       <span class="select-arrow">▼</span>
     </button>
     <ul class="select-dropdown" v-show="open">
-      <li
-        v-for="opt in normalizedOptions"
-        :key="opt.value"
-        :class="{ selected: opt.value === modelValue }"
-        @mousedown.stop.prevent="select(opt)"
-      >
+      <li v-for="opt in normalized" :class="{ selected: opt.value === modelValue }" @mousedown.stop.prevent="select(opt)">
         {{ opt.label }}
       </li>
     </ul>
@@ -115,7 +81,7 @@ defineExpose({ open })
   &.open .select-arrow
     transform: rotate(180deg)
 
-  &.disabled
+  &:disabled
     opacity: 0.3
     cursor: not-allowed
 

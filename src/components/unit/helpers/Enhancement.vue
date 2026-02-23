@@ -5,7 +5,7 @@ import { useMods } from '@/composables/useMods.js'
 import CostsList from '@/components/ui/CostsList.vue'
 import LineItem from '../helpers/LineItem.vue'
 
-const props = defineProps(['enhancement', 'nextIsChained', 'type'])
+const props = defineProps(['enhancement', 'hasDependents', 'type'])
 const { mods } = useMods(props, 'uenhancement', { type: null })
 
 const stats = computed(() => {
@@ -39,7 +39,7 @@ const hasStats = computed(() => stats.value.length > 0)
 </script>
 
 <template>
-  <div class="uenhancement" :class="[mods, { 'uenhancement_chained': nextIsChained, 'uenhancement_has-stats': hasStats }]">
+  <div class="uenhancement" :class="[mods, { 'uenhancement_chained': hasDependents, 'uenhancement_has-stats': hasStats }]">
     <div class="uenhancement__heading">
       <span class="uenhancement__title">{{ enhancement.Name }}</span>
       <CostsList :item="enhancement" :size="14" />

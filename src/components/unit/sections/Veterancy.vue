@@ -4,6 +4,7 @@ import { round, formatNum } from '@/composables/helpers/common'
 import LineItem from '../helpers/LineItem.vue'
 import { useUnitData } from '@/composables/useUnitData'
 import { useCompareStore } from '@/stores/compare'
+import { EXPAND_SCORE_THRESHOLD } from '../../../composables/useRowAlignment'
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const { unitDefaults } = useUnitData()
@@ -16,7 +17,7 @@ const vetMultiplier = computed(() => {
   if (isACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.COMMAND
   if (isSACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.SUBCOMMANDER
   if (unit.tech === 'EXP') return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.EXPERIMENTAL
-  const techKey = unit.tech.replace('T','TECH')
+  const techKey = unit.tech.replace('T', 'TECH')
   return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.[techKey]
 })
 
@@ -40,58 +41,46 @@ const standardMassPerLevel = computed(() => {
   return vetMultiplier.value * (unit.Economy?.BuildCostMass || 1)
 })
 
-const showMassLine = computed(() => {
-  return !unit.VeteranMass && standardMassPerLevel.value > 0
-})
-
-const isCompact = computed(() => !unit.VeteranMass)
-const expandScore = computed(() => unit.VeteranMass ? 5 : 1)
 
 const canGetVeterancy = computed(() =>
-  unit.Weapon?.some(w =>
-    !w.FireOnDeath && !['Teleport', 'Kamikaze', 'Death'].includes(w.WeaponCategory) && !(w.Label == "DeathWeapon") && (w.Damage || w.NukeInnerRingDamage)
-  )
+unit.Weapon?.some(w =>
+!w.FireOnDeath && !['Kamikaze', 'Death'].includes(w.WeaponCategory) && !(w.Label == "DeathWeapon") && (w.Damage || w.NukeInnerRingDamage)
 )
+)
+const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
+
+const isCompact = computed(() => !unit.VeteranMass)
+const expandScore = computed(() => unit.VeteranMass ? EXPAND_SCORE_THRESHOLD : 1)
 const isShown = computed(() => showedSections['Veterancy'] && canGetVeterancy.value && !!unit.Defense)
 
 defineExpose({ name: 'Veterancy', isCompact, isShown, expandScore })
 
-const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 </script>
 
 <template>
   <div class="uveterancy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <h2 class="uc__section-title uveterancy__header">Veterancy</h2>
-    <template v-if="!unit.VeteranMass">
-      <div class="uc__section-line">
-        <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
-        <LineItem text="Regen / lvl:" :value="'+' +regenPerLevel + '/s'" v-if="regenPerLevel" />
-        <LineItem text="Mass to kill / lvl:" :value="formatNum(standardMassPerLevel)" v-if="showMassLine" />
-      </div>
-    </template>
-
-    <template v-else>
-      <div class="uc__section-line">
-        <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
-        <LineItem text="Regen / lvl:" :value="'+' + regenPerLevel + '/s'" v-if="regenPerLevel" />
-      </div>
-      <div class="uveterancy__table-wrap">
-        <table class="uveterancy__table">
-          <thead>
-            <tr>
-              <th></th>
-              <th v-for="n in 5">{{ romanNumerals[n - 1] }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Mass to<br> kill / lvl</td>
-              <td v-for="mass in unit.VeteranMass">{{ formatNum(mass) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </template>
+    <div class="uc__section-line">
+      <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
+      <LineItem text="Regen / lvl:" :value="'+' + regenPerLevel + '/s'" v-if="regenPerLevel" />
+      <LineItem text="Mass to kill / lvl:" :value="formatNum(standardMassPerLevel)" v-if="standardMassPerLevel" />
+    </div>
+    <div class="uveterancy__table-wrap" v-if="unit.VeteranMass">
+      <table class="uveterancy__table">
+        <thead>
+          <tr>
+            <th></th>
+            <th v-for="n in romanNumerals">{{ n }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mass to<br> kill / lvl</td>
+            <td v-for="mass in unit.VeteranMass">{{ formatNum(mass) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 

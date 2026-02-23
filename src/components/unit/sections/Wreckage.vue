@@ -5,19 +5,19 @@ import LineItem from '../helpers/LineItem.vue'
 import { useUnitData } from '@/composables/useUnitData'
 import { useCompareStore } from '@/stores/compare'
 
-const props = defineProps(['unit', 'compactOverride'])
+const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const { unitDefaults } = useUnitData()
 const { showedSections } = useCompareStore()
 
 const techMassMult = computed(() => {
   const mults = unitDefaults.value.wreckageTechMassMults || {}
-  const techKey = 'TECH' + props.unit.tech?.charAt(1)
+  const techKey = 'TECH' + unit.tech?.charAt(1)
   return mults[techKey] || mults.EXPERIMENTAL || 1
 })
 
 const massValue = computed(() => {
-  const mult = props.unit.Wreckage?.MassMult || 0
-  return (props.unit.Economy?.BuildCostMass || 0) * mult * techMassMult.value
+  const mult = unit.Wreckage?.MassMult || 0
+  return (unit.Economy?.BuildCostMass || 0) * mult * techMassMult.value
 })
 
 const massWaterValue = computed(() => {
@@ -25,24 +25,22 @@ const massWaterValue = computed(() => {
 })
 
 const healthValue = computed(() => {
-  const mult = props.unit.Wreckage?.HealthMult || 0
-  return props.unit.Defense.Health * mult
+  const mult = unit.Wreckage?.HealthMult || 0
+  return unit.Defense.Health * mult
 })
 
-const canBeOnLand = computed(()=>props.unit.General.Icon != 'sea')
+const canBeOnLand = computed(()=>unit.General.Icon != 'sea')
 const canBeInWater = computed(()=>{
-  return !(props.unit.General.Icon == 'land' && props.unit.Categories.includes('STRUCTURE'))
+  return !(unit.General.Icon == 'land' && unit.Categories.includes('STRUCTURE'))
 })
 
-const isShown = computed(() => showedSections['Wreckage'] && !!props.unit.Wreckage?.HealthMult)
-const isCompact = computed(() => true)
-const expandScore = computed(() => 1)
+const isShown = computed(() => showedSections['Wreckage'] && !!unit.Wreckage?.HealthMult)
 
-defineExpose({ name: 'Wreckage', isShown, isCompact, expandScore })
+defineExpose({ name: 'Wreckage', isShown, isCompact: true })
 </script>
 
 <template>
-  <div class="uwreckage uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
+  <div class="uwreckage uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? true }">
     <h2 class="uc__section-title uwreckage__header">Wreckage</h2>
     <div class="uc__section-line">
       <LineItem v-if="canBeOnLand" text="Mass:" :value="formatNum(round(massValue))" />
