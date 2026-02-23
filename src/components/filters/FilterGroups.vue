@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useFilterStore } from '../../stores/filterStore.js'
+import { useFilterStore } from '@/stores/filterStore.js'
 
 const filterStore = useFilterStore()
 const { factions, kinds, tech } = storeToRefs(filterStore)

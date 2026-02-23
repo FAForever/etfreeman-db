@@ -1,12 +1,13 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { round } from '../../composables/helpers/common';
-import Icon from '../Icon.vue';
-import LineItem from './LineItem.vue';
-import { useUnitData } from '../../composables/useUnitData';
-import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
+import { round } from '@/composables/helpers/common';
+import LineItem from '../helpers/LineItem.vue';
+import { useUnitData } from '@/composables/useUnitData';
+import { useCalcEfficiency } from '@/composables/useCalcEfficiency';
+import { useCompareStore } from '@/stores/compare';
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
+const { showedSections } = useCompareStore()
 const { unitDefaults } = useUnitData()
 const { getDivisor, calculate, denominatorLabel, invert } = useCalcEfficiency('unit')
 
@@ -38,21 +39,20 @@ const getEfficiencyDisplay = (hpValue) => {
 
 const isShieldAndHpUnited = ref(false)
 
-const isShown = computed(() => true)
+const isShown = computed(() => showedSections['Defense'])
 const isCompact = computed(() => false)
 const expandScore = computed(() => 0)
 
-defineExpose({ key: 'defense', isCompact, isShown, expandScore })
+defineExpose({ name: 'Defense', isCompact, isShown, expandScore })
 </script>
 
 <template>
-  <div class="u2defense uc__section" v-if="isShown">
-    <h2 class="uc__section-title u2defense__header" v-if="false">Defense</h2>
+  <div class="udefense uc__section" v-if="isShown">
     <div class="uc__section-line uc__section-line_close" v-if="!isShieldAndHpUnited">
       <LineItem :span="invert ? 7 : 8" :type="['bar', 'bar-hp']" :value="hpBarValue" />
       <LineItem span="4" :value="getEfficiencyDisplay(health)" />
     </div>
-    <button v-if="shield" class="u2defense__merge" :class="{'u2defense__merge_merged': isShieldAndHpUnited}" @click="isShieldAndHpUnited = !isShieldAndHpUnited">{{isShieldAndHpUnited? '-' : '+'}}</button>
+    <button v-if="shield" class="udefense__merge" :class="{'udefense__merge_merged': isShieldAndHpUnited}" @click="isShieldAndHpUnited = !isShieldAndHpUnited">{{isShieldAndHpUnited? '-' : '+'}}</button>
     <template v-if="shield">
       <div class="uc__section-line uc__section-line_close" v-if="!isShieldAndHpUnited">
         <LineItem :span="invert ? 7 : 8" :type="['bar', 'bar-shield']" :value="shieldBarValue" />
@@ -85,7 +85,7 @@ defineExpose({ key: 'defense', isCompact, isShown, expandScore })
 .uc:hover
   --mergedopacity: .75
   --mergedopacity-merged: .2
-.u2defense
+.udefense
   position: relative
   margin-top: -4px
   --bottompadding: 3px

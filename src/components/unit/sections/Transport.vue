@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue'
-import LineItem from './LineItem.vue'
+import LineItem from '../helpers/LineItem.vue'
+import { useCompareStore } from '@/stores/compare'
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
+const { showedSections } = useCompareStore()
 
 const transport = unit.Transport || {}
 
@@ -20,14 +22,14 @@ const transportItems = transportConfig
   .map(item => ({ text: item.label, value: transport[item.key] }))
 
 const isCompact = computed(() => transportItems.length <= 3)
-const isShown = computed(() => !!unit.Transport && unit.Transport.AirClass && transportItems.length > 0)
+const isShown = computed(() => showedSections['Transport'] && !!unit.Transport && unit.Transport.AirClass && transportItems.length > 0)
 const expandScore = computed(() => transportItems.length / 3)
 
-defineExpose({ key: 'transport', isCompact, isShown, expandScore })
+defineExpose({ name: 'Transport', isCompact, isShown, expandScore })
 </script>
 
 <template>
-  <div class="u2transport uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
+  <div class="utransport uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
       <h2 class="uc__section-title">
         <span>Transport</span>

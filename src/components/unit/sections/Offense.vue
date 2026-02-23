@@ -1,9 +1,8 @@
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useCompareStore } from '../../stores/compare'
-import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
-import Icon from '../Icon.vue';
-import WeaponGroup from './WeaponGroup.vue';
+import { useCompareStore } from '@/stores/compare'
+import { useCalcEfficiency } from '@/composables/useCalcEfficiency';
+import WeaponGroup from '../helpers/WeaponGroup.vue';
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const weapons = unit.Weapon
@@ -102,10 +101,10 @@ const weaponColumns = computed(() => {
 })
 
 const isCompact = computed(() => weaponColumns.value.length <= 3)
-const isShown = computed(() => Object.keys(weaponGroups.value).length > 0)
+const isShown = computed(() => compareStore.showedSections['Offense'] && Object.keys(weaponGroups.value).length > 0)
 const expandScore = computed(() => weaponColumns.value.length / 3 * 1.9)
 
-defineExpose({ key: 'offense', isCompact, isShown, expandScore })
+defineExpose({ name: 'Offense', isCompact, isShown, expandScore })
 
 const headReplacements = computed(() => ({
   'dps/mass': getFractionHTML(),
@@ -175,10 +174,10 @@ watch(weaponColumns, optimizeFontSize)
 </script>
 
 <template>
-  <div class="u2offense uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
-    <h2 class="uc__section-title u2offense__header">Offense</h2>
-    <div class="u2offense__table-wrap" ref="tableWrapRef">
-      <table class="u2offense__table" ref="tableRef" :data-shrink="currentShrinkLevel" :style="{ '--opacity': opacity }">
+  <div class="uoffense uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
+    <h2 class="uc__section-title uoffense__header">Offense</h2>
+    <div class="uoffense__table-wrap" ref="tableWrapRef">
+      <table class="uoffense__table" ref="tableRef" :data-shrink="currentShrinkLevel" :style="{ '--opacity': opacity }">
         <thead>
           <tr>
             <th v-for="col in weaponColumns" :key="col" v-html="headReplacements[col] || col" />
@@ -195,7 +194,7 @@ watch(weaponColumns, optimizeFontSize)
 
 <style lang="sass">
 
-.u2offense
+.uoffense
   --tooltipfontsize: 14.5px
   flex-grow: 1
   width: 100%

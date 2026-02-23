@@ -1,12 +1,13 @@
 <script setup>
 import { computed } from 'vue'
-import { round, formatNum } from '../../composables/helpers/common'
-import Icon from '../Icon.vue'
-import LineItem from './LineItem.vue'
-import { useUnitData } from '../../composables/useUnitData'
+import { round, formatNum } from '@/composables/helpers/common'
+import LineItem from '../helpers/LineItem.vue'
+import { useUnitData } from '@/composables/useUnitData'
+import { useCompareStore } from '@/stores/compare'
 
 const props = defineProps(['unit', 'compactOverride'])
 const { unitDefaults } = useUnitData()
+const { showedSections } = useCompareStore()
 
 const techMassMult = computed(() => {
   const mults = unitDefaults.value.wreckageTechMassMults || {}
@@ -33,16 +34,16 @@ const canBeInWater = computed(()=>{
   return !(props.unit.General.Icon == 'land' && props.unit.Categories.includes('STRUCTURE'))
 })
 
-const isShown = computed(() => !!props.unit.Wreckage?.HealthMult)
+const isShown = computed(() => showedSections['Wreckage'] && !!props.unit.Wreckage?.HealthMult)
 const isCompact = computed(() => true)
 const expandScore = computed(() => 1)
 
-defineExpose({ key: 'wreckage', isShown, isCompact, expandScore })
+defineExpose({ name: 'Wreckage', isShown, isCompact, expandScore })
 </script>
 
 <template>
-  <div class="u2wreckage uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
-    <h2 class="uc__section-title u2wreckage__header">Wreckage</h2>
+  <div class="uwreckage uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
+    <h2 class="uc__section-title uwreckage__header">Wreckage</h2>
     <div class="uc__section-line">
       <LineItem v-if="canBeOnLand" text="Mass:" :value="formatNum(round(massValue))" />
       <LineItem v-if="canBeInWater" text="Mass (in water):" :value="formatNum(round(massWaterValue))" />
@@ -52,7 +53,7 @@ defineExpose({ key: 'wreckage', isShown, isCompact, expandScore })
 </template>
 
 <style lang="sass">
-.u2wreckage
+.uwreckage
   &__header-icon
     stroke-width: 50
     fill: transparent

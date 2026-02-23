@@ -1,13 +1,12 @@
 <script setup>
 import { computed } from 'vue'
-import { shorten } from '../../composables/helpers/common.js'
-import { useMods } from '../../composables/useMods.js'
-import CostsList from '../ui/CostsList.vue'
-import LineItem from './LineItem.vue'
-import Icon from '../Icon.vue'
+import { shorten } from '@/composables/helpers/common.js'
+import { useMods } from '@/composables/useMods.js'
+import CostsList from '@/components/ui/CostsList.vue'
+import LineItem from '../helpers/LineItem.vue'
 
 const props = defineProps(['enhancement', 'nextIsChained', 'type'])
-const { mods } = useMods(props, 'u2enhancement', { type: null })
+const { mods } = useMods(props, 'uenhancement', { type: null })
 
 const stats = computed(() => {
   const e = props.enhancement
@@ -40,12 +39,12 @@ const hasStats = computed(() => stats.value.length > 0)
 </script>
 
 <template>
-  <div class="u2enhancement" :class="[mods, { 'u2enhancement_chained': nextIsChained, 'u2enhancement_has-stats': hasStats }]">
-    <div class="u2enhancement__heading">
-      <span class="u2enhancement__title">{{ enhancement.Name }}</span>
+  <div class="uenhancement" :class="[mods, { 'uenhancement_chained': nextIsChained, 'uenhancement_has-stats': hasStats }]">
+    <div class="uenhancement__heading">
+      <span class="uenhancement__title">{{ enhancement.Name }}</span>
       <CostsList :item="enhancement" :size="14" />
     </div>
-    <div class="u2enhancement__body" v-if="hasStats">
+    <div class="uenhancement__body" v-if="hasStats">
       <div class="uc__section-line">
         <LineItem v-for="stat in stats" :key="stat.label" :text="stat.label + ':'" :value="stat.value" />
       </div>
@@ -54,7 +53,7 @@ const hasStats = computed(() => stats.value.length > 0)
 </template>
 
 <style lang="sass">
-.u2enhancement
+.uenhancement
   position: relative
   &__heading
     display: flex

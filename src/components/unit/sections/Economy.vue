@@ -1,10 +1,11 @@
 <script setup>
 import { computed } from 'vue'
-import { formatNum } from '../../composables/helpers/common'
-import Icon from '../Icon.vue'
-import LineItem from './LineItem.vue'
-import U2Projectile from './U2Projectile.vue'
+import { formatNum } from '@/composables/helpers/common'
+import LineItem from '../helpers/LineItem.vue'
+import UProjectile from '../helpers/Projectile.vue'
+import { useCompareStore } from '@/stores/compare'
 
+const { showedSections } = useCompareStore()
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 
 const economy = unit.Economy || {}
@@ -30,26 +31,26 @@ const projectiles = computed(() => {
 })
 
 const isCompact = computed(() => economyItems.length <= 3 && !projectiles.value.length)
-const isShown = computed(() => economyItems.length > 0 || projectiles.value.length > 0)
+const isShown = computed(() => showedSections['Economy'] && (economyItems.length > 0 || projectiles.value.length > 0))
 const expandScore = computed(() => economyItems.length / 3 + 5 * projectiles.value.length)
 
-defineExpose({ key: 'economy', isCompact, isShown, expandScore })
+defineExpose({ name: 'Economy', isCompact, isShown, expandScore })
 </script>
 
 <template>
-  <div class="u2economy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact, 'u2economy_withweapons': projectiles.length }">
+  <div class="ueconomy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact, 'ueconomy_withweapons': projectiles.length }">
     <div class="uc__section-query">
       <h2 class="uc__section-title">Economy</h2>
       <div class="uc__section-line">
         <LineItem v-for="item in economyItems" :key="item.text" :text="item.text + ':'" :value="formatNum(item.value)" />
       </div>
-      <U2Projectile v-for="(proj, i) in projectiles" :key="i" :projectile="proj" />
+      <UProjectile v-for="(proj, i) in projectiles" :key="i" :projectile="proj" />
     </div>
   </div>
 </template>
 
 <style lang="sass">
-.u2economy
+.ueconomy
   .uc__section-query
     display: flex
     flex-direction: column
@@ -63,6 +64,6 @@ defineExpose({ key: 'economy', isCompact, isShown, expandScore })
     color: #eee
   &_withweapons
     padding-bottom: 0 !important
-.uc:has(.u2economy_withweapons:last-child)
+.uc:has(.ueconomy_withweapons:last-child)
   padding-bottom: 0 !important
 </style>

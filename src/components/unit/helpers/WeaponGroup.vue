@@ -1,9 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { useCompareStore } from '../../stores/compare'
-import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
-import { addBr, round, roundIfPossible, shorten } from '../../composables/helpers/common';
-import { getDetailedCycle, getDoTBreakdown } from '../../stores/utils/unitDecorator/dps/index.js';
+import { useCompareStore } from '@/stores/compare'
+import { useCalcEfficiency } from '@/composables/useCalcEfficiency';
+import { addBr, round, roundIfPossible, shorten } from '@/composables/helpers/common';
+import { getDetailedCycle, getDoTBreakdown } from '@/stores/utils/unitDecorator/dps/index.js';
 
 const { weapons, category, columns, economy } = defineProps(['weapons', 'category', 'columns', 'economy'])
 const compareStore = useCompareStore()

@@ -47,7 +47,7 @@ const unitRows = computed(() =>
       <SectionFilters class="compare__filters" />
     </Resizer>
     <div class="compare__unitlist" ref="containerRef">
-      <UnitRow v-for="row in unitRows" :units="row" :showedSections="compareStore.showedSections" />
+      <UnitRow v-for="row in unitRows" :units="row"/>
     </div>
   </div>
 </template>

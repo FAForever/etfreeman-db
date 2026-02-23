@@ -1,8 +1,8 @@
 <script setup>
-import Icon from '../Icon.vue'
-import CostsList from '../ui/CostsList.vue'
+import Icon from '../../Icon.vue'
+import CostsList from '@/components/ui/CostsList.vue'
 import { computed } from 'vue'
-import { useCompareStore } from '../../stores/compare'
+import { useCompareStore } from '@/stores/compare'
 
 const { unit } = defineProps(['unit'])
 const compareStore = useCompareStore()
@@ -20,35 +20,35 @@ const subtitleProps = computed(() => unit.General.UnitName
   : { is: 'a', attrs: { href: blueprintUrl.value, target: '_blank', class: 'link link-underline' } }
 )
 
-const isShown = computed(() => true)
+const isShown = computed(() => compareStore.showedSections['Header'])
 const isCompact = computed(() => false)
 const expandScore = computed(() => 0)
 const rowSpan = computed(() => 1)
 
-defineExpose({ key: 'header', isShown, isCompact, expandScore, rowSpan })
+defineExpose({ name: 'Header', isShown, isCompact, expandScore, rowSpan })
 </script>
 
 <template>
-  <div class="u2header uc__section" :class="`u2header_${unit.faction}`">
-    <a v-if="compareStore.toggles.showUnitId" class="u2header__unitID link link-underline" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
-    <a class="u2header__img" :href="blueprintUrl" target="_blank">
-      <img class="u2header__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
-      <div class="u2header__img-main-wrap">
-        <div :class="['u2header__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></div>
+  <div class="uheader uc__section" :class="`uheader_${unit.faction}`">
+    <a v-if="compareStore.toggles.showUnitId" class="uheader__unitID link link-underline" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
+    <a class="uheader__img" :href="blueprintUrl" target="_blank">
+      <img class="uheader__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
+      <div class="uheader__img-main-wrap">
+        <div :class="['uheader__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></div>
       </div>
-      <span :class="['u2header__img-strategic', `u2header__img-strategic_${unit.section.toLowerCase()}`, 'strategic', 'icon_strategic', `icon-${unit.faction}_${unit.strategicIcon}`]"></span>
+      <span :class="['uheader__img-strategic', `uheader__img-strategic_${unit.section.toLowerCase()}`, 'strategic', 'icon_strategic', `icon-${unit.faction}_${unit.strategicIcon}`]"></span>
     </a>
-    <div class="u2header__content">
-      <a v-if="unit.General.UnitName" class="u2header__title link link-underline" :href="blueprintUrl" target="_blank">{{ unit.General.UnitName }}</a>
-      <component :is="subtitleProps.is" v-bind="subtitleProps.attrs" class="u2header__subtitle">{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</component>
+    <div class="uheader__content">
+      <a v-if="unit.General.UnitName" class="uheader__title link link-underline" :href="blueprintUrl" target="_blank">{{ unit.General.UnitName }}</a>
+      <component :is="subtitleProps.is" v-bind="subtitleProps.attrs" class="uheader__subtitle">{{ unit.rawTech == 'EXP' ? '' : unit.rawTech }} {{ unit.Description }}</component>
       <CostsList :item="unit.Economy" :size="18" />
     </div>
-    <Icon :name="unit.faction" :class="['u2header__faction', `u2header__faction_${unit.faction}`]" />
+    <Icon :name="unit.faction" :class="['uheader__faction', `uheader__faction_${unit.faction}`]" />
   </div>
 </template>
 
 <style lang="sass">
-.u2header
+.uheader
   grid-column: span 2
   display: flex
   height: fit-content
@@ -103,7 +103,7 @@ defineExpose({ key: 'header', isShown, isCompact, expandScore, rowSpan })
     font-weight: 600
     &:first-child
       font-size: 18px
-  &:has(.u2header__unitID) &__faction
+  &:has(.uheader__unitID) &__faction
     top: 10px
     width: 53px
     height: 50px

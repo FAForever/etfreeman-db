@@ -1,5 +1,5 @@
 <script setup>
-import { shorten } from '../../composables/helpers/common.js'
+import { shorten } from '@/composables/helpers/common.js'
 import MassIcon from './MassIcon.vue'
 import EnergyIcon from './EnergyIcon.vue'
 import BuildtimeIcon from './BuildtimeIcon.vue'

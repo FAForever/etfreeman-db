@@ -13,7 +13,7 @@ export function useRowAlignment(unitRefs, units) {
   const shownSectionsPerUnit = computed(() => {
     if (!isReady.value) return []
     const result = unitRefs.value.map(unitRef => {
-      return unitRef.sections.filter(s => s.show).map(s => s.key)
+      return unitRef.sections.filter(s => s.show).map(s => s.name)
     })
     return result
   })
@@ -46,7 +46,7 @@ export function useRowAlignment(unitRefs, units) {
 
     const overrides = {}
     for (const section of multiUnitSections) {
-      const sectionData = unitRefs.value.map(r => r.sections.find(s => s.key === section)).filter(Boolean)
+      const sectionData = unitRefs.value.map(r => r.sections.find(s => s.name === section)).filter(Boolean)
       if (sectionData.length < 2) continue
 
       const compactnesses = sectionData.map(s => s.compact)

@@ -1,10 +1,11 @@
 <script setup>
 import { computed } from 'vue'
-import { round } from '../../composables/helpers/common';
-import Icon from '../Icon.vue'
-import LineItem from './LineItem.vue'
+import { round } from '@/composables/helpers/common';
+import LineItem from '../helpers/LineItem.vue'
+import { useCompareStore } from '@/stores/compare'
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
+const { showedSections } = useCompareStore()
 
 const physics = unit.Physics || {}
 const air = unit.Air || {}
@@ -19,10 +20,10 @@ const isFirst3SmallLand = computed(() => {
 })
 
 const isCompact = computed(() => physicsItems.length <= 3)
-const isShown = computed(() => physicsItems.length > 0)
+const isShown = computed(() => showedSections['Physics'] && physicsItems.length > 0)
 const expandScore = computed(() => physicsItems.length / 3)
 
-defineExpose({ key: 'physics', isCompact, isShown, expandScore })
+defineExpose({ name: 'Physics', isCompact, isShown, expandScore })
 
 const formatTime = (val) => {
   const m = Math.floor(val / 60)
@@ -67,7 +68,7 @@ physicsItems.splice(1, 0, ...multipliers)
 </script>
 
 <template>
-  <div class="u2physics uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
+  <div class="uphysics uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
       <h2 class="uc__section-title">Physics</h2>
       <div class="uc__section-line">

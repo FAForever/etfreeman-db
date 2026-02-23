@@ -1,6 +1,6 @@
 <script setup>
 import SingleCostItem from './SingleCostItem.vue'
-import { useMods } from '../../composables/useMods.js'
+import { useMods } from '@/composables/useMods.js'
 
 const props = defineProps({
   item: Object,

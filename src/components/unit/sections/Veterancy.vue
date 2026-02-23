@@ -1,11 +1,13 @@
 <script setup>
 import { computed } from 'vue'
-import { round, formatNum } from '../../composables/helpers/common'
-import LineItem from './LineItem.vue'
-import { useUnitData } from '../../composables/useUnitData'
+import { round, formatNum } from '@/composables/helpers/common'
+import LineItem from '../helpers/LineItem.vue'
+import { useUnitData } from '@/composables/useUnitData'
+import { useCompareStore } from '@/stores/compare'
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const { unitDefaults } = useUnitData()
+const { showedSections } = useCompareStore()
 
 const isACU = computed(() => unit.Categories?.includes('COMMAND'))
 const isSACU = computed(() => unit.Categories?.includes('SUBCOMMANDER'))
@@ -51,16 +53,16 @@ const canGetVeterancy = computed(() =>
     !w.FireOnDeath && !['Teleport', 'Kamikaze', 'Death'].includes(w.WeaponCategory) && !(w.Label == "DeathWeapon") && (w.Damage || w.NukeInnerRingDamage)
   )
 )
-const isShown = computed(() => canGetVeterancy.value && !!unit.Defense)
+const isShown = computed(() => showedSections['Veterancy'] && canGetVeterancy.value && !!unit.Defense)
 
-defineExpose({ key: 'veterancy', isCompact, isShown, expandScore })
+defineExpose({ name: 'Veterancy', isCompact, isShown, expandScore })
 
 const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 </script>
 
 <template>
-  <div class="u2veterancy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
-    <h2 class="uc__section-title u2veterancy__header">Veterancy</h2>
+  <div class="uveterancy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
+    <h2 class="uc__section-title uveterancy__header">Veterancy</h2>
     <template v-if="!unit.VeteranMass">
       <div class="uc__section-line">
         <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
@@ -74,8 +76,8 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
         <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
         <LineItem text="Regen / lvl:" :value="'+' + regenPerLevel + '/s'" v-if="regenPerLevel" />
       </div>
-      <div class="u2veterancy__table-wrap">
-        <table class="u2veterancy__table">
+      <div class="uveterancy__table-wrap">
+        <table class="uveterancy__table">
           <thead>
             <tr>
               <th></th>
@@ -95,7 +97,7 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 </template>
 
 <style lang="sass">
-.u2veterancy
+.uveterancy
   &__header-icon
     fill: transparent
     margin-right: 1px

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useMods } from '../../composables/useMods.js'
+import { useMods } from '@/composables/useMods.js'
 
 const props = defineProps({
   modelValue: [String, Number],

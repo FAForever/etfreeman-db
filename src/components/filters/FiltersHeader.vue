@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUnitData } from '../../composables/useUnitData.js'
+import { useUnitData } from '@/composables/useUnitData.js'
 import Icon from '../Icon.vue'
 
 const router = useRouter()

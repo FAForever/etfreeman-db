@@ -1,9 +1,10 @@
 <script setup>
 import { computed } from 'vue'
-import Icon from '../Icon.vue'
-import LineItem from './LineItem.vue'
+import LineItem from '../helpers/LineItem.vue'
+import { useCompareStore } from '@/stores/compare'
 
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
+const { showedSections } = useCompareStore()
 
 const intel = unit.Intel || {}
 
@@ -24,14 +25,14 @@ const intelItems = intelConfig
   .map(item => ({ text: item.label, value: intel[item.key] }))
 
 const isCompact = computed(() => intelItems.length <= 3)
-const isShown = computed(() => intelItems.length > 0)
+const isShown = computed(() => showedSections['Intel'] && intelItems.length > 0)
 const expandScore = computed(() => intelItems.length / 3)
 
-defineExpose({ key: 'intel', isCompact, isShown, expandScore })
+defineExpose({ name: 'Intel', isCompact, isShown, expandScore })
 </script>
 
 <template>
-  <div class="u2intel uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
+  <div class="uintel uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <div class="uc__section-query">
       <h2 class="uc__section-title">Intel</h2>
       <div class="uc__section-line">
@@ -43,7 +44,7 @@ defineExpose({ key: 'intel', isCompact, isShown, expandScore })
 
 <style lang="sass">
 
-.u2intel
+.uintel
   @container (max-width: 300px)
     .uc__section-line
       --columncount: 6

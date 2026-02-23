@@ -1,8 +1,7 @@
 <script setup>
-import Icon from '../Icon.vue'
 import { useMods } from '@/composables/useMods.js'
 
-const props = defineProps(['text', 'value', 'icon', 'type', 'span', 'column', 'tooltip'])
+const props = defineProps(['text', 'value', 'type', 'span', 'tooltip'])
 const { mods } = useMods(props, 'lineItem', { type: 'basic', span: '', column: '' })
 </script>
 
@@ -23,9 +22,6 @@ const { mods } = useMods(props, 'lineItem', { type: 'basic', span: '', column: '
   @for $span from 1 through 12
     &_span-#{$span}
       grid-column: span #{$span} !important
-  @for $column from 1 through 12
-    &_column-#{$column}
-      grid-column-start: #{$column} !important
   &_type-basic &-text, &_type-basic &-value
     flex-basis: 10px
     min-width: min-content

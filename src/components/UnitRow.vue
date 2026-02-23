@@ -1,21 +1,18 @@
 <template>
-  <div class="compare__unitlist-line" :style="{ '--units-per-row': units.length }"
-    :class="{ 'compare__unitlist-line_no-align': !compareStore.toggles.linedUpSections }">
-    <UnitComponent2 v-for="(u, colIndex) in units" :ref="el => setUnitRef(el, colIndex)" :key="u.id" :unit="u"
-      :showedSections="showedSections"
-      :sectionOrder="sectionOrder" :compactOverrides="compactOverrides" :linedUp="compareStore.toggles.linedUpSections"
-      :style="{ gridColumn: colIndex + 1 }"
-      :class="{ 'uc_initializing': !isReady }" />
+  <div class="unitRow" :style="{ '--units-per-row': units.length }"
+    :class="{ 'unitRow_no-align': !compareStore.toggles.linedUpSections, 'unitRow_initializing': !isReady }">
+    <UnitComponent v-for="(u, colIndex) in units" :ref="el => setUnitRef(el, colIndex)" :key="u.id" :unit="u"
+      :sectionOrder="sectionOrder" :compactOverrides="compactOverrides"/>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, toRefs, watch } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 import { useCompareStore } from '../stores/compare'
 import { useRowAlignment } from '../composables/useRowAlignment.js'
-import UnitComponent2 from './UnitComponent2.vue'
+import UnitComponent from './UnitComponent.vue'
 
-const props = defineProps(['units', 'showedSections'])
+const props = defineProps(['units'])
 const { units } = toRefs(props)
 const compareStore = useCompareStore()
 
@@ -33,7 +30,7 @@ const { isReady, sectionOrder, compactOverrides } = useRowAlignment(unitRefs, un
 </script>
 
 <style lang="sass">
-.compare__unitlist-line
+.unitRow
   display: grid
   grid-template-columns: repeat(var(--units-per-row, 4), var(--unitwidth))
   grid-template-rows: 1fr
@@ -44,7 +41,7 @@ const { isReady, sectionOrder, compactOverrides } = useRowAlignment(unitRefs, un
     margin-bottom: var(--unitgap)
   &_no-align
     align-items: start
-
-.uc_initializing
-  visibility: hidden
+    --uc-template-rows: auto
+  &_initializing
+    visibility: hidden
 </style>

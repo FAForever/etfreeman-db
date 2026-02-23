@@ -1,8 +1,8 @@
 // Unit Data Store Tests - Tests state management
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useUnitDataStore } from '../../stores/unitData.js'
-import { useFilterStore } from '../../stores/filterStore.js'
+import { useUnitDataStore } from '@/stores/unitData.js'
+import { useFilterStore } from '@/stores/filterStore.js'
 
 describe('Unit Data Store', () => {
   beforeEach(() => {

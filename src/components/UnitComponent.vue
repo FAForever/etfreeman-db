@@ -1,36 +1,29 @@
 <template>
-  <div class="uc faction" :class="[unit.faction.toLowerCase(), { 'uc--no-subgrid': !linedUp }]"
-    :style="{ gridRow: `span ${rowCount}` }">
-    <component v-for="section in sortedSections" :key="section.key" 
-      :is="getComponent(section.key)" ref="sectionRefs" :unit="unit"
-      :compactOverride="getCompactOverride(section.key)" :class="getColumnClass(section.key)" />
+  <div class="uc faction" :class="[unit.faction.toLowerCase()]"
+    :style="{ gridRow: `span ${layoutInfo.rowCount}` }">
+    <component v-for="section in sortedSections" :key="section.name"
+      :is="SectionComponents[section.name]" ref="sectionRefs" :unit="unit"
+      :compactOverride="getCompactOverride(section.name)" :class="layoutInfo.columnClasses[section.name]"/>
   </div>
 </template>
 
 <script setup>
-import { computed,  ref } from 'vue'
-import { useCompareStore } from '../stores/compare'
+import { computed, ref } from 'vue'
+import { useCompareStore } from '../stores/compare/index.js'
 import { DEFAULT_ORDER } from '../stores/compare/sectionOrder.js'
-import * as SectionComponents from './unit2/index.js'
+import * as SectionComponents from './unit/sections/index.js'
 
-const props = defineProps(['unit', 'showedSections', 'sectionOrder', 'compactOverrides', 'linedUp'])
+const props = defineProps(['unit', 'sectionOrder', 'compactOverrides'])
 const compareStore = useCompareStore()
-
+const sectionNames = Object.keys(SectionComponents)
 const sectionRefs = ref([])
 
-const getComponent = key => SectionComponents['U2' + key.charAt(0).toUpperCase() + key.slice(1)]
-
 const sections = computed(() => {
-  const s = props.showedSections || {}
-  return DEFAULT_ORDER.map(key => {
-    const toggleKey = key.charAt(0).toUpperCase() + key.slice(1)
-    const ref = sectionRefs.value.find(r => r.key === key)
+  return sectionNames.map(name => {
+    const ref = sectionRefs.value.find(r => r.name === name)
     return {
-      key,
-      show: s[toggleKey] && ref?.isShown,
-      compact: ref?.isCompact,
-      expandScore: ref?.expandScore || 0,
-      rowSpan: ref?.rowSpan || 1
+      name, show: ref?.isShown, compact: ref?.isCompact,
+      expandScore: ref?.expandScore || 0, rowSpan: ref?.rowSpan || 1
     }
   })
 })
@@ -41,13 +34,13 @@ const sortedSections = computed(() => {
   return sections.value
     .map(s => ({
       ...s,
-      compact: compareStore.toggles.compactSections ? (props.compactOverrides?.[s.key] ?? s.compact) : false
+      compact: compareStore.toggles.compactSections ? (props.compactOverrides?.[s.name] ?? s.compact) : false
     }))
-    .sort((a, b) => (orderIndex[a.key] ?? 99) - (orderIndex[b.key] ?? 99))
+    .sort((a, b) => (orderIndex[a.name] ?? 99) - (orderIndex[b.name] ?? 99))
 })
 
 const layoutInfo = computed(() => {
-  const columns = {}
+  const columnClasses = {}
   const expanded = new Set()
   let total = 0
   const secs = sortedSections.value.filter(s => s.show)
@@ -55,7 +48,7 @@ const layoutInfo = computed(() => {
   for (let i = 0; i < secs.length; i++) {
     const sec = secs[i]
     const column = total % 1 ? 2 : 1
-    columns[sec.key] = sec.compact ? column : null
+    columnClasses[sec.name] = sec.compact ? `uc__section_column-${column}` : null
 
     if (total % 1) {
       total += sec.compact ? 0.5 : 1.5
@@ -66,29 +59,21 @@ const layoutInfo = computed(() => {
 
     if (total % 1) {
       const nextSec = secs[i + 1]
-      if (!nextSec || !nextSec.compact) expanded.add(sec.key)
+      if (!nextSec || !nextSec.compact) expanded.add(sec.name)
     }
   }
 
-  for (const key of expanded) {
-    columns[key] = null
+  for (const name of expanded) {
+    columnClasses[name] = null
   }
 
-  return { columns, expanded, rowCount: Math.ceil(total) }
+  return { columnClasses, expanded, rowCount: Math.ceil(total) }
 })
 
-const expandedKeys = computed(() => layoutInfo.value.expanded)
-const rowCount = computed(() => layoutInfo.value.rowCount)
-const getColumn = (key) => layoutInfo.value.columns[key]
-const getColumnClass = (key) => {
-  const col = getColumn(key)
-  return col ? `uc__section_column-${col}` : null
-}
-
-const getCompactOverride = (key) => {
+const getCompactOverride = (name) => {
   if (!compareStore.toggles.compactSections) return false
-  if (expandedKeys.value.has(key)) return false
-  return props.compactOverrides?.[key]
+  if (layoutInfo.value.expanded.has(name)) return false
+  return props.compactOverrides?.[name]
 }
 
 defineExpose({ sections })
@@ -103,7 +88,6 @@ defineExpose({ sections })
     --factioncolortrans: #{color.adjust($color, $alpha:-.1)}
     --factioncolorsol: #{color.adjust($color, $alpha:.1)}
     --factioncolorsolid: #{color.adjust($color, $alpha:1)}
-    --factioncolorsoliddark: #{color.adjust($color, $alpha:1, $lightness: -30%)}
     .uc__section-title
       position: relative
       &::before
@@ -124,24 +108,21 @@ defineExpose({ sections })
   display: grid
   gap: 0
   grid-template-columns: repeat(2, 1fr)
-  grid-template-rows: subgrid
-  &--no-subgrid
-    grid-template-rows: auto
+  grid-template-rows: var(--uc-template-rows, subgrid)
   @supports (corner-shape: bevel)
     corner-shape: bevel
     border-radius: 6px
-  &:has(.u2enhancements:last-child)
+  &:has(.uenhancements:last-child)
     padding-bottom: 0
-  &:has(.u2header:last-child)
+  &:has(.uheader:last-child)
     padding-bottom: 10px
-
   &:hover
     z-index: 100
   @each $name, $color in colors.$factions
     &.#{$name}
       background: linear-gradient(rgba(0,0,0,.37), rgba(0,0,0,.37))
       background-color: color.adjust($color)
-      border: 1px solid color.adjust($color, $alpha: .1, $lightness: 30%) !important
+      border: 1px solid color.adjust($color, $alpha: .1, $lightness: 30%)
       box-shadow: inset 0 0 4px 0px color.adjust($color, $alpha: .2, $saturation: 700%, $lightness: 20%)
       filter: contrast(110%)
       outline: 1px solid transparent
@@ -176,8 +157,6 @@ defineExpose({ sections })
       text-align: left
       justify-content: flex-start
       color: white
-      svg
-        --color1: transparent        
 
     &-line
       --columncount: 12
@@ -185,7 +164,7 @@ defineExpose({ sections })
       grid-template-columns: repeat(var(--columncount), 1fr)
       padding: 3px 0
       gap: 6px var(--uccolumngap)
-      &_close 
+      &_close
         gap: 6px 5px
       >*
         grid-column: span 6

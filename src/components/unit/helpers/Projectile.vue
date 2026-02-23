@@ -1,18 +1,18 @@
 <script setup>
-import CostsList from '../ui/CostsList.vue'
+import CostsList from '@/components/ui/CostsList.vue'
 
 const props = defineProps(['projectile'])
 </script>
 
 <template>
-  <div class="u2projectile">
-    <span class="u2projectile__title">{{ projectile.Description }}</span>
+  <div class="uprojectile">
+    <span class="uprojectile__title">{{ projectile.Description }}</span>
     <CostsList :item="projectile" :size="16" />
   </div>
 </template>
 
 <style lang="sass">
-.u2projectile
+.uprojectile
   width: calc(100% + var(--sectionpadding) * 2)
   margin: 0 calc(var(--sectionpadding) * (-1))
   padding: 5px var(--sectionpadding)
