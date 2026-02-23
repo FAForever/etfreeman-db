@@ -48,7 +48,4 @@ defineExpose({ name: 'Intel', isCompact, isShown, expandScore })
   @container (max-width: 300px)
     .uc__section-line
       --columncount: 6
-  &__header-icon
-    margin: -1px
-    fill: white
 </style>

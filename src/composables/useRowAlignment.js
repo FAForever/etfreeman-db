@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { DEFAULT_ORDER } from '../stores/compare/sectionOrder.js'
 
+export const EXPAND_SCORE_THRESHOLD = 1.9
 const ORDER_INDEX = Object.fromEntries(DEFAULT_ORDER.map((k, i) => [k, i]))
-const COMPACT_MAX_EXPAND_SCORE = 1.9
 
 export function useRowAlignment(unitRefs, units) {
   const isReady = computed(() => {
@@ -54,7 +54,7 @@ export function useRowAlignment(unitRefs, units) {
       if (allSame) continue
 
       const maxScore = Math.max(...sectionData.map(s => s.expandScore || 0))
-      overrides[section] = maxScore <= COMPACT_MAX_EXPAND_SCORE
+      overrides[section] = maxScore < EXPAND_SCORE_THRESHOLD
     }
 
     return overrides

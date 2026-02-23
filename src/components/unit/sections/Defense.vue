@@ -6,7 +6,7 @@ import { useUnitData } from '@/composables/useUnitData';
 import { useCalcEfficiency } from '@/composables/useCalcEfficiency';
 import { useCompareStore } from '@/stores/compare';
 
-const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
+const { unit } = defineProps(['unit'])
 const { showedSections } = useCompareStore()
 const { unitDefaults } = useUnitData()
 const { getDivisor, calculate, denominatorLabel, invert } = useCalcEfficiency('unit')
@@ -14,9 +14,14 @@ const { getDivisor, calculate, denominatorLabel, invert } = useCalcEfficiency('u
 const health = computed(() => unit.Defense.Health)
 const shield = computed(() => unit.Defense.Shield && unit.Defense.Shield.ShieldMaxHealth ? unit.Defense.Shield : null)
 
-const hpBarValue = computed(() => health.value + ' HP' + (unit.Defense.RegenRate ? (' + ' + unit.Defense.RegenRate + '/s') : ''))
-const shieldBarValue = computed(() => shield.value.ShieldMaxHealth + ' HP' + (shield.value.ShieldRegenRate ? (' + ' + shield.value.ShieldRegenRate + '/s') : ''))
-const mergedBarValue = computed(() => health.value + shield.value.ShieldMaxHealth + ' HP' + (unit.Defense?.RegenRate || shield.value.ShieldRegenRate ? (' + ' + ((unit.Defense?.RegenRate || 0) + (shield.value.ShieldRegenRate || 0)) + '/s') : ''))
+const hpRegen = computed(() => unit.Defense?.RegenRate || 0)
+const shieldRegen = computed(() => shield.value?.ShieldRegenRate || 0)
+const regenText = (regen) => regen? ` + ${regen}/s` : ''
+
+const hpBarValue = computed(() => health.value + ' HP' + regenText(hpRegen.value))
+const shieldBarValue = computed(() => shield.value.ShieldMaxHealth + ' HP' + regenText(shieldRegen.value))
+const mergedBarValue = computed(() => health.value + shield.value.ShieldMaxHealth + ' HP' + regenText(hpRegen.value + shieldRegen.value))
+
 const shieldType = computed(() => {
   if (shield.value.PersonalShield)
     return 'Personal'
@@ -39,11 +44,13 @@ const getEfficiencyDisplay = (hpValue) => {
 
 const isShieldAndHpUnited = ref(false)
 
-const isShown = computed(() => showedSections['Defense'])
-const isCompact = computed(() => false)
-const expandScore = computed(() => 0)
+const rechargeTime = computed(() => shield.value.ShieldRechargeTime || unitDefaults.value.shieldDefaultRechargeTime)
+const rechargeRate = computed(() => round(shield.value.ShieldMaxHealth / rechargeTime.value, 2))
+const rechargeText = computed(() => `${rechargeTime.value}s<span>, so recharges</span> ${rechargeRate.value} hp/s`)
 
-defineExpose({ name: 'Defense', isCompact, isShown, expandScore })
+const isShown = computed(() => showedSections['Defense'])
+
+defineExpose({ name: 'Defense', isCompact: false, isShown, expandScore: 0 })
 </script>
 
 <template>
@@ -52,7 +59,8 @@ defineExpose({ name: 'Defense', isCompact, isShown, expandScore })
       <LineItem :span="invert ? 7 : 8" :type="['bar', 'bar-hp']" :value="hpBarValue" />
       <LineItem span="4" :value="getEfficiencyDisplay(health)" />
     </div>
-    <button v-if="shield" class="udefense__merge" :class="{'udefense__merge_merged': isShieldAndHpUnited}" @click="isShieldAndHpUnited = !isShieldAndHpUnited">{{isShieldAndHpUnited? '-' : '+'}}</button>
+    <button v-if="shield" class="udefense__merge" :class="{ 'udefense__merge_merged': isShieldAndHpUnited }"
+      @click="isShieldAndHpUnited = !isShieldAndHpUnited">{{ isShieldAndHpUnited ? '-' : '+' }}</button>
     <template v-if="shield">
       <div class="uc__section-line uc__section-line_close" v-if="!isShieldAndHpUnited">
         <LineItem :span="invert ? 7 : 8" :type="['bar', 'bar-shield']" :value="shieldBarValue" />
@@ -65,15 +73,15 @@ defineExpose({ name: 'Defense', isCompact, isShown, expandScore })
       <div class="uc__section-line">
         <LineItem text="Shield regen delay:" :value="shield.ShieldRegenStartTime + 's'" />
         <LineItem text="Shield type:" :value="shieldType"
-          :tooltip="shield.PersonalBubble ? ['PersonalBubble, to be precise','bottom-left'] : null" />
+          :tooltip="shield.PersonalBubble ? ['PersonalBubble, to be precise', 'bottom-left'] : null" />
       </div>
       <div class="uc__section-line" v-if="shieldType == 'Bubble'">
         <LineItem text="Shield size:" :value="shield.ShieldSize" />
-        <LineItem text="Shield overspill:" :value="shield.ShieldSpillOverDamageMod || unitDefaults.shieldDefaultOverspill" />
+        <LineItem text="Shield overspill:"
+          :value="shield.ShieldSpillOverDamageMod || unitDefaults.shieldDefaultOverspill" />
       </div>
       <div class="uc__section-line">
-        <LineItem text="Recharge time:" span="12"
-          :value="(shield.ShieldRechargeTime || unitDefaults.shieldDefaultRechargeTime) + `s<span>, so recharges</span> ${round(shield.ShieldMaxHealth / (shield.ShieldRechargeTime || unitDefaults.shieldDefaultRechargeTime), 2)} hp/s`" />
+        <LineItem text="Recharge time:" span="12" :value="rechargeText" />
       </div>
     </template>
   </div>
@@ -110,16 +118,10 @@ defineExpose({ name: 'Defense', isCompact, isShown, expandScore })
     align-items: center
     justify-content: center
     text-shadow: 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black
-    border-radius: 5px
     transform: translate(-50%, calc(-50% - 2px))
     &_merged
       transform: translate(-50%, 3px)
       opacity: var(--mergedopacity-merged, 0.1)
     &:hover
-      opacity: 1 !important
-
-  &__header
-    &-icon
-      stroke: white
-      fill: #999
+      opacity: 1
 </style>

@@ -10,15 +10,6 @@ const { showedSections } = useCompareStore()
 const physics = unit.Physics || {}
 const air = unit.Air || {}
 
-const isFirst3SmallLand = computed(() => {
-  return !air.MaxAirspeed
-    && physicsItems.length >= 3
-    && physicsItems.length % 2
-    && physicsItems[0]?.text === 'Speed'
-    && physicsItems[1]?.text === 'Turn rate'
-    && physicsItems[2]?.text === 'Backup Distance'
-})
-
 const isCompact = computed(() => physicsItems.length <= 3)
 const isShown = computed(() => showedSections['Physics'] && physicsItems.length > 0)
 const expandScore = computed(() => physicsItems.length / 3)
@@ -31,40 +22,26 @@ const formatTime = (val) => {
   return m ? `${m}m ${s}s` : `${s}s`
 }
 
-const physicsItems = [
-  ...(air.MaxAirspeed != null ? [{ text: 'Speed', value: `${air.MinAirspeed || 0}-${air.MaxAirspeed}` }] :
-    physics.MaxSpeed != null ? [{ text: 'Speed', value: physics.MaxSpeed }] : []),
-  { key: 'TurnRate', label: 'Turn rate', src: physics },
-  { key: 'TurnSpeed', label: 'Turn speed', src: air },
-  { key: 'BackUpDistance', label: 'Backup Distance', src: physics, skipZero: true },
-  { key: 'Elevation', label: 'Elevation', src: physics },
-  { key: 'CombatTurnSpeed', label: 'Combat turn speed', src: air },
-  { key: 'FuelUseTime', label: 'Fuel use time', src: physics, format: formatTime },
-].filter(item => {
-  if (item.src) {
-    const val = item.src[item.key]
-    if (item.skipZero && val === 0) return false
-    return val != null
-  }
-  return item.value != null
+const speedValue = computed(() => {
+  if (air.MaxAirspeed) return `${air.MinAirspeed || 0}-${air.MaxAirspeed}`
+  return physics.MaxSpeed || 0
 })
-  .map(item => item.src ? { text: item.label, value: item.format ? item.format(item.src[item.key]) : item.src[item.key] } : item)
 
-if (physics.FuelUseTime && physics.FuelRechargeRate) {
-  physicsItems.push({
-    text: 'Fuel recharge',
-    value: formatTime(10 * physics.FuelUseTime / physics.FuelRechargeRate)
-  })
-}
-
-const multipliers = [
-  { text: 'Speed (on land)', value: round(physics.MaxSpeed * physics.LandSpeedMultiplier * physics.LandSpeedMultiplier, 2) },
-  { text: 'Speed (submerged)', value: round(physics.MaxSpeed * physics.SubSpeedMultiplier * physics.SubSpeedMultiplier, 2) },
-  { text: 'Speed (in water)', value: round(physics.MaxSpeed * physics.WaterSpeedMultiplier * physics.WaterSpeedMultiplier, 2) },
-  { text: 'Sniper mode speed', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier * physics.SniperModeSpeedMultiplier, 2) }
-].filter(item => item.value)
-
-physicsItems.splice(1, 0, ...multipliers)
+const physicsItems = [
+  { text: 'Speed', value: speedValue.value },
+  { text: 'Speed (on land)', value: round(physics.MaxSpeed * physics.LandSpeedMultiplier ** 2, 2) },
+  { text: 'Speed (submerged)', value: round(physics.MaxSpeed * physics.SubSpeedMultiplier ** 2, 2) },
+  { text: 'Speed (in water)', value: round(physics.MaxSpeed * physics.WaterSpeedMultiplier ** 2, 2) },
+  { text: 'Sniper mode speed', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier ** 2, 2) },
+  { text: 'Turn rate', value: physics.TurnRate },
+  { text: 'Turn speed', value: air.TurnSpeed },
+  { text: 'Backup Distance', value: physics.BackUpDistance},
+  { text: 'Elevation', value: physics.Elevation, dontSkipZero: true },
+  { text: 'Combat turn speed', value: air.CombatTurnSpeed },
+  { text: 'Fuel use time', value: physics.FuelUseTime, format: formatTime },
+  { text: 'Fuel recharge', value: 10 * physics.FuelUseTime / physics.FuelRechargeRate, format: formatTime }
+].filter(item => item.value || (item.value === 0 && item.dontSkipZero))
+  .map(item => item.format ? { ...item, value: item.format(item.value) } : item)
 </script>
 
 <template>

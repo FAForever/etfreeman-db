@@ -4,6 +4,7 @@ import { formatNum } from '@/composables/helpers/common'
 import LineItem from '../helpers/LineItem.vue'
 import UProjectile from '../helpers/Projectile.vue'
 import { useCompareStore } from '@/stores/compare'
+import { EXPAND_SCORE_THRESHOLD } from '@/composables/useRowAlignment'
 
 const { showedSections } = useCompareStore()
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
@@ -32,7 +33,7 @@ const projectiles = computed(() => {
 
 const isCompact = computed(() => economyItems.length <= 3 && !projectiles.value.length)
 const isShown = computed(() => showedSections['Economy'] && (economyItems.length > 0 || projectiles.value.length > 0))
-const expandScore = computed(() => economyItems.length / 3 + 5 * projectiles.value.length)
+const expandScore = computed(() => economyItems.length / 3 + EXPAND_SCORE_THRESHOLD * projectiles.value.length)
 
 defineExpose({ name: 'Economy', isCompact, isShown, expandScore })
 </script>
@@ -60,10 +61,8 @@ defineExpose({ name: 'Economy', isCompact, isShown, expandScore })
   @container (max-width: 300px)
     .uc__section-line
       --columncount: 6
-  &__header-icon
-    color: #eee
   &_withweapons
     padding-bottom: 0 !important
 .uc:has(.ueconomy_withweapons:last-child)
-  padding-bottom: 0 !important
+  padding-bottom: 0
 </style>

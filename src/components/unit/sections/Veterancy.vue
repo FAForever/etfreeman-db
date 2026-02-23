@@ -13,12 +13,11 @@ const isACU = computed(() => unit.Categories?.includes('COMMAND'))
 const isSACU = computed(() => unit.Categories?.includes('SUBCOMMANDER'))
 
 const vetMultiplier = computed(() => {
-  if (isACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.COMMAND || 2
-  if (isSACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.SUBCOMMANDER || 2
-  if (unit.tech === 'EXP') return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.EXPERIMENTAL || 2
-
-  const techKey = 'TECH' + unit.tech?.charAt(1)
-  return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.[techKey] || 2
+  if (isACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.COMMAND
+  if (isSACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.SUBCOMMANDER
+  if (unit.tech === 'EXP') return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.EXPERIMENTAL
+  const techKey = unit.tech.replace('T','TECH')
+  return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.[techKey]
 })
 
 const regenBuffIndex = computed(() => {
@@ -98,10 +97,6 @@ const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 
 <style lang="sass">
 .uveterancy
-  &__header-icon
-    fill: transparent
-    margin-right: 1px
-    margin-left: 1px
   &__table
     font-size: 15px
     border-collapse: collapse
