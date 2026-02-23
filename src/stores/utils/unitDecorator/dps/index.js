@@ -1,10 +1,10 @@
 // FA Game-Accurate DPS Calculator
 // Based on: fa\lua\ui\game\unitviewDetail.lua
 
-import { MATH_IRound, calculateProjectileDamage, getRoundedTime, getFiringCooldown, processRackSequence, isSequentialSingleFire, getBeamDamageTicks, getDoTBreakdown, getSalvoInfo } from './calculations.js'
+import { calculateProjectileDamage, getRoundedTime, getFiringCooldown, processRackSequence, isSequentialSingleFire, getDoTBreakdown, getSalvoInfo } from './calculations.js'
 import { formatDmg, formatStandardBeamCycle, formatContinuousBeamCycle, formatMuzzleSalvoCycle, formatMultiRackSalvoCycle, formatCommonCycle } from './formatters.js'
 
-export const simulateFiringCycle = (weapon) => {
+export const calculateFiringCycle = (weapon) => {
   const firingCooldown = getFiringCooldown(weapon)
   if (firingCooldown * 10 % 1) {
     console.error('Bad firing cooldown:', firingCooldown, ' engine will round it to something?')
@@ -35,25 +35,19 @@ export const simulateFiringCycle = (weapon) => {
     cycleTime = null
   }
 
-  weapon.__cycleProjs = cycleProjs
-  weapon.__cycleTime = cycleTime
-
   return { cycleProjs, cycleTime }
 }
 
 export const calculateDps = (weapon, toShields = false) => {
   if (!weapon.RateOfFire || weapon.ForceSingleFire || weapon.FireOnDeath || ['Teleport', "Kamikaze"].includes(weapon.WeaponCategory)) return null
-
   const damage = calculateProjectileDamage(weapon, toShields)
-  const { cycleProjs, cycleTime } = simulateFiringCycle(weapon)
-
-  return Number(((damage * cycleProjs) / cycleTime).toFixed(2))
+  return Number(((damage * weapon.firingCycle.cycleProjs) / weapon.firingCycle.cycleTime).toFixed(2))
 }
 
 export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true) => {
   if (toShields) return null
 
-  const { cycleProjs, cycleTime } = simulateFiringCycle(weapon)
+  const { cycleProjs, cycleTime } = weapon.firingCycle
   if (!cycleTime) return null
 
   if (weapon.BeamLifetime && weapon.BeamLifetime !== 0) {

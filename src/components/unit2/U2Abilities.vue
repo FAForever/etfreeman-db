@@ -10,7 +10,7 @@ const isCompact = computed(() => abilities.length <= 3)
 const isShown = computed(() => abilities.length > 0)
 const expandScore = computed(() => abilities.length / 3)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'abilities', isCompact, isShown, expandScore })
 </script>
 
 <template>

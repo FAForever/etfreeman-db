@@ -23,7 +23,7 @@ const isCompact = computed(() => transportItems.length <= 3)
 const isShown = computed(() => !!unit.Transport && unit.Transport.AirClass && transportItems.length > 0)
 const expandScore = computed(() => transportItems.length / 3)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'transport', isCompact, isShown, expandScore })
 </script>
 
 <template>

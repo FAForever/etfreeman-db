@@ -19,6 +19,13 @@ const subtitleProps = computed(() => unit.General.UnitName
   ? { is: 'div', attrs: {} }
   : { is: 'a', attrs: { href: blueprintUrl.value, target: '_blank', class: 'link link-underline' } }
 )
+
+const isShown = computed(() => true)
+const isCompact = computed(() => false)
+const expandScore = computed(() => 0)
+const rowSpan = computed(() => 1)
+
+defineExpose({ key: 'header', isShown, isCompact, expandScore, rowSpan })
 </script>
 
 <template>

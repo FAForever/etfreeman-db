@@ -70,9 +70,11 @@ export function useOptimalLayout(tierTree, containerWidth, options = {}) {
     const widths = sectionNames.map(s => Math.min(calcSectionWidth(sections[s]) + sectionGap, maxWidth))
     const allIndexes = Array.from({ length: sectionNames.length }, (_, i) => i)
 
-    const highPriorityIndexes = ['Land', 'Air', 'Naval']
-      .map(name => sectionNames.indexOf(name))
-      .filter(idx => idx > -1)
+    const highPriorityIndexes = sectionNames
+      .map((name, idx) => ({ idx, priority: getSectionPriority(name) }))
+      .filter(item => item.priority > 0)
+      .sort((a, b) => b.priority - a.priority)
+      .map(item => item.idx)
 
     const bestRows = findBestArrangement(allIndexes, widths, maxWidth, highPriorityIndexes, sectionNames)
 

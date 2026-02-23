@@ -1,7 +1,7 @@
 <template>
   <div class="section-filters">
     <button
-      v-for="(isShown, section) in compareStore.showedSections"
+      v-for="(isShown, section) in filteredSections"
       :key="section"
       :class="['section-filters__btn', { active: isShown }]"
       @click="compareStore.toggleSection(section)"
@@ -12,9 +12,15 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useCompareStore } from '@/stores/compare'
 
 const compareStore = useCompareStore()
+
+const filteredSections = computed(() => {
+  const { Header, ...rest } = compareStore.showedSections
+  return rest
+})
 </script>
 
 <style lang="sass">

@@ -42,7 +42,7 @@ const isShown = computed(() => true)
 const isCompact = computed(() => false)
 const expandScore = computed(() => 0)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'defense', isCompact, isShown, expandScore })
 </script>
 
 <template>

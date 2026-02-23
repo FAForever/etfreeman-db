@@ -103,7 +103,10 @@ const groupedBySlot = computed(() => {
   return groups
 })
 
-defineExpose({ isShown, rowSpan })
+const isCompact = computed(() => false)
+const expandScore = computed(() => 0)
+
+defineExpose({ key: 'enhancements', isShown, isCompact, expandScore, rowSpan })
 </script>
 
 <template>

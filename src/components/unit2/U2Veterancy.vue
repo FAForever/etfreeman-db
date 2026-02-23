@@ -53,7 +53,7 @@ const canGetVeterancy = computed(() =>
 )
 const isShown = computed(() => canGetVeterancy.value && !!unit.Defense)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'veterancy', isCompact, isShown, expandScore })
 
 const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 </script>

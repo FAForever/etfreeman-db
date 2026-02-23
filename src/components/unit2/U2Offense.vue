@@ -5,7 +5,8 @@ import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 import Icon from '../Icon.vue';
 import WeaponGroup from './WeaponGroup.vue';
 
-const { unit, weapons, compactOverride } = defineProps(['unit', 'weapons', 'compactOverride'])
+const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
+const weapons = unit.Weapon
 const compareStore = useCompareStore()
 const { getFractionHTML } = useCalcEfficiency('weapon')
 
@@ -104,7 +105,7 @@ const isCompact = computed(() => weaponColumns.value.length <= 3)
 const isShown = computed(() => Object.keys(weaponGroups.value).length > 0)
 const expandScore = computed(() => weaponColumns.value.length / 3 * 1.9)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'offense', isCompact, isShown, expandScore })
 
 const headReplacements = computed(() => ({
   'dps/mass': getFractionHTML(),

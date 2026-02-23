@@ -48,7 +48,7 @@ export const throttle = (fn, ms) => {
 
   return (...args) => {
     lastArgs = args
-    const now = Date.now()
+    const now = performance.now()
 
     if (now - lastCall >= ms) {
       lastCall = now
@@ -59,7 +59,7 @@ export const throttle = (fn, ms) => {
     if (!timeout) {
       timeout = setTimeout(() => {
         timeout = null
-        lastCall = Date.now()
+        lastCall = performance.now()
         fn(...lastArgs)
       }, ms - (now - lastCall))
     }

@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 const DEFAULTS = {
-  Defense: true, Economy: true, Offense: true, Physics: true,
+  Header: true, Defense: true, Economy: true, Offense: true, Physics: true,
   Abilities: true, Intel: true, Transport: true, Veterancy: true,
   Wreckage: true, Enhancements: true
 }

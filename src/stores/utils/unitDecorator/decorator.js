@@ -1,5 +1,5 @@
 import { getTech, kindMap } from '../categorizer.js'
-import { calculateDps, calculateProjectileDamage } from './dps/index.js'
+import { calculateDps, calculateProjectileDamage, calculateFiringCycle } from './dps/index.js'
 import { categorize } from '../categorizer.js'
 
 export const decorateUnit = (blueprint) => {
@@ -24,6 +24,7 @@ export const decorateUnit = (blueprint) => {
       weapon.__unitID = self.id
       if (weapon.WeaponCategory === 'Death' && !weapon.FireOnDeath) weapon.FireOnDeath = true
       if (weapon.WeaponCategory === 'Anti Navy') weapon.WeaponCategory = 'Anti-Navy'
+      weapon.firingCycle = calculateFiringCycle(weapon)
       weapon.dps = calculateDps(weapon, false)
       weapon.fullDamage = calculateProjectileDamage(weapon, false)
       if (weapon.DamageToShields) weapon.dpsShields = calculateDps(weapon, true)

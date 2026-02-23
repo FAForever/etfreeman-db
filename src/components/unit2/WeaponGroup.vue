@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useCompareStore } from '../../stores/compare'
 import { useCalcEfficiency } from '../../composables/useCalcEfficiency';
 import { addBr, round, roundIfPossible, shorten } from '../../composables/helpers/common';
-import { getDetailedCycle, getDoTBreakdown, simulateFiringCycle } from '../../stores/utils/unitDecorator/dps/index.js';
+import { getDetailedCycle, getDoTBreakdown } from '../../stores/utils/unitDecorator/dps/index.js';
 
 const { weapons, category, columns, economy } = defineProps(['weapons', 'category', 'columns', 'economy'])
 const compareStore = useCompareStore()
@@ -57,10 +57,10 @@ const getStat = (weapon, stat) => {
     case 'HP':
       return weapon.Projectile?.Health || null
     case 'cycle':
-      return [(category == 'Defense'? 1 : weapon.fullDamage) * weapon.__cycleProjs, weapon.FireOnDeath ? null : weapon.__cycleTime]
+      return [(category == 'Defense'? 1 : weapon.fullDamage) * weapon.firingCycle.cycleProjs, weapon.FireOnDeath ? null : weapon.firingCycle.cycleTime]
     case 'cycle to shields':
       if (!weapon.DamageToShields) return null
-      return [(category == 'Defense' ? 1 : (weapon.Damage + weapon.DamageToShields)) * weapon.__cycleProjs, weapon.FireOnDeath ? null : weapon.__cycleTime]
+      return [(category == 'Defense' ? 1 : (weapon.Damage + weapon.DamageToShields)) * weapon.firingCycle.cycleProjs, weapon.FireOnDeath ? null : weapon.firingCycle.cycleTime]
     default:
       console.error(`Unknown stat: ${stat}`)
       return null
@@ -115,7 +115,7 @@ const getCycleTooltip = (weapon, stat) => {
 
   const dot = getDoTBreakdown(weapon)
   if (dot.hasDoT) {
-    const { cycleProjs } = simulateFiringCycle(weapon)
+    const { cycleProjs } = weapon.firingCycle
     const instant = Math.round(dot.instant * cycleProjs)
     const dotDmg = Math.round(dot.dotTotal * cycleProjs)
 
@@ -125,7 +125,7 @@ const getCycleTooltip = (weapon, stat) => {
     }
 
     const plural = cycleProjs > 1 ? 's' : ''
-    const cycleTime = weapon.__cycleTime
+    const cycleTime = weapon.firingCycle.cycleTime
     const cycleTimeText = cycleTime === 1 ? '' : cycleTime?.toFixed(1)
     return `${instant}dmg + ${dotDmg} DoT\n${cycleProjs} shot${plural} / ${cycleTimeText}s`
   }
@@ -137,7 +137,7 @@ const getDoTTooltip = (weapon) => {
   const dot = getDoTBreakdown(weapon)
   if (!dot.hasDoT) return undefined
 
-  const { cycleProjs } = simulateFiringCycle(weapon)
+  const { cycleProjs } = weapon.firingCycle
   if (cycleProjs > 1) {
     const totalDot = dot.dotTotal * cycleProjs
     return `Each of ${cycleProjs} projectiles:\n${dot.ticks} tick${dot.ticks > 1 ? 's' : ''} of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${cycleProjs} × ${dot.dotTotal} = ${totalDot}dmg`

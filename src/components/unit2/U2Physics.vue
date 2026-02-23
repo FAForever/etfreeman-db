@@ -22,7 +22,7 @@ const isCompact = computed(() => physicsItems.length <= 3)
 const isShown = computed(() => physicsItems.length > 0)
 const expandScore = computed(() => physicsItems.length / 3)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'physics', isCompact, isShown, expandScore })
 
 const formatTime = (val) => {
   const m = Math.floor(val / 60)

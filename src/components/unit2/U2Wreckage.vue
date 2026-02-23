@@ -37,7 +37,7 @@ const isShown = computed(() => !!props.unit.Wreckage?.HealthMult)
 const isCompact = computed(() => true)
 const expandScore = computed(() => 1)
 
-defineExpose({ isShown, isCompact, expandScore })
+defineExpose({ key: 'wreckage', isShown, isCompact, expandScore })
 </script>
 
 <template>

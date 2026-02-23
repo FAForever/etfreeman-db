@@ -158,7 +158,7 @@ Supreme Commander unit database built with Vue.js 3.
   - Beams: `damage * (1 + floor(beamTicks / (collisionTicks + 1)))`
   - Non-beams: `damage * DoTPulses + InitialDamage`
   - Fragments: multiplies by `weapon.ProjectileFragmentMultiplier` (pre-calculated by generator)
-- `simulateFiringCycle(weapon)` - Returns `{ cycleProjs, cycleTime }`
+- `calculateFiringCycle(weapon)` - Returns `{ cycleProjs, cycleTime }`
   - Iterates `RackBones` with proper muzzle counting
   - Handles `RackFireTogether`, `MuzzleSalvoDelay`, `RackSalvoChargeTime`, `RackSalvoReloadTime`
 - `calculateDps(weapon, toShields)` - Returns `(damage * cycleProjs) / cycleTime`

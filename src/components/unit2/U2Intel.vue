@@ -27,7 +27,7 @@ const isCompact = computed(() => intelItems.length <= 3)
 const isShown = computed(() => intelItems.length > 0)
 const expandScore = computed(() => intelItems.length / 3)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'intel', isCompact, isShown, expandScore })
 </script>
 
 <template>

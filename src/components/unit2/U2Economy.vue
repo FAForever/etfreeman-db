@@ -33,7 +33,7 @@ const isCompact = computed(() => economyItems.length <= 3 && !projectiles.value.
 const isShown = computed(() => economyItems.length > 0 || projectiles.value.length > 0)
 const expandScore = computed(() => economyItems.length / 3 + 5 * projectiles.value.length)
 
-defineExpose({ isCompact, isShown, expandScore })
+defineExpose({ key: 'economy', isCompact, isShown, expandScore })
 </script>
 
 <template>
@@ -63,6 +63,6 @@ defineExpose({ isCompact, isShown, expandScore })
     color: #eee
   &_withweapons
     padding-bottom: 0 !important
-.uc:has(.u2economy_withweapons.last)
+.uc:has(.u2economy_withweapons:last-child)
   padding-bottom: 0 !important
 </style>

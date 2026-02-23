@@ -1,74 +1,44 @@
 <template>
-  <div class="uc faction" :class="[unit.faction.toLowerCase(), { 'uc--no-subgrid': !linedUp }]" :style="{ gridRow: `span ${rowCount}` }">
-    <U2Header ref="headerRef" :unit="unit" :style="{ order: getOrder('header') }" />
-    <U2Defense ref="defenseRef" v-if="showedSections?.Defense" :unit="unit" :compactOverride="getCompactOverride('defense')" :class="getColumnClass('defense')" :style="{ order: getOrder('defense') }" />
-    <U2Economy ref="economyRef" v-if="showedSections?.Economy" :unit="unit" :compactOverride="getCompactOverride('economy')" :class="[getOrder('economy') == sortedSections.length - 1 ? 'last' : '', getColumnClass('economy')]" :style="{ order: getOrder('economy') }" />
-    <U2Offense ref="offenseRef" v-if="showedSections?.Offense" :unit="unit" :weapons="unit.Weapon" :compactOverride="getCompactOverride('offense')" :class="getColumnClass('offense')" :style="{ order: getOrder('offense') }" />
-    <U2Physics ref="physicsRef" v-if="showedSections?.Physics" :unit="unit" :compactOverride="getCompactOverride('physics')" :class="getColumnClass('physics')" :style="{ order: getOrder('physics') }" />
-    <U2Abilities ref="abilitiesRef" v-if="showedSections?.Abilities" :unit="unit" :compactOverride="getCompactOverride('abilities')" :class="getColumnClass('abilities')" :style="{ order: getOrder('abilities') }" />
-    <U2Intel ref="intelRef" v-if="showedSections?.Intel" :unit="unit" :compactOverride="getCompactOverride('intel')" :class="getColumnClass('intel')" :style="{ order: getOrder('intel') }" />
-    <U2Transport ref="transportRef" v-if="showedSections?.Transport" :unit="unit" :compactOverride="getCompactOverride('transport')" :class="getColumnClass('transport')" :style="{ order: getOrder('transport') }" />
-    <U2Veterancy ref="veterancyRef" v-if="showedSections?.Veterancy" :unit="unit" :compactOverride="getCompactOverride('veterancy')" :class="getColumnClass('veterancy')" :style="{ order: getOrder('veterancy') }" />
-    <U2Wreckage ref="wreckageRef" v-if="showedSections?.Wreckage" :unit="unit" :compactOverride="getCompactOverride('wreckage')" :class="getColumnClass('wreckage')" :style="{ order: getOrder('wreckage') }" />
-    <U2Enhancements ref="enhancementsRef" v-if="showedSections?.Enhancements" :unit="unit" :style="{ order: getOrder('enhancements') }" />
+  <div class="uc faction" :class="[unit.faction.toLowerCase(), { 'uc--no-subgrid': !linedUp }]"
+    :style="{ gridRow: `span ${rowCount}` }">
+    <component v-for="section in sortedSections" :key="section.key" 
+      :is="getComponent(section.key)" ref="sectionRefs" :unit="unit"
+      :compactOverride="getCompactOverride(section.key)" :class="getColumnClass(section.key)" />
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed,  ref } from 'vue'
 import { useCompareStore } from '../stores/compare'
-import U2Abilities from './unit2/U2Abilities.vue';
-import U2Defense from './unit2/U2Defense.vue';
-import U2Economy from './unit2/U2Economy.vue';
-import U2Enhancements from './unit2/U2Enhancements.vue';
-import U2Header from './unit2/U2Header.vue';
-import U2Intel from './unit2/U2Intel.vue';
-import U2Offense from './unit2/U2Offense.vue';
-import U2Physics from './unit2/U2Physics.vue';
-import U2Transport from './unit2/U2Transport.vue';
-import U2Veterancy from './unit2/U2Veterancy.vue';
-import U2Wreckage from './unit2/U2Wreckage.vue';
+import { DEFAULT_ORDER } from '../stores/compare/sectionOrder.js'
+import * as SectionComponents from './unit2/index.js'
 
 const props = defineProps(['unit', 'showedSections', 'sectionOrder', 'compactOverrides', 'linedUp'])
 const compareStore = useCompareStore()
 
-const DEFAULT_ORDER = ['header', 'defense', 'economy', 'offense', 'physics',
-  'abilities', 'intel', 'transport', 'veterancy', 'wreckage', 'enhancements']
+const sectionRefs = ref([])
 
-const headerRef = ref(null)
-const defenseRef = ref(null)
-const economyRef = ref(null)
-const offenseRef = ref(null)
-const physicsRef = ref(null)
-const abilitiesRef = ref(null)
-const intelRef = ref(null)
-const transportRef = ref(null)
-const veterancyRef = ref(null)
-const wreckageRef = ref(null)
-const enhancementsRef = ref(null)
+const getComponent = key => SectionComponents['U2' + key.charAt(0).toUpperCase() + key.slice(1)]
 
 const sections = computed(() => {
   const s = props.showedSections || {}
-  return [
-    { key: 'header', show: true, compact: false, expandScore: 0, rowSpan: 1 },
-    { key: 'defense', show: s.Defense && defenseRef.value?.isShown, compact: defenseRef.value?.isCompact, expandScore: defenseRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'economy', show: s.Economy && economyRef.value?.isShown, compact: economyRef.value?.isCompact, expandScore: economyRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'offense', show: s.Offense && offenseRef.value?.isShown, compact: offenseRef.value?.isCompact, expandScore: offenseRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'physics', show: s.Physics && physicsRef.value?.isShown, compact: physicsRef.value?.isCompact, expandScore: physicsRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'abilities', show: s.Abilities && abilitiesRef.value?.isShown, compact: abilitiesRef.value?.isCompact, expandScore: abilitiesRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'intel', show: s.Intel && intelRef.value?.isShown, compact: intelRef.value?.isCompact, expandScore: intelRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'transport', show: s.Transport && transportRef.value?.isShown, compact: transportRef.value?.isCompact, expandScore: transportRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'veterancy', show: s.Veterancy && veterancyRef.value?.isShown, compact: veterancyRef.value?.isCompact, expandScore: veterancyRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'wreckage', show: s.Wreckage && wreckageRef.value?.isShown, compact: true, expandScore: wreckageRef.value?.expandScore || 0, rowSpan: 1 },
-    { key: 'enhancements', show: s.Enhancements && enhancementsRef.value?.isShown, compact: false, expandScore: 0, rowSpan: enhancementsRef.value?.rowSpan || 1 },
-  ]
+  return DEFAULT_ORDER.map(key => {
+    const toggleKey = key.charAt(0).toUpperCase() + key.slice(1)
+    const ref = sectionRefs.value.find(r => r.key === key)
+    return {
+      key,
+      show: s[toggleKey] && ref?.isShown,
+      compact: ref?.isCompact,
+      expandScore: ref?.expandScore || 0,
+      rowSpan: ref?.rowSpan || 1
+    }
+  })
 })
 
 const sortedSections = computed(() => {
   const order = props.sectionOrder || DEFAULT_ORDER
   const orderIndex = Object.fromEntries(order.map((k, i) => [k, i]))
   return sections.value
-    .filter(s => s.show)
     .map(s => ({
       ...s,
       compact: compareStore.toggles.compactSections ? (props.compactOverrides?.[s.key] ?? s.compact) : false
@@ -80,7 +50,7 @@ const layoutInfo = computed(() => {
   const columns = {}
   const expanded = new Set()
   let total = 0
-  const secs = sortedSections.value
+  const secs = sortedSections.value.filter(s => s.show)
 
   for (let i = 0; i < secs.length; i++) {
     const sec = secs[i]
@@ -114,15 +84,6 @@ const getColumnClass = (key) => {
   const col = getColumn(key)
   return col ? `uc__section_column-${col}` : null
 }
-
-const sectionOrderIndex = computed(() => {
-  const map = {}
-  const order = props.sectionOrder || DEFAULT_ORDER
-  order.forEach((key, index) => map[key] = index)
-  return map
-})
-
-const getOrder = (key) => sectionOrderIndex.value[key] ?? 99
 
 const getCompactOverride = (key) => {
   if (!compareStore.toggles.compactSections) return false
