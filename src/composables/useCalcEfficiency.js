@@ -27,6 +27,15 @@ export function useCalcEfficiency(type) {
     return invert.value ? divisor / value : value / divisor
   }
 
+  const calculateWeapon = (value, economy) => {
+    if (value == null) return null
+    const [rate] = mode.value.split('/')
+    const isPerMinute = rate === 'DPM'
+    const divisor = getDivisor(economy)
+    const adjusted = value * (isPerMinute ? 60 : 1)
+    return calculate(adjusted, divisor)
+  }
+
   const getFractionHTML = (isShields = false) => {
     const num = invert.value ? parsed.value.denominator : parsed.value.numerator
     const denom = invert.value ? parsed.value.numerator : parsed.value.denominator
@@ -36,6 +45,6 @@ export function useCalcEfficiency(type) {
 
   return {
     mode, invert, parsed, denominatorLabel,
-    getDivisor, calculate, getFractionHTML
+    getDivisor, calculate, calculateWeapon, getFractionHTML
   }
 }
