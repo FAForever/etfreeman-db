@@ -32,3 +32,7 @@ export const aggregateColumnFormat = (stats, key, category, getEfficiencyValue) 
       return stats[key].map(el => getStatText(null, key, el || 0, category, getEfficiencyValue)).join(', ')
   }
 }
+
+export const createFormatter = (statsHelper) => ({
+  aggregateColumnFormat: (stats, key) => aggregateColumnFormat(stats, key, statsHelper.category, statsHelper.getEfficiencyValue)
+})
