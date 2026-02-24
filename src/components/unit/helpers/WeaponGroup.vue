@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useCompareStore } from '@/stores/compare'
-import { getTooltip, getTractorTooltip } from '@/composables/weapon/weaponTooltips'
+import { getTooltip, tractorTooltip } from '@/composables/weapon/weaponTooltips'
 import { useWeaponGrouping } from '@/composables/weapon/useWeaponGrouping'
 
 const { weapons, category, columns, economy } = defineProps(['weapons', 'category', 'columns', 'economy'])
@@ -14,26 +14,22 @@ defineExpose({ toggleExpanded, isExpanded })
 const { aggregatedStats, groupedWeapons, getDisplayName, stats } =
   useWeaponGrouping(weapons, category, columns, economy, isExpanded)
 
-const tractorTooltip = getTractorTooltip(weapons)
-
 const shouldHighlightCollapsed = computed(() =>
   compareStore.toggles.highlightGroupedWeapons && !isExpanded.value && weapons.length > 1
 )
-
-const getCellTooltip = (weapon, col) => getTooltip(weapon, col, category)
 
 const getCellContent = (weapon, col) => stats.getStatText(weapon, col, undefined) ?? '-'
 </script>
 
 <template>
   <tr v-if="weapons.length == 1">
-    <td v-for="col in columns" :key="col" :data-tooltip="getCellTooltip(weapons[0], col)" data-tooltip-params="big-top-left" v-html="getCellContent(weapons[0], col)" />
+    <td v-for="col in columns" :key="col" :data-tooltip="getTooltip(weapons[0], col)" data-tooltip-params="big-top-left" v-html="getCellContent(weapons[0], col)" />
   </tr>
   <template v-else>
     <tr class="weaponGroup" :class="{ active: isExpanded, highlighted: shouldHighlightCollapsed }" @click="toggleExpanded" style="cursor: pointer">
       <template v-for="col, index in columns" :key="col">
         <td v-if="index" v-html="aggregatedStats[col] || '-'" />
-        <td v-else :data-tooltip="tractorTooltip" data-tooltip-params="big-top-right">
+        <td v-else :data-tooltip="weapons.some(w => w.TractorDamage) ? tractorTooltip : null" data-tooltip-params="big-top-right">
           <div class="groupToggle" @click.stop="toggleExpanded">
             <div class="groupToggle__triangle" :class="{ active: isExpanded }"></div>
             <div v-html="aggregatedStats[col] || '-'"></div>
@@ -44,7 +40,7 @@ const getCellContent = (weapon, col) => stats.getStatText(weapon, col, undefined
     <template v-if="isExpanded">
       <tr v-for="group, index in groupedWeapons" :key="group.signature" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
         <td v-for="col, colIndex in columns" :key="col"
-        :data-tooltip="colIndex ? getCellTooltip(group.weapons[0], col) : undefined"
+        :data-tooltip="colIndex ? getTooltip(group.weapons[0], col) : undefined"
         data-tooltip-params="big-top-left"
         v-html="colIndex ? getCellContent(group.weapons[0], col) : getDisplayName(group)"></td>
       </tr>
