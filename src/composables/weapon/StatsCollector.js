@@ -1,4 +1,6 @@
-export const createStatsCollector = (columns, sumColumns = []) => {
+import { Column } from '@/composables/useWeaponColumns.js'
+
+export const createStatsCollector = (columns, sumColumns = [Column.DPS, Column.DPS_PER_MASS, Column.DPS_TO_SHIELDS, Column.DPS_TO_SHIELDS_PER_MASS, Column.CYCLE, Column.CYCLE_TO_SHIELDS]) => {
   const configs = new Map()
 
   for (const col of columns) {

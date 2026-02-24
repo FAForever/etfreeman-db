@@ -41,13 +41,13 @@ export const getStat = (weapon, stat, category, getEfficiencyValue) => {
       return weapon.Projectile?.Health || null
     case Column.CYCLE: {
       const damageMultiplier = category === 'Defense' ? 1 : weapon.fullDamage
-      const cycleTime = isOneTimeUse(weapon, category) ? null : weapon.firingCycle.cycleTime
+      const cycleTime = isOneTimeUse(weapon) ? null : weapon.firingCycle.cycleTime
       return [damageMultiplier * weapon.firingCycle.cycleProjs, cycleTime]
     }
     case Column.CYCLE_TO_SHIELDS: {
       if (!weapon.DamageToShields) return null
       const damageMultiplier = category === 'Defense' ? 1 : (weapon.Damage + weapon.DamageToShields)
-      const cycleTime = isOneTimeUse(weapon, category) ? null : weapon.firingCycle.cycleTime
+      const cycleTime = isOneTimeUse(weapon) ? null : weapon.firingCycle.cycleTime
       return [damageMultiplier * weapon.firingCycle.cycleProjs, cycleTime]
     }
     default:
@@ -59,7 +59,7 @@ export const getStat = (weapon, stat, category, getEfficiencyValue) => {
 export const getCycleTextFromVal = (val, weapon, category) => {
   const isNukeWithNullCycle = weapon?.NukeInnerRingDamage && val[1] === null
   const hasDoT = (weapon?.DoTPulses || 1) > 1
-  const needsTooltip = hasDoT && (isOneTimeUse(weapon, category) || val[1] === null)
+  const needsTooltip = hasDoT && (isOneTimeUse(weapon) || val[1] === null)
   const dmgPart = shorten(val[0], false).toUpperCase() + (category === 'Defense' ? '&nbsp;proj.' : '&nbsp;dmg')
 
   if (isNukeWithNullCycle || needsTooltip) {

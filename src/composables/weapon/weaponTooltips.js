@@ -22,7 +22,7 @@ export const getCycleTooltip = (weapon, stat, category) => {
     const instant = Math.round(dot.instant * cycleProjs)
     const dotDmg = Math.round(dot.dotTotal * cycleProjs)
 
-    if (isOneTimeUse(weapon, category)) {
+    if (isOneTimeUse(weapon)) {
       return `${instant}dmg + ${dotDmg} DoT`
     }
 

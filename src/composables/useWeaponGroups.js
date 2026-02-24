@@ -13,16 +13,33 @@ const categorizeWeapon = (weapon) => {
     let str = weapon.DisplayName
     if (weapon.Label == "AutoOverCharge" && !weapon.DisplayName.match('Auto'))
       str = str.replace('Overcharge', 'AutoOvercharge')
-    return str.replace('Overcharge', 'OC')
+    weapon.__category = str.replace('Overcharge', 'OC')
+    return weapon.__category
   }
-  if (weapon.WeaponCategory == 'Missile' && weapon.NukeInnerRingRadius) return 'Nuke'
-  if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode') return 'Sniper mode'
-  if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled) return 'Kamikaze' // fire beetle moment
+  if (weapon.WeaponCategory == 'Missile' && weapon.NukeInnerRingRadius) {
+    weapon.__category = 'Nuke'
+    return weapon.__category
+  }
+  if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode') {
+    weapon.__category = 'Sniper mode'
+    return weapon.__category
+  }
+  if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled) {
+    weapon.__category = 'Kamikaze'
+    return weapon.__category
+  }
   if (weapon.WeaponCategory == 'Defense') {
-    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('missile')) return 'Anti-Missile'
-    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('torpedo')) return 'Anti-Torpedo'
+    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('missile')) {
+      weapon.__category = 'Anti-Missile'
+      return weapon.__category
+    }
+    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('torpedo')) {
+      weapon.__category = 'Anti-Torpedo'
+      return weapon.__category
+    }
   }
-  return CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory
+  weapon.__category = CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory
+  return weapon.__category
 }
 
 export function useWeaponGroups(weapons) {
