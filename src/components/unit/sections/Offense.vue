@@ -106,6 +106,14 @@ watch(weaponColumns, optimizeTableWidth)
     td, th
       padding: 2px var(--cellpadding, 8px)
       transition: background 0.2s ease-out
+    td[data-tooltip]:not(:has([data-tooltip-target]))
+      padding-bottom: 7px
+      padding-top: 7px
+      text-underline-offset: 3px
+    th [data-tooltip]
+      display: block
+      padding-bottom: 3px 
+      padding-top: 3px
     tbody tr td
       padding-top: 4px
     td:not(:last-child), th:not(:last-child)

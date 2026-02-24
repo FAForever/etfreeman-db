@@ -14,21 +14,13 @@ const categorizeWeapon = (weapon) => {
     if (weapon.Label == "AutoOverCharge" && !weapon.DisplayName.match('Auto'))
       str = str.replace('Overcharge', 'AutoOvercharge')
     weapon.__category = str.replace('Overcharge', 'OC')
-    return weapon.__category
-  }
-  if (weapon.WeaponCategory == 'Missile' && weapon.NukeInnerRingRadius) {
+  } else if (weapon.WeaponCategory == 'Missile' && weapon.NukeInnerRingRadius) {
     weapon.__category = 'Nuke'
-    return weapon.__category
-  }
-  if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode') {
+  } else if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode') {
     weapon.__category = 'Sniper mode'
-    return weapon.__category
-  }
-  if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled) {
+  } else if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled) {
     weapon.__category = 'Kamikaze'
-    return weapon.__category
-  }
-  if (weapon.WeaponCategory == 'Defense') {
+  } else if (weapon.WeaponCategory == 'Defense') {
     if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('missile')) {
       weapon.__category = 'Anti-Missile'
       return weapon.__category
@@ -37,8 +29,7 @@ const categorizeWeapon = (weapon) => {
       weapon.__category = 'Anti-Torpedo'
       return weapon.__category
     }
-  }
-  weapon.__category = CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory
+  } else weapon.__category = CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory
   return weapon.__category
 }
 

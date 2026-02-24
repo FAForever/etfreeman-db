@@ -4,26 +4,24 @@ import { useCompareStore } from '@/stores/compare'
 import { getTooltip, tractorTooltip } from '@/composables/weapon/weaponTooltips'
 import { useWeaponGrouping } from '@/composables/weapon/useWeaponGrouping'
 
-const { weapons, category, columns, economy } = defineProps(['weapons', 'category', 'columns', 'economy'])
+const { weapons, columns, economy } = defineProps(['weapons', 'columns', 'economy'])
 const compareStore = useCompareStore()
 
 const isExpanded = ref(true)
 const toggleExpanded = () => { isExpanded.value = !isExpanded.value }
 defineExpose({ toggleExpanded, isExpanded })
 
-const { aggregatedStats, groupedWeapons, getDisplayName, stats } =
-  useWeaponGrouping(weapons, category, columns, economy, isExpanded)
+const { aggregatedStats, groupedWeapons, getDisplayName, getStatText } =
+  useWeaponGrouping(weapons, columns, economy, isExpanded)
 
 const shouldHighlightCollapsed = computed(() =>
   compareStore.toggles.highlightGroupedWeapons && !isExpanded.value && weapons.length > 1
 )
-
-const getCellContent = (weapon, col) => stats.getStatText(weapon, col, undefined) ?? '-'
 </script>
 
 <template>
   <tr v-if="weapons.length == 1">
-    <td v-for="col in columns" :key="col" :data-tooltip="getTooltip(weapons[0], col)" data-tooltip-params="big-top-left" v-html="getCellContent(weapons[0], col)" />
+    <td v-for="col in columns" :key="col" :data-tooltip="getTooltip(weapons[0], col)" data-tooltip-params="big-top-left" v-html="getStatText(weapons[0], col)" />
   </tr>
   <template v-else>
     <tr class="weaponGroup" :class="{ active: isExpanded, highlighted: shouldHighlightCollapsed }" @click="toggleExpanded" style="cursor: pointer">
@@ -42,7 +40,7 @@ const getCellContent = (weapon, col) => stats.getStatText(weapon, col, undefined
         <td v-for="col, colIndex in columns" :key="col"
         :data-tooltip="colIndex ? getTooltip(group.weapons[0], col) : undefined"
         data-tooltip-params="big-top-left"
-        v-html="colIndex ? getCellContent(group.weapons[0], col) : getDisplayName(group)"></td>
+        v-html="colIndex ? getStatText(group.weapons[0], col) : getDisplayName(group)"></td>
       </tr>
     </template>
   </template>
