@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useCompareStore } from '@/stores/compare'
-import { getStatText } from '@/composables/weapon/weaponStats'
 import { getTooltip, getTractorTooltip } from '@/composables/weapon/weaponTooltips'
 import { useWeaponGrouping } from '@/composables/weapon/useWeaponGrouping'
 
@@ -12,7 +11,7 @@ const isExpanded = ref(true)
 const toggleExpanded = () => { isExpanded.value = !isExpanded.value }
 defineExpose({ toggleExpanded, isExpanded })
 
-const { aggregatedStats, groupedWeapons, getDisplayName, getEfficiencyValue } =
+const { aggregatedStats, groupedWeapons, getDisplayName, stats } =
   useWeaponGrouping(weapons, category, columns, economy, isExpanded)
 
 const tractorTooltip = getTractorTooltip(weapons)
@@ -23,7 +22,7 @@ const shouldHighlightCollapsed = computed(() =>
 
 const getCellTooltip = (weapon, col) => getTooltip(weapon, col, category)
 
-const getCellContent = (weapon, col) => getStatText(weapon, col, undefined, category, getEfficiencyValue) ?? '-'
+const getCellContent = (weapon, col) => stats.getStatText(weapon, col, undefined) ?? '-'
 </script>
 
 <template>

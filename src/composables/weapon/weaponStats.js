@@ -112,6 +112,8 @@ export const aggregateColumn = (stats, key, category, getEfficiencyValue) => {
 }
 
 export const createStatsHelper = (category, getEfficiencyValue) => ({
+  category,
+  getEfficiencyValue,
   getStat: (weapon, stat) => getStat(weapon, stat, category, getEfficiencyValue),
   getStatText: (weapon, stat, value) => getStatText(weapon, stat, value, category, getEfficiencyValue),
   aggregateColumn: (stats, key) => aggregateColumn(stats, key, category, getEfficiencyValue)
