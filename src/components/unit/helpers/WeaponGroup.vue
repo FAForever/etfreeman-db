@@ -1,10 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { useCompareStore } from '@/stores/compare'
 import { getTooltip, tractorTooltip } from '@/composables/weapon/weaponTooltips'
 import { useWeaponGrouping } from '@/composables/weapon/useWeaponGrouping'
 
-const { weapons, columns, economy } = defineProps(['weapons', 'columns', 'economy'])
+const props = defineProps(['weapons', 'columns', 'economy'])
+const { weapons, columns, economy } = toRefs(props)
 const compareStore = useCompareStore()
 
 const isExpanded = ref(true)
@@ -36,7 +37,7 @@ const shouldHighlightCollapsed = computed(() =>
       </template>
     </tr>
     <template v-if="isExpanded">
-      <tr v-for="group, index in groupedWeapons" :key="group.signature" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
+      <tr v-for="group, index in groupedWeapons" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
         <td v-for="col, colIndex in columns" :key="col"
         :data-tooltip="colIndex ? getTooltip(group.weapons[0], col) : undefined"
         data-tooltip-params="big-top-left"

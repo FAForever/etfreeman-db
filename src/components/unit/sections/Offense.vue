@@ -47,7 +47,7 @@ watch(weaponColumns, optimizeTableWidth)
         </thead>
         <tbody>
           <WeaponGroup v-for="(weapons, category) in groups" :key="category" ref="weaponGroupRefs" :columns="weaponColumns"
-            :category="category" :weapons="weapons" :economy="unit.Economy" />
+            :weapons="weapons" :economy="unit.Economy" />
         </tbody>
       </table>
     </div>

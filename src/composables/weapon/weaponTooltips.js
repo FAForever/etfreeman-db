@@ -1,7 +1,7 @@
 import { shorten } from '@/composables/helpers/common'
 import { getDetailedCycle, getDoTBreakdown } from '@/stores/utils/unitDecorator/dps/index.js'
 import { Column } from '@/composables/useWeaponColumns'
-import { isOneTimeUse } from '@/composables/useWeaponStats'
+import { isOneTimeUse } from '../helpers/weaponHelper'
 
 const getCycleTooltip = (weapon, stat) => {
   if (stat === Column.CYCLE_TO_SHIELDS) {

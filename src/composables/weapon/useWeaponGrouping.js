@@ -4,52 +4,51 @@ import { addBr } from '@/composables/helpers/common'
 import { createStatsHelper } from '@/composables/weapon/weaponStats'
 import { createStatsCollector } from '@/composables/weapon/StatsCollector'
 
-export const useWeaponGrouping = (weapons, columns, economy, isExpanded) => {
+export const useWeaponGrouping = (weaponsRef, columnsRef, economyRef, isExpanded) => {
   const { calculateWeapon } = useCalcEfficiency('weapon')
-  const getEfficiencyValue = (dpsValue) => calculateWeapon(dpsValue, economy)
 
-  const category = weapons[0]?.__category
+  const statsHelper = computed(() => {
+    const getEfficiencyValue = (dpsValue) => calculateWeapon(dpsValue, economyRef.value)
+    return createStatsHelper(weaponsRef.value[0]?.__category, getEfficiencyValue)
+  })
 
-  const statsHelper = createStatsHelper(category, getEfficiencyValue)
+  const aggregatedStats = computed(() => {
+    const weapons = weaponsRef.value
+    const columns = columnsRef.value
+    const stats = statsHelper.value
 
-  const collectStats = () => {
     const collector = createStatsCollector(columns)
     for (const weapon of weapons) {
       for (const column of columns) {
-        collector.add(column, statsHelper.getStat(weapon, column))
+        collector.add(column, stats.getStat(weapon, column))
       }
     }
-    return collector.toArray()
-  }
+    const rawStats = collector.toArray()
 
-  const aggregateStats = (rawStats) => {
+    const result = {}
     for (const column in rawStats) {
-      rawStats[column] = statsHelper.aggregateColumn(rawStats, column)
-      if (rawStats[column] == undefined || rawStats[column] == '') {
-        rawStats[column] = '-'
-      }
+      result[column] = stats.aggregateColumn(rawStats, column)
     }
-    return rawStats
-  }
-
-  const aggregatedStats = computed(() => {
-    const rawStats = collectStats()
-    return aggregateStats(rawStats)
+    return result
   })
 
   const groupedWeapons = computed(() => {
     if (!isExpanded.value) return []
 
+    const weapons = weaponsRef.value
+    const columns = columnsRef.value
+    const stats = statsHelper.value
+
     const groupMap = {}
     for (const weapon of weapons) {
-      const signature = columns.map(col => statsHelper.getStat(weapon, col)).join('|')
+      const signature = columns.map(col => stats.getStat(weapon, col)).join('|')
 
       const existing = groupMap[signature]
       if (existing) {
         existing.count++
         existing.weapons.push(weapon)
       } else {
-        groupMap[signature] = { signature, count: 1, weapons: [weapon] }
+        groupMap[signature] = { count: 1, weapons: [weapon] }
       }
     }
     return Object.values(groupMap)
@@ -61,10 +60,7 @@ export const useWeaponGrouping = (weapons, columns, economy, isExpanded) => {
     return name
   }
 
-  return {
-    aggregatedStats,
-    groupedWeapons,
-    getDisplayName,
-    getStatText: statsHelper.getStatText
-  }
+  const getStatText = (weapon, stat) => statsHelper.value.getStatText(weapon, stat)
+
+  return { aggregatedStats, groupedWeapons, getDisplayName, getStatText }
 }

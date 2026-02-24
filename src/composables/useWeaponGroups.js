@@ -13,24 +13,21 @@ const categorizeWeapon = (weapon) => {
     let str = weapon.DisplayName
     if (weapon.Label == "AutoOverCharge" && !weapon.DisplayName.match('Auto'))
       str = str.replace('Overcharge', 'AutoOvercharge')
-    weapon.__category = str.replace('Overcharge', 'OC')
-  } else if (weapon.WeaponCategory == 'Missile' && weapon.NukeInnerRingRadius) {
-    weapon.__category = 'Nuke'
-  } else if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode') {
-    weapon.__category = 'Sniper mode'
-  } else if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled) {
-    weapon.__category = 'Kamikaze'
-  } else if (weapon.WeaponCategory == 'Defense') {
-    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('missile')) {
-      weapon.__category = 'Anti-Missile'
-      return weapon.__category
-    }
-    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('torpedo')) {
-      weapon.__category = 'Anti-Torpedo'
-      return weapon.__category
-    }
-  } else weapon.__category = CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory
-  return weapon.__category
+    return str.replace('Overcharge', 'OC')
+  }
+  if (weapon.WeaponCategory == 'Missile' && weapon.NukeInnerRingRadius)
+    return 'Nuke'
+  if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode')
+    return 'Sniper mode'
+  if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled)
+    return 'Kamikaze'
+  if (weapon.WeaponCategory == 'Defense') {
+    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('missile'))
+      return 'Anti-Missile'
+    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('torpedo'))
+      return 'Anti-Torpedo'
+  }
+  return CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory
 }
 
 export function useWeaponGroups(weapons) {
@@ -42,6 +39,7 @@ export function useWeaponGroups(weapons) {
       if (weapon.WeaponCategory == "Kamikaze" && weapon.fullDamage == 1) return acc // fire beetle moment
 
       const category = categorizeWeapon(weapon)
+      weapon.__category = category
       if (!acc[category]) acc[category] = []
       acc[category].push(weapon)
       return acc

@@ -1,6 +1,6 @@
 import { round, roundIfPossible, shorten, smartRound } from '@/composables/helpers/common'
 import { Column } from '@/composables/useWeaponColumns'
-import { isOneTimeUse } from '@/composables/useWeaponStats'
+import { isOneTimeUse } from '../helpers/weaponHelper'
 
 const getStat = (ctx, weapon, stat) => {
   const { category, getEfficiencyValue } = ctx
@@ -16,11 +16,11 @@ const getStat = (ctx, weapon, stat) => {
     case Column.DPS:
       return weapon.dps
     case Column.DPS_PER_MASS:
-      return getEfficiencyValue?.(weapon.dps)
+      return getEfficiencyValue(weapon.dps)
     case Column.DPS_TO_SHIELDS:
       return weapon.dpsShields
     case Column.DPS_TO_SHIELDS_PER_MASS:
-      return getEfficiencyValue?.(weapon.dpsShields)
+      return getEfficiencyValue(weapon.dpsShields)
     case Column.DOT:
       return weapon.DoTTime || null
     case Column.MUZZLE_VELOCITY:
@@ -92,8 +92,9 @@ const aggregateColumn = (ctx, stats, column) => {
       return smartRound(values.reduce((a, b) => a + (b || 0), 0))
 
     case Column.DPS_PER_MASS:
+      return smartRound(getEfficiencyValue((stats[Column.DPS] || []).reduce((a, b) => a + (b || 0), 0)))
     case Column.DPS_TO_SHIELDS_PER_MASS:
-      return smartRound(getEfficiencyValue?.(values.reduce((a, b) => a + (b || 0), 0)))
+      return smartRound(getEfficiencyValue((stats[Column.DPS_TO_SHIELDS] || []).reduce((a, b) => a + (b || 0), 0)))
 
     case Column.CYCLE:
     case Column.CYCLE_TO_SHIELDS: {
