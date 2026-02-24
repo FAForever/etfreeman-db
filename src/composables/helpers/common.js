@@ -21,6 +21,11 @@ export const round = (value, decimals = 0) => {
   return Math.round((value || 0) * multiplier) / multiplier
 }
 
+export const smartRound = (val) => {
+  const decimals = val >= 1000 ? 0 : (val >= 100 ? 1 : 2)
+  return round(val, decimals)
+}
+
 export const roundIfPossible = (value, decimals) => {
   if (typeof value === 'number') return round(value, decimals)
   return value
