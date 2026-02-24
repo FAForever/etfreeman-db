@@ -29,6 +29,7 @@ const physicsItems = [
   { text: 'Sniper mode speed', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier ** 2, 2) },
   { text: 'Turn rate', value: physics.TurnRate },
   { text: 'Turn speed', value: air.TurnSpeed },
+  { text: 'StartTurnDistance ', value: air.StartTurnDistance },
   { text: 'Backup Distance', value: physics.BackUpDistance},
   { text: 'Elevation', value: physics.Elevation, dontSkipZero: true },
   { text: 'Combat turn speed', value: air.CombatTurnSpeed },

@@ -23,7 +23,6 @@ export const decorateUnit = (blueprint) => {
     for (const weapon of blueprint.Weapon) {
       weapon.__unitID = self.id
       if (weapon.WeaponCategory === 'Death' && !weapon.FireOnDeath) weapon.FireOnDeath = true
-      if (weapon.WeaponCategory === 'Anti Navy') weapon.WeaponCategory = 'Anti-Navy'
       weapon.firingCycle = calculateFiringCycle(weapon)
       weapon.dps = calculateDps(weapon, false)
       weapon.fullDamage = calculateProjectileDamage(weapon, false)

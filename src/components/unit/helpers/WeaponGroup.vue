@@ -4,6 +4,7 @@ import { useCompareStore } from '@/stores/compare'
 import { useCalcEfficiency } from '@/composables/useCalcEfficiency';
 import { addBr, round, roundIfPossible, shorten } from '@/composables/helpers/common';
 import { getDetailedCycle, getDoTBreakdown } from '@/stores/utils/unitDecorator/dps/index.js';
+import { Column } from '@/composables/useWeaponColumns';
 
 const { weapons, category, columns, economy } = defineProps(['weapons', 'category', 'columns', 'economy'])
 const compareStore = useCompareStore()
@@ -26,39 +27,39 @@ const getStat = (weapon, stat) => {
   if (!weapon)
     return null
   switch (stat) {
-    case 'type':
+    case Column.TYPE:
       return category
-    case 'range':
+    case Column.RANGE:
       if (weapon?.MinRadius) return [weapon.MinRadius, weapon.MaxRadius]
       return weapon?.MaxRadius || null
-    case 'AoE':
+    case Column.AOE:
       return weapon.DamageRadius || (weapon.NukeInnerRingRadius ? [weapon.NukeInnerRingRadius, weapon.NukeOuterRingRadius] : undefined)
-    case 'DPS':
+    case Column.DPS:
       return weapon.dps
-    case 'dps/mass':
+    case Column.DPS_PER_MASS:
       return getEfficiencyValue(weapon.dps)
-    case 'DPS to shields':
+    case Column.DPS_TO_SHIELDS:
       return weapon.dpsShields
-    case 'DPS to shields / mass':
+    case Column.DPS_TO_SHIELDS_PER_MASS:
       return getEfficiencyValue(weapon.dpsShields)
-    case 'DoT':
+    case Column.DOT:
       return weapon.DoTTime || null
-    case 'muzzleVel':
+    case Column.MUZZLE_VELOCITY:
       if (weapon.BeamLifetime !== undefined) return '∞'
       return weapon.MuzzleVelocity
-    case 'randomness':
+    case Column.RANDOMNESS:
       return weapon.FiringRandomness
-    case 'randomnessMove':
+    case Column.RANDOMNESS_MOVE:
       return weapon.FiringRandomnessWhileMoving
-    case 'firingTol':
+    case Column.FIRING_TOLERANCE:
       return weapon.FiringTolerance
-    case 'yaw':
+    case Column.YAW:
       return weapon.TurretYawRange
-    case 'HP':
+    case Column.HP:
       return weapon.Projectile?.Health || null
-    case 'cycle':
+    case Column.CYCLE:
       return [(category == 'Defense'? 1 : weapon.fullDamage) * weapon.firingCycle.cycleProjs, weapon.FireOnDeath ? null : weapon.firingCycle.cycleTime]
-    case 'cycle to shields':
+    case Column.CYCLE_TO_SHIELDS:
       if (!weapon.DamageToShields) return null
       return [(category == 'Defense' ? 1 : (weapon.Damage + weapon.DamageToShields)) * weapon.firingCycle.cycleProjs, weapon.FireOnDeath ? null : weapon.firingCycle.cycleTime]
     default:
@@ -85,13 +86,13 @@ const getStatText = (weapon, stat, value) => {
   if (val == null) {
     val = '-'
   }
-  if (stat == 'DoT')
+  if (stat == Column.DOT)
     return (val && !isNaN(val)) ? round(val, 1) + 's' : val
-  if (stat == 'cycle' || stat == 'cycle to shields')
+  if (stat == Column.CYCLE || stat == Column.CYCLE_TO_SHIELDS)
     return getCycleTextFromVal(val, weapon)
-  if (stat == 'HP')
+  if (stat == Column.HP)
     return shorten(val)
-  if (['range', 'AoE'].includes(stat) && Array.isArray(val))
+  if ([Column.RANGE, Column.AOE].includes(stat) && Array.isArray(val))
     return `${val[0]}&#8209;${shorten(val[1])}`
   if (typeof (val) == 'number') {
     const decimals = val >= 1000 ? 0 : (val >= 100 ? 1 : 2)
@@ -101,7 +102,7 @@ const getStatText = (weapon, stat, value) => {
 }
 
 const getCycleTooltip = (weapon, stat) => {
-  if (stat === 'cycle to shields') {
+  if (stat === Column.CYCLE_TO_SHIELDS) {
     return getDetailedCycle(weapon, true)
   }
 
@@ -146,17 +147,19 @@ const getDoTTooltip = (weapon) => {
   return `${dot.ticks} tick${dot.ticks > 1 ? 's' : ''} of ${weapon.Damage}dmg / ${dot.interval.toFixed(1)}s\nTotal DoT: ${dot.dotTotal}dmg`
 }
 
+const EFF_COLUMNS = [Column.DPS, Column.DPS_PER_MASS, Column.DPS_TO_SHIELDS, Column.DPS_TO_SHIELDS_PER_MASS, Column.CYCLE, Column.CYCLE_TO_SHIELDS]
+
 const getGroupStatText = computed(() => {
-  const stats = Object.fromEntries(columns.map(col => [col, ['DPS', 'dps/mass', 'DPS to shields', 'DPS to shields / mass', 'cycle', 'cycle to shields'].includes(col) ? [] : new Set()]))
+  const stats = Object.fromEntries(columns.map(col => [col, EFF_COLUMNS.includes(col) ? [] : new Set()]))
   for (const weapon of weapons)
     for (const stat of columns) {
-      if (stat === 'dps/mass')
+      if (stat === Column.DPS_PER_MASS)
         stats[stat].push(weapon.dps)
-      else if (stat === 'DPS to shields / mass')
+      else if (stat === Column.DPS_TO_SHIELDS_PER_MASS)
         stats[stat].push(weapon.dpsShields)
-      else if (['DPS', 'DPS to shields', 'cycle', 'cycle to shields'].includes(stat))
+      else if ([Column.DPS, Column.DPS_TO_SHIELDS, Column.CYCLE, Column.CYCLE_TO_SHIELDS].includes(stat))
         stats[stat].push(getStat(weapon, stat))
-      else if (stat == 'range')
+      else if (stat == Column.RANGE)
         stats[stat].add(JSON.stringify(getStat(weapon, stat)))
       else
         stats[stat].add(getStat(weapon, stat))
@@ -165,32 +168,35 @@ const getGroupStatText = computed(() => {
     if (!Array.isArray(stats[key]))
       stats[key] = Array.from(stats[key])
     switch (key) {
-      case 'DPS':
-      case 'DPS to shields':
+      case Column.DPS:
+      case Column.DPS_TO_SHIELDS: {
         const total = stats[key].reduce((acc, val) => acc + (val ?? 0), 0)
         const decimals = total >= 1000 ? 0 : (total >= 100 ? 1 : 2)
         stats[key] = round(total, decimals)
         break
-      case 'dps/mass':
-      case 'DPS to shields / mass':
+      }
+      case Column.DPS_PER_MASS:
+      case Column.DPS_TO_SHIELDS_PER_MASS: {
         const totalDps = stats[key].reduce((acc, val) => acc + (val ?? 0), 0)
         const efficiency = getEfficiencyValue(totalDps)
         const effDecimals = efficiency >= 1000 ? 0 : (efficiency >= 100 ? 1 : 2)
         stats[key] = round(efficiency, effDecimals)
         break
-      case 'cycle':
-      case 'cycle to shields':
+      }
+      case Column.CYCLE:
+      case Column.CYCLE_TO_SHIELDS: {
         const [sum, times] = stats[key].reduce((acc, val) => val ? [acc[0] + val[0], acc[1].add(val[1])] : acc, [0, new Set()])
         if (times.size != 1 || times.has(null)) stats[key] = 'different'
         else stats[key] = getCycleTextFromVal([sum, Array.from(times)[0]])
         break
-      case 'range':
+      }
+      case Column.RANGE:
         if (stats[key].length == 1) stats[key] = `<div class="shrinkable-param">${getStatText(null, key, JSON.parse(stats[key][0]))}</div>`
         else {
           stats[key] = `<div class="shrinkable-param">${stats[key].map(el => getStatText(null, key, JSON.parse(el) || 0)).join(', ')}</div>`
         }
         break
-      case 'firingTol':
+      case Column.FIRING_TOLERANCE: {
         const rawValue = stats[key].length == 1 ? stats[key][0] : stats[key].map(el => getStatText(null, key, el || 0)).join(', ')
         const valueStr = String(rawValue)
         const needsShrink = valueStr.includes(',') ? valueStr.length > 3 : valueStr.length > 2
@@ -200,13 +206,14 @@ const getGroupStatText = computed(() => {
           stats[key] = `<div class="${className}">${stats[key].map(el => getStatText(null, key, el || 0)).join(', ')}</div>`
         }
         break
-      case 'muzzleVel':
+      }
+      case Column.MUZZLE_VELOCITY:
         if (stats[key].length == 1) stats[key] = `<div class="shrinkable-param">${getStatText(null, key, stats[key][0])}</div>`
         else {
           stats[key] = `<div class="shrinkable-param">${stats[key].map(el => getStatText(null, key, el)).join(', ')}</div>`
         }
         break
-      case 'yaw':
+      case Column.YAW:
         if (stats[key].length == 1) stats[key] = `<div class="shrinkable-param">${getStatText(null, key, stats[key][0])}</div>`
         else {
           stats[key] = `<div class="shrinkable-param">${stats[key].map(el => getStatText(null, key, el)).join(', ')}</div>`
@@ -230,7 +237,7 @@ const groupedWeapons = computed(() => {
   const groups = []
   for (const weapon of weapons) {
     const signature = columns.map(col =>
-      col === 'type' ? category : getStat(weapon, col)
+      col === Column.TYPE ? category : getStat(weapon, col)
     ).join('|')
 
     const existing = groups.find(g => g.signature === signature)
@@ -261,11 +268,11 @@ const shouldHighlightCollapsed = computed(() =>
 
 <template>
   <tr v-if="weapons.length == 1">
-    <td v-for="col in columns" :key="col" :data-tooltip="(col === 'cycle' || col === 'cycle to shields') ? getCycleTooltip(weapons[0], col) : (col === 'DoT' ? getDoTTooltip(weapons[0]) : undefined)" data-tooltip-params="big-top-left" v-html="getStatText(weapons[0], col) ?? '-'" />
+    <td v-for="col in columns" :key="col" :data-tooltip="(col === Column.CYCLE || col === Column.CYCLE_TO_SHIELDS) ? getCycleTooltip(weapons[0], col) : (col === Column.DOT ? getDoTTooltip(weapons[0]) : undefined)" data-tooltip-params="big-top-left" v-html="getStatText(weapons[0], col) ?? '-'" />
   </tr>
   <template v-else>
     <tr class="weaponGroup" :class="{ active: isExpanded, highlighted: shouldHighlightCollapsed }" @click="toggleExpanded" style="cursor: pointer">
-      <template v-for="col, index in columns" :key="col" v-html="index? (getGroupStatText[col] || '-' ): null">
+      <template v-for="col, index in columns" :key="col">
         <td v-if="index" v-html="getGroupStatText[col] || '-'" />
         <td v-else :data-tooltip="tractorTooltip" data-tooltip-params="big-top-right">
           <div class="groupToggle" @click.stop="toggleExpanded">
@@ -277,11 +284,10 @@ const shouldHighlightCollapsed = computed(() =>
     </tr>
     <template v-if="isExpanded">
       <tr v-for="group, index in groupedWeapons" :key="group.signature" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
-        <td v-for="col, colIndex in columns" :key="col" :data-tooltip="(colIndex && (col === 'cycle' || col === 'cycle to shields')) ? getCycleTooltip(group.weapons[0], col) : (colIndex && col === 'DoT' ? getDoTTooltip(group.weapons[0]) : undefined)" data-tooltip-params="big-top-left" v-html="colIndex ? (getStatText(group.weapons[0], col) ?? '-') : getDisplayName(group)"></td>
+        <td v-for="col, colIndex in columns" :key="col" :data-tooltip="(colIndex && (col === Column.CYCLE || col === Column.CYCLE_TO_SHIELDS)) ? getCycleTooltip(group.weapons[0], col) : (colIndex && col === Column.DOT ? getDoTTooltip(group.weapons[0]) : undefined)" data-tooltip-params="big-top-left" v-html="colIndex ? (getStatText(group.weapons[0], col) ?? '-') : getDisplayName(group)"></td>
       </tr>
     </template>
   </template>
-
 </template>
 
 <style lang="sass">

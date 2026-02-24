@@ -1,18 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { fetchDefaults, fetchAllBlueprints, fetchAllProjectiles } from './fetcher.js';
+import { fetchDefaults, fetchAllBlueprints, fetchAllProjectiles, DEFAULT_FILES } from './fetcher.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, 'cached_blueprints');
-
-const DEFAULT_FILES = [
-  ['versionContent', 'version.lua'],
-  ['shieldContent', 'shield.lua'],
-  ['blueprintsUnitsContent', 'blueprints-units.lua'],
-  ['defaultComponentsContent', 'defaultcomponents.lua'],
-  ['unitContent', 'unit.lua'],
-]
 
 async function download() {
   console.log('=== Blueprint Downloader ===\n');
@@ -55,6 +47,6 @@ async function download() {
 }
 
 download().catch(error => {
-  console.error('✗ Error:', error.message);
+  console.error('✗ Error:', error?.message || error);
   process.exit(1);
 });

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { fetchDefaults, fetchAllBlueprints, fetchAllProjectiles } from './fetcher.js';
+import { fetchDefaults, fetchAllBlueprints, fetchAllProjectiles, DEFAULT_FILES } from './fetcher.js';
 import { parseBlueprint, parseVersion, parseProjectile, parseShield, parseVeterancyConstants, parseWreckageConstants } from './parser.js';
 import WHITELIST from './whitelist.js';
 
@@ -80,14 +80,6 @@ function deriveClassification(categories) {
 
   return null;
 }
-
-const DEFAULT_FILES = [
-  ['versionContent', 'version.lua'],
-  ['shieldContent', 'shield.lua'],
-  ['blueprintsUnitsContent', 'blueprints-units.lua'],
-  ['defaultComponentsContent', 'defaultcomponents.lua'],
-  ['unitContent', 'unit.lua'],
-]
 
 const useCached = process.argv.includes('--cached');
 const withFat = process.argv.includes('--withfat');
@@ -364,6 +356,6 @@ function loadProjectilesFromCache() {
 }
 
 generate().catch(error => {
-  console.error('\n✗ Error:', error.message);
+  console.error('\n✗ Error:', error?.message || error);
   process.exit(1);
 });

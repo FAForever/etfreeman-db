@@ -20,7 +20,7 @@ const WHITELIST = {
   Physics: ['MaxSpeed', 'TurnRate', 'BackUpDistance', 'Elevation',
             'FuelUseTime', 'FuelRechargeRate', 'SniperModeSpeedMultiplier','WaterSpeedMultiplier','LandSpeedMultiplier','SubSpeedMultiplier'],
 
-  Air: ['MaxAirspeed', 'MinAirspeed', 'TurnSpeed', 'CombatTurnSpeed'],
+  Air: ['MaxAirspeed', 'MinAirspeed', 'TurnSpeed', 'CombatTurnSpeed', 'StartTurnDistance'],
 
   Display: ['Abilities'],
 
