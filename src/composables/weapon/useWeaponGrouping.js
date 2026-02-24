@@ -3,35 +3,27 @@ import { useCalcEfficiency } from '@/composables/useCalcEfficiency'
 import { addBr } from '@/composables/helpers/common'
 import { Column } from '@/composables/useWeaponColumns'
 import { getStat, EFF_COLUMNS, aggregateColumn } from '@/composables/weapon/weaponStats'
+import { aggregateColumnFormat } from '@/composables/weapon/weaponFormatters'
+import { createStatsCollector } from '@/composables/weapon/StatsCollector'
 
 export const useWeaponGrouping = (weapons, category, columns, economy, isExpanded) => {
   const { calculateWeapon } = useCalcEfficiency('weapon')
   const getEfficiencyValue = (dpsValue) => calculateWeapon(dpsValue, economy)
 
   const collectStats = () => {
-    const stats = Object.fromEntries(columns.map(col => [col, EFF_COLUMNS.includes(col) ? [] : new Set()]))
+    const collector = createStatsCollector(columns, EFF_COLUMNS)
     for (const weapon of weapons) {
       for (const stat of columns) {
-        if (EFF_COLUMNS.includes(stat)) {
-          stats[stat].push(getStat(weapon, stat, category, getEfficiencyValue))
-        } else if (stat == Column.RANGE) {
-          stats[stat].add(JSON.stringify(getStat(weapon, stat, category, getEfficiencyValue)))
-        } else {
-          stats[stat].add(getStat(weapon, stat, category, getEfficiencyValue))
-        }
+        collector.add(stat, getStat(weapon, stat, category, getEfficiencyValue))
       }
     }
-    for (const key in stats) {
-      if (!Array.isArray(stats[key])) {
-        stats[key] = Array.from(stats[key])
-      }
-    }
-    return stats
+    return collector.toArray()
   }
 
   const aggregateStats = (stats) => {
     for (const key in stats) {
-      stats[key] = aggregateColumn(stats, key, category, getEfficiencyValue)
+      const result = aggregateColumn(stats, key, category, getEfficiencyValue)
+      stats[key] = result ?? aggregateColumnFormat(stats, key, category, getEfficiencyValue)
       if (stats[key] == undefined || stats[key] == '') {
         stats[key] = '-'
       }
@@ -39,7 +31,7 @@ export const useWeaponGrouping = (weapons, category, columns, economy, isExpande
     return stats
   }
 
-  const getGroupStatText = computed(() => {
+  const aggregatedStats = computed(() => {
     const rawStats = collectStats()
     return aggregateStats(rawStats)
   })
@@ -47,21 +39,21 @@ export const useWeaponGrouping = (weapons, category, columns, economy, isExpande
   const groupedWeapons = computed(() => {
     if (!isExpanded.value) return []
 
-    const groups = []
+    const groupMap = {}
     for (const weapon of weapons) {
       const signature = columns.map(col =>
         col === Column.TYPE ? category : getStat(weapon, col, category, getEfficiencyValue)
       ).join('|')
 
-      const existing = groups.find(g => g.signature === signature)
+      const existing = groupMap[signature]
       if (existing) {
         existing.count++
         existing.weapons.push(weapon)
       } else {
-        groups.push({ signature, count: 1, weapons: [weapon] })
+        groupMap[signature] = { signature, count: 1, weapons: [weapon] }
       }
     }
-    return groups
+    return Object.values(groupMap)
   })
 
   const getDisplayName = (group) => {
@@ -71,7 +63,7 @@ export const useWeaponGrouping = (weapons, category, columns, economy, isExpande
   }
 
   return {
-    getGroupStatText,
+    aggregatedStats,
     groupedWeapons,
     getDisplayName,
     getEfficiencyValue

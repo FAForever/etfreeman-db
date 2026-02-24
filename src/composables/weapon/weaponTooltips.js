@@ -58,3 +58,8 @@ export const getTooltip = (weapon, col, category) => {
   }
   return undefined
 }
+
+export const getTractorTooltip = (weapons) => {
+  if (!weapons.some(w => w.TractorDamage)) return undefined
+  return 'Tractor only deals damage once the target is fully pulled in'
+}
