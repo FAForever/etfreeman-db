@@ -1,7 +1,7 @@
 const WHITELIST = {
   root: ['Id', 'Description', 'Categories', 'StrategicIconName', 'VeteranMassMult', 'VeteranMass'],
 
-  General: ['FactionName', 'Icon', 'UnitName', 'Classification'],
+  General: ['FactionName', 'Icon', 'UnitName'],
 
   Defense: ['Health', 'MaxHealth', 'RegenRate', {
     Shield: ['ShieldMaxHealth', 'ShieldRegenRate', 'ShieldRegenStartTime',

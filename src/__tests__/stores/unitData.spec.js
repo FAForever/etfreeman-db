@@ -38,8 +38,8 @@ describe('Unit Data Store', () => {
           {
             Id: 'UEL0201',
             Description: 'Medium Tank',
-            General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' },
-            Categories: ['TECH1']
+            General: { FactionName: 'UEF' },
+            Categories: ['TECH1', 'MOBILE', 'LAND']
           }
         ]
       }
@@ -73,8 +73,8 @@ describe('Unit Data Store', () => {
       const store = useUnitDataStore()
       store.setData({
         units: [
-          { Id: 'UEL0201', General: { FactionName: 'UEF', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] },
-          { Id: 'URL0107', General: { FactionName: 'Cybran', Classification: 'RULEUC_MilitaryVehicle' }, Categories: ['TECH1'] }
+          { Id: 'UEL0201', General: { FactionName: 'UEF' }, Categories: ['TECH1', 'MOBILE', 'LAND'] },
+          { Id: 'URL0107', General: { FactionName: 'Cybran' }, Categories: ['TECH1', 'MOBILE', 'LAND'] }
         ]
       })
     })

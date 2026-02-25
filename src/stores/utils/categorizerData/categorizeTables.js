@@ -53,20 +53,3 @@ export const sectionByType = {
 export const TypeToSection = Object.fromEntries(
   Object.entries(sectionByType).flatMap(([section, types]) => types.map(t => [t, section]))
 )
-
-export const kindMap = {
-  'RULEUC_Engineer': 'Build',
-  'RULEUC_Commander': 'Build',
-  'RULEUMT_Amphibious': 'Land',
-  'RULEUC_MilitaryVehicle': 'Land',
-  'RULEUC_MilitaryAircraft': 'Air',
-  'RULEUC_MilitarySub': 'Naval',
-  'RULEUC_MilitaryShip': 'Naval',
-  'RULEUC_Weapon': 'Base',
-  'RULEUC_Sensor': 'Base',
-  'RULEUC_Factory': 'Base',
-  'RULEUC_MilitaryStructure': 'Base',
-  'RULEUC_Resource': 'Base',
-  'RULEUC_MiscSupport': 'Base',
-  'RULEUC_CounterMeasure': 'Base'
-}

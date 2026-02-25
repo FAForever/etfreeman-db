@@ -50,37 +50,6 @@ function distillUnit(unit) {
   return result
 }
 
-function deriveClassification(categories) {
-  if (!categories) return null;
-
-  if (categories.includes('MOBILE')) {
-    if (categories.includes('ENGINEER')) return 'RULEUC_Engineer';
-    if (categories.includes('COMMAND')) return 'RULEUC_Commander';
-    if (categories.includes('LAND')) return 'RULEUC_MilitaryVehicle';
-    if (categories.includes('NAVAL')) return 'RULEUC_MilitaryShip';
-    if (categories.includes('SUB')) return 'RULEUC_MilitarySub';
-    if (categories.includes('AIR')) return 'RULEUC_MilitaryAircraft';
-    if (categories.includes('COUNTERINTELLIGENCE')) return 'RULEUC_CounterMeasure';
-  }
-
-  if (categories.includes('STRUCTURE')) {
-    if (categories.includes('ENGINEER')) return 'RULEUC_Engineer';
-    if (categories.includes('FACTORY')) return 'RULEUC_Factory';
-    if (categories.includes('DIRECTFIRE')) return 'RULEUC_MilitaryStructure';
-    if (categories.includes('ANTIAIR')) return 'RULEUC_MilitaryStructure';
-    if (categories.includes('INDIRECTFIRE')) return 'RULEUC_MilitaryStructure';
-    if (categories.includes('ANTIMISSILE')) return 'RULEUC_MilitaryStructure';
-    if (categories.includes('COUNTERINTELLIGENCE')) return 'RULEUC_CounterMeasure';
-    if (categories.includes('SHIELD')) return 'RULEUC_MiscSupport';
-    if (categories.includes('RADAR')) return 'RULEUC_Sensor';
-    if (categories.includes('OMNI')) return 'RULEUC_Sensor';
-    if (categories.includes('SONAR')) return 'RULEUC_Sensor';
-    return 'RULEUC_Resource';
-  }
-
-  return null;
-}
-
 const useCached = process.argv.includes('--cached');
 const withFat = process.argv.includes('--withfat');
 
@@ -128,12 +97,7 @@ async function generate() {
         continue;
       }
 
-      if (!data.General) data.General = {};
-      if (!data.General.Classification) {
-        data.General.Classification = deriveClassification(data.Categories);
-      }
-
-      // Hotfix for naval wrecks
+      // This is a crutch from faforever/fa repo, should be fixed at some point and removed from here
       if (data.Categories && data.Categories.includes('NAVAL') && !data.Wreckage) {
         data.Wreckage = {
           Blueprint: '/props/DefaultWreckage/DefaultWreckage_prop.bp',

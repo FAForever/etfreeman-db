@@ -1,4 +1,4 @@
-import { getTech, kindMap } from '../categorizer.js'
+import { getTech, deriveKind } from '../categorizer.js'
 import { calculateDps, calculateProjectileDamage, calculateFiringCycle } from './dps/index.js'
 import { categorize } from '../categorizer.js'
 
@@ -8,7 +8,7 @@ export const decorateUnit = (blueprint) => {
     name: blueprint.General?.UnitName || '',
     description: blueprint.Description || '',
     faction: blueprint.General?.FactionName?.toLowerCase() || '',
-    kind: kindMap[blueprint.General?.Classification] || 'Unknown',
+    kind: deriveKind(blueprint.Categories),
     tech: getTech(blueprint, 'T1'),
     rawTech: getTech(blueprint, ''),
     strategicIcon: blueprint.StrategicIconName || '',

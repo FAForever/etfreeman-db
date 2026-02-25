@@ -1,9 +1,9 @@
 import { SECTION_ORDER, getUnitSortOrder, getTypeSortOrder, sortFaction, sortUnits, sortTierKey } from "./categorizerData/categorizeOrders"
-import { kindMap, TypeById, TypeToSection } from "./categorizerData/categorizeTables"
+import { TypeById, TypeToSection } from "./categorizerData/categorizeTables"
 
 const techMap = { 'TECH1': 'T1', 'TECH2': 'T2', 'TECH3': 'T3','EXPERIMENTAL': 'EXP' }
-const getTech = (bp, fallback = 'T1') => techMap[bp?.Categories?.find(c => techMap[c])] || fallback
 const stripType = (type) => type.replace(/^(T[1234]|EXP) /, '').replace(/\(.*\)/, '').replace(/\sHQ$/, '').trim()
+export const getTech = (bp, fallback = 'T1') => techMap[bp?.Categories?.find(c => techMap[c])] || fallback
 
 export const categorize = (bp) => {
   const tech = getTech(bp)
@@ -63,4 +63,16 @@ const calculateTypeOrders = (units) => {
 
 export const generateTierTree = (units) => buildSortedTree(units, 'tech', sortTierKey)
 export const generateTypeTree = (units) => buildSortedTree(units, 'type', calculateTypeOrders(units))
-export { getTech, kindMap }
+
+export const deriveKind = (categories = []) => {
+  const has = (c) => categories.includes(c)
+
+  if (has('MOBILE')) {
+    if (has('AIR')) return 'Air'
+    if (has('NAVAL')) return 'Naval'
+    return 'Land'
+  }
+
+  if (has('STRUCTURE')) return 'Base'
+  return 'Unknown'
+}
