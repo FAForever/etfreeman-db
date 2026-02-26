@@ -1,0 +1,740 @@
+[
+  {
+    "unitId": "URL0107",
+    "weaponName": "Light Pulse Laser",
+    "weapon": {
+      "DisplayName": "Light Pulse Laser",
+      "Label": "LaserArms",
+      "WeaponCategory": "Direct Fire",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 18,
+      "Damage": 8,
+      "DamageRadius": 0,
+      "MuzzleVelocity": 25,
+      "FiringRandomnessWhileMoving": 0,
+      "FiringTolerance": 2,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 3.3333333333333335,
+      "ProjectileId": "/projectiles/CDFLaserHeavy01/CDFLaserHeavy01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_01"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_02"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "UAS0201",
+    "weaponName": "Oblivion Cannon",
+    "weapon": {
+      "DisplayName": "Oblivion Cannon",
+      "Label": "FrontTurret",
+      "WeaponCategory": "Direct Fire Naval",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 75,
+      "Damage": 1060,
+      "DamageRadius": 1.4,
+      "MuzzleVelocity": 30,
+      "FiringRandomness": 0.2,
+      "FiringTolerance": 1,
+      "TurretYawRange": 160,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "MuzzleChargeDelay": 0.1,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.2,
+      "ProjectileId": "/projectiles/ADFOblivionCannon01/ADFOblivionCannon01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Turret_Front_Muzzle"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "XSS0201",
+    "weaponName": "Front Ultrachromatic Beam Generator",
+    "weapon": {
+      "DisplayName": "Front Ultrachromatic Beam Generator",
+      "Label": "FrontTurret",
+      "WeaponCategory": "Direct Fire Naval",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 60,
+      "Damage": 45,
+      "DamageRadius": 1,
+      "BeamLifetime": 1,
+      "BeamCollisionDelay": 0,
+      "FiringTolerance": 0,
+      "TurretYawRange": 120,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "MuzzleChargeDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.25,
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Front_Turret_Muzzle"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "XSS0201",
+    "weaponName": "Rear Ultrachromatic Beam Generator",
+    "weapon": {
+      "DisplayName": "Rear Ultrachromatic Beam Generator",
+      "Label": "BackTurret",
+      "WeaponCategory": "Direct Fire Naval",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 60,
+      "Damage": 26,
+      "DamageRadius": 1,
+      "BeamLifetime": 1,
+      "BeamCollisionDelay": 0,
+      "FiringTolerance": 0,
+      "TurretYawRange": 140,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "MuzzleChargeDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.25,
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Back_Turret_Muzzle"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "UES0201",
+    "weaponName": "Gauss Cannon",
+    "weapon": {
+      "DisplayName": "Gauss Cannon",
+      "Label": "FrontTurret01",
+      "WeaponCategory": "Direct Fire Naval",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 60,
+      "Damage": 305,
+      "DamageRadius": 1,
+      "MuzzleVelocity": 30,
+      "FiringRandomness": 0.35,
+      "FiringTolerance": 2,
+      "TurretYawRange": 140,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": true,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.25,
+      "ProjectileId": "/projectiles/TDFGauss05/TDFGauss05_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Front_Turret01_Muzzle01"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Front_Turret01_Muzzle02"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "XES0102",
+    "weaponName": "Angler Torpedo",
+    "weapon": {
+      "DisplayName": "Angler Torpedo",
+      "Label": "Torpedo01",
+      "WeaponCategory": "Anti Navy",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE, HOVER",
+      "MaxRadius": 55,
+      "Damage": 80,
+      "MuzzleVelocity": 5,
+      "FiringTolerance": 2,
+      "TurretYawRange": 0,
+      "MuzzleSalvoSize": 4,
+      "MuzzleSalvoDelay": 0.4,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.3125,
+      "ProjectileId": "/projectiles/TANAnglerTorpedo02/TANAnglerTorpedo02_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Projectile01"
+          ]
+        }
+      ],
+      "Projectile": {
+        "Description": "Angler Torpedo",
+        "Health": 1
+      }
+    }
+  },
+  {
+    "unitId": "XAS0204",
+    "weaponName": "Chrono Torpedo",
+    "weapon": {
+      "DisplayName": "Chrono Torpedo",
+      "Label": "Torpedo01",
+      "WeaponCategory": "Anti Navy",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE, HOVER",
+      "MaxRadius": 45,
+      "Damage": 90,
+      "MuzzleVelocity": 5,
+      "FiringTolerance": 2,
+      "TurretYawRange": 0,
+      "MuzzleSalvoSize": 4,
+      "MuzzleSalvoDelay": 0.4,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.25,
+      "ProjectileId": "/projectiles/AANTorpedo01/AANTorpedo01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Projectile_Front_Right",
+            "Projectile_Front_Left"
+          ]
+        }
+      ],
+      "Projectile": {
+        "Description": "Chrono Torpedo",
+        "Health": 1
+      }
+    }
+  },
+  {
+    "unitId": "UEL0103",
+    "weaponName": "Fragmentation Artillery",
+    "weapon": {
+      "DisplayName": "Fragmentation Artillery",
+      "Label": "MainGun",
+      "WeaponCategory": "Artillery",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 30,
+      "MinRadius": 5,
+      "Damage": 100,
+      "DamageRadius": 1,
+      "MuzzleVelocity": 14,
+      "FiringRandomness": 0.5,
+      "FiringTolerance": 2,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.12048192771084337,
+      "ProjectileId": "/projectiles/TIFFragmentationSensorShell01/TIFFragmentationSensorShell01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle"
+          ]
+        }
+      ],
+      "__fragmentCount": 5
+    }
+  },
+  {
+    "unitId": "XSL0103",
+    "weaponName": "Thuntho Artillery Cannon",
+    "weapon": {
+      "DisplayName": "Thuntho Artillery Cannon",
+      "Label": "MainGun",
+      "WeaponCategory": "Artillery",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 30,
+      "MinRadius": 8,
+      "Damage": 45,
+      "DamageRadius": 1.5,
+      "MuzzleVelocity": 14,
+      "FiringRandomness": 1,
+      "FiringTolerance": 1,
+      "TurretYawRange": 45,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.3448275862068966,
+      "ProjectileId": "/projectiles/SIFThunthoArtilleryShell01/SIFThunthoArtilleryShell01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle"
+          ]
+        }
+      ],
+      "__fragmentCount": 5
+    }
+  },
+  {
+    "unitId": "XRA0305",
+    "weaponName": "Disintegrator Pulse Laser",
+    "weapon": {
+      "DisplayName": "Disintegrator Pulse Laser",
+      "Label": "Disintegrator01",
+      "WeaponCategory": "Direct Fire",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "HIGHALTAIR, UNTARGETABLE",
+      "MaxRadius": 25,
+      "MinRadius": 2,
+      "Damage": 140,
+      "MuzzleVelocity": 35,
+      "FiringTolerance": 0.5,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 1.6666666666666667,
+      "ProjectileId": "/projectiles/CDFLaserDisintegrator04/CDFLaserDisintegrator04_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Turret_Down_Muzzle_01"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Turret_Down_Muzzle_02"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "URA0103",
+    "weaponName": "Neutron Cluster Bomb",
+    "weapon": {
+      "DisplayName": "Neutron Cluster Bomb",
+      "Label": "Bomb",
+      "WeaponCategory": "Bomb",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 40,
+      "Damage": 50,
+      "DamageRadius": 3,
+      "MuzzleVelocity": 0,
+      "FiringTolerance": 6,
+      "TurretYawRange": 0,
+      "MuzzleSalvoSize": 6,
+      "MuzzleSalvoDelay": 0.2,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.2,
+      "ProjectileId": "/projectiles/CIFNeutronClusterBomb01/CIFNeutronClusterBomb01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Muzzle_L03",
+            "Muzzle_R03",
+            "Muzzle_L02",
+            "Muzzle_R02",
+            "Muzzle_L01",
+            "Muzzle_R01"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "UAA0103",
+    "weaponName": "Graviton Bomb",
+    "weapon": {
+      "DisplayName": "Graviton Bomb",
+      "Label": "Bomb",
+      "WeaponCategory": "Bomb",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 40,
+      "Damage": 200,
+      "DamageRadius": 4,
+      "MuzzleVelocity": 0,
+      "FiringRandomness": 0,
+      "FiringTolerance": 6,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.2,
+      "ProjectileId": "/projectiles/AIFBombGraviton01/AIFBombGraviton01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "UAA0103"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "XSA0103",
+    "weaponName": "Othe Tactical Bomb",
+    "weapon": {
+      "DisplayName": "Othe Tactical Bomb",
+      "Label": "Bomb",
+      "WeaponCategory": "Bomb",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 40,
+      "Damage": 250,
+      "DamageRadius": 4,
+      "MuzzleVelocity": 0,
+      "FiringRandomness": 0,
+      "FiringTolerance": 6,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.2,
+      "ProjectileId": "/projectiles/SBOOtheTacticalBomb01/SBOOtheTacticalBomb01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Center_Projectile"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "DRLK001",
+    "weaponName": "Nanodart Launcher",
+    "weapon": {
+      "DisplayName": "Nanodart Launcher",
+      "Label": "AAGun",
+      "WeaponCategory": "Anti Air",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 62,
+      "Damage": 100,
+      "DamageRadius": 1.5,
+      "MuzzleVelocity": 15,
+      "FiringTolerance": 10,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 2,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 2,
+      "RateOfFire": 1.6666666666666667,
+      "ProjectileId": "/projectiles/CAANanoDartEx/CAANanoDartEx_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_01",
+            "Turret_Muzzle_04"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_02",
+            "Turret_Muzzle_05"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_03",
+            "Turret_Muzzle_06"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_01",
+            "Turret_Muzzle_04"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_02",
+            "Turret_Muzzle_05"
+          ]
+        },
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle_03",
+            "Turret_Muzzle_06"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "DSLK004",
+    "weaponName": "Lightning Projector",
+    "weapon": {
+      "DisplayName": "Lightning Projector",
+      "Label": "PhasonBeamAir",
+      "WeaponCategory": "Anti Air",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "WeaponUnpackAnimation": "/units/DSLK004/DSLK004_updummy.sca",
+      "MaxRadius": 58,
+      "MinRadius": 0,
+      "Damage": 200,
+      "DamageRadius": 1,
+      "BeamLifetime": 0.6,
+      "BeamCollisionDelay": 0,
+      "FiringRandomness": 0,
+      "FiringTolerance": 0,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "MuzzleChargeDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 5,
+      "RateOfFire": 1,
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "muzzle01"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "XSB2205",
+    "weaponName": "Heavy Cavitation Torpedo Cluster",
+    "weapon": {
+      "DisplayName": "Heavy Cavitation Torpedo Cluster",
+      "Label": "TorpedoTurrets",
+      "WeaponCategory": "Anti Navy",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE, HOVER",
+      "MaxRadius": 60,
+      "Damage": 242,
+      "MuzzleVelocity": 15,
+      "FiringTolerance": 45,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 3,
+      "MuzzleSalvoDelay": 0.3,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.25,
+      "ProjectileId": "/projectiles/SANHeavyCavitationTorpedo02/SANHeavyCavitationTorpedo02_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Muzzle01",
+            "Muzzle02",
+            "Muzzle03"
+          ]
+        }
+      ],
+      "Projectile": {
+        "Description": "Heavy Cavitation Torpedo Cluster",
+        "Health": 1
+      },
+      "childCount": 3,
+      "childSplitType": "onWater"
+    }
+  },
+  {
+    "unitId": "XAA0306",
+    "weaponName": "Torpedo Cluster",
+    "weapon": {
+      "DisplayName": "Torpedo Cluster",
+      "Label": "Bomb",
+      "WeaponCategory": "Anti Navy",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE, HOVER",
+      "MaxRadius": 26,
+      "MinRadius": 4,
+      "Damage": 1000,
+      "MuzzleVelocity": 0,
+      "FiringRandomness": 3,
+      "FiringTolerance": 6,
+      "TurretYawRange": 0,
+      "MuzzleSalvoSize": 5,
+      "MuzzleSalvoDelay": 0.2,
+      "RackFireTogether": false,
+      "RackSalvoSize": 2,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.1,
+      "ProjectileId": "/projectiles/AANTorpedoCluster01/AANTorpedoCluster01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Torpedo_Muzzle"
+          ]
+        }
+      ],
+      "Projectile": {
+        "Description": "Torpedo Cluster",
+        "Health": 1
+      },
+      "childCount": 2,
+      "childSplitType": "onWater"
+    }
+  },
+  {
+    "unitId": "UAL0304",
+    "weaponName": "Sonance Artillery",
+    "weapon": {
+      "DisplayName": "Sonance Artillery",
+      "Label": "MainGun",
+      "WeaponCategory": "Artillery",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 90,
+      "MinRadius": 25,
+      "Damage": 95,
+      "DamageRadius": 3,
+      "DoTTime": 4.2,
+      "DoTPulses": 15,
+      "MuzzleVelocity": 24,
+      "FiringRandomness": 1,
+      "FiringTolerance": 2,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 1,
+      "MuzzleSalvoDelay": 0,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.05,
+      "ProjectileId": "/projectiles/AIFSonanceShell01/AIFSonanceShell01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Turret_Muzzle"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "DEA0202",
+    "weaponName": "Napalm Carpet Bomb",
+    "weapon": {
+      "DisplayName": "Napalm Carpet Bomb",
+      "Label": "Bomb",
+      "WeaponCategory": "Bomb",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 60,
+      "Damage": 6,
+      "DamageRadius": 3,
+      "InitialDamage": 20,
+      "DoTTime": 5.4,
+      "DoTPulses": 10,
+      "MuzzleVelocity": 0,
+      "FiringRandomness": 0.1,
+      "FiringTolerance": 6,
+      "TurretYawRange": 180,
+      "MuzzleSalvoSize": 20,
+      "MuzzleSalvoDelay": 0.1,
+      "RackFireTogether": false,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.1,
+      "ProjectileId": "/projectiles/TIFNapalmCarpetBomb02/TIFNapalmCarpetBomb02_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Rear_Bomb",
+            "Left_Wing_Bomb",
+            "Right_Wing_Bomb"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "unitId": "UEA0103",
+    "weaponName": "Napalm Carpet Bomb",
+    "weapon": {
+      "DisplayName": "Napalm Carpet Bomb",
+      "Label": "Bomb",
+      "WeaponCategory": "Bomb",
+      "DamageType": "Normal",
+      "TargetRestrictDisallow": "UNTARGETABLE",
+      "MaxRadius": 40,
+      "Damage": 4.5,
+      "DamageRadius": 3,
+      "InitialDamage": 42.5,
+      "DoTTime": 3.6,
+      "DoTPulses": 10,
+      "MuzzleVelocity": 0,
+      "FiringTolerance": 6,
+      "MuzzleSalvoSize": 4,
+      "MuzzleSalvoDelay": 0.2,
+      "RackSalvoSize": 1,
+      "RackSalvoChargeTime": 0,
+      "RackSalvoReloadTime": 0,
+      "RateOfFire": 0.2,
+      "ProjectileId": "/projectiles/TIFNapalmCarpetBomb01/TIFNapalmCarpetBomb01_proj.bp",
+      "RackBones": [
+        {
+          "MuzzleBones": [
+            "Projectile"
+          ]
+        }
+      ]
+    }
+  }
+]

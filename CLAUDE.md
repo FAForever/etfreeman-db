@@ -1,207 +1,425 @@
 # CLAUDE.md
 
 ## Project: Unit Database (FAF)
-Supreme Commander unit database built with Vue.js 3.
+Supreme Commander: Forged Alliance Forever (FAF) unit database web application built with Vue 3.
 
 ## File Structure
 
 ### Application
 **Location:** `src/`
+
+**Entry:**
 - `main.js` - App entry point
 - `App.vue` - Root component with global sass imports
 - `index.html` - Main HTML file
 
-**Router:** `src/router/`
-- `index.js` - Vue Router 4 configuration with hash mode
-  - `/` - View A (HomeView)
-  - `/by-class` - View B (ByClassView)
-  - `/:ids` - Compare view (comma-separated unit IDs)
-  - Route guards for lastListView tracking and saved view restoration
+**Router:** `src/router/index.js`
+- Vue Router 4 with hash mode
+- Routes: `/`, `/by-type`, `/:ids` (compare)
+- View preference persisted as `faf-last-view`
 
-**Components:** `src/components/`
-- `ThumbComponent.vue` - Unit thumbnail tile (accepts `mini` prop for compact display)
-- `FiltersComponent.vue` - Faction/kind/tech filters (uses `route.path` for view mode active state, `row` prop for horizontal layout)
-- `Header.vue` - Version display + view switcher buttons
-- `AppFooter.vue` - Footer
-- `UnitComponent.vue` - Full unit details for compare view (accepts `unit` and `showedSections` props)
-  - `unit/` - Sub-components for unit sections:
-    - `UnitHeader.vue` - Unit name, icon, description
-    - `WeaponsSection.vue` - Weapon stats with DPS, damage, cycle info
-    - `DefenseSection.vue` - HP, shields, regen
-    - `EconomySection.vue` - Build/r reclaim/mass/energy stats
-    - `IntelSection.vue` - Radar, sonar, stealth, vision
-    - `PhysicsSection.vue` - Speed, acceleration, turn rate
-    - `AirPhysicsSection.vue` - Air-specific physics (layers, loiter)
-    - `AbilitiesSection.vue` - Special abilities (transport, tactical nuke, etc.)
-    - `UpgradesSection.vue` - Upgrade/build options
-    - `VeterancySection.vue` - Veterancy bonuses
-    - `WreckageSection.vue` - Wreckage/reclaim values
+---
 
-**Views:** `src/views/`
-- `HomeView.vue` - **View A**: Faction grid layout with horizontal filters (uses `home_A` modifier)
-- `ByClassView.vue` - **View B**: Category masonry layout with vertical sidebar (uses `home_B` modifier)
-- `CompareView.vue` - Unit comparison screen with section toggles (saved to localStorage)
+### Views: `src/views/`
+- `HomeView.vue` - View A: Faction grid with horizontal filters (redirects from mobile)
+- `ByTypeView.vue` - View B: Category masonry layout with vertical sidebar
+- `CompareView.vue` - Unit comparison with dynamic sections, URL-based unit selection
 
-**State:** `src/stores/`
-- `unitData.js` - Pinia store for unit data and selection
-- `utils/` - Shared utilities:
-  - `categorizer.js` - Unit categorization and tree generation
-    - Exports: `categorize()`, `generateTierTree()`, `generateTypeTree()`, `getTech()`, `kindMap`
-  - `categorizerData/` - Categorization data tables
-    - `categorizeTables.js` - Lookup tables: `kindMap`, `TypeById`, `TypeToSection`, `sectionByType`, `typeOverrides`
-    - `categorizeOrders.js` - Sort orders: `SECTION_ORDER`, `customOrderModifiers`, `sortTierKey`, `sortFaction`, `sortUnits`
-  - `unitDecorator/` - Unit data decoration
-    - `index.js` - Public API: exports `decorateUnit`, `decorateUnits`
-    - `decorator.js` - Main decoration (adds DPS, fireCycle functions to weapons)
-    - `dps2.js` - FA-accurate DPS calculation (MATH_IRound, firing cycle simulation, beam handling)
+---
 
-**Utilities:** `src/composables/`
-- `useUnitData.js` - Composable wrapping store, adds `effectiveVisibleFactions` computed
-- `useOptimalLayout.js` - Optimal section layout algorithm for ByClassView (replaces useUnitGrouping)
-- `useStatRows.js` - Stat row formatting for unit details
+### Components: `src/components/`
+
+**App-level:**
+- `BackgroundPicture.vue` - Background image display
+- `Icon.vue` - Icon component
+- `SvgSprite.vue` - SVG sprite display
+- `ThumbComponent.vue` - Unit thumbnail tile (`mini` prop for compact)
+- `FiltersComponent.vue` - Faction/kind/tech filters
+- `Header.vue` - Version display + view switcher
+- `HomeTop.vue` - Home view header
+- `SettingsPanel.vue` - Settings panel
+
+**ByType view:**
+- `ByTypeSection.vue` - Section component for type-based view
+
+**Home view:**
+- `HomeSection.vue` - Tier-based section display
+- `HomeSectionTier.vue` - Individual tier component
+- `config.js` - Section sort scores, tier buttons, min widths
+
+**Compare view:**
+- `BackButton.vue` - Navigation back
+- `FilterButton.vue` - Filter toggle
+- `SectionFilters.vue` - Section visibility filters
+- `SettingsButton.vue` - Settings toggle
+- `SettingsPanel.vue` - Comparison settings
+- `UnitRow.vue` - Row of units in comparison
+- `CalculationSelect.vue` - Efficiency calculation selector
+
+**Filters:**
+- `FiltersHeader.vue` - Filter header bar
+- `FilterGroups.vue` - Filter group display
+
+**Unit detail:**
+- `UnitComponent.vue` - Main unit card with dynamic layout
+- `unit/sections/` - Unit data sections:
+  - `Header.vue` - Unit name, icon, description
+  - `Defense.vue` - HP, shields, regen
+  - `Economy.vue` - Build costs, production, storage
+  - `Offense.vue` - Weapon stats with DPS table
+  - `Physics.vue` - Speed, acceleration, turn rate
+  - `Abilities.vue` - Special abilities
+  - `Intel.vue` - Radar, sonar, stealth, vision
+  - `Transport.vue` - Transport capacity
+  - `Veterancy.vue` - Veterancy bonuses
+  - `Wreckage.vue` - Wreckage/reclaim values
+  - `Enhancements.vue` - ACU/SACM upgrades
+  - `index.js` - Barrel export
+- `unit/helpers/` - Unit display helpers:
+  - `WeaponGroup.vue` - Collapsible weapon group table rows
+  - `Projectile.vue` - Projectile info display
+  - `LineItem.vue` - Generic line item display
+  - `Enhancement.vue` - Enhancement item display
+
+**UI components:**
+- `ToggleSwitch.vue` - On/off toggle
+- `Select.vue` - Dropdown select
+- `Input.vue` - Text input
+- `Resizer.vue` - Slide-out panel resizer
+- `CostsList.vue` - Economy cost list
+- `SingleCostItem.vue` - Single cost display
+- `BuildtimeIcon.vue` - Build time icon
+- `EnergyIcon.vue` - Energy icon
+- `MassIcon.vue` - Mass icon
+- `HpIcon.vue` - HP icon
+
+---
+
+### Stores: `src/stores/`
+
+**`unitData.js`** - Main unit data store
+- State: `units`, `unitsMap`, `version`, `unitDefaults`
+- Computed: `visibleUnits`, `tierTree`, `typeTree`
+- Actions: `loadData()`, `setData()`, `toggleUnitSelection()`
+
+**`filterStore.js`** - Filter state
+- State: `factions` (Set), `kinds` (Set), `tech` (Set), `search` (string)
+- Actions: `passesFilters()`, `toggleFaction()`, etc.
+- Note: Factions stored lowercase: `'uef'`, `'cybran'`, `'aeon'`, `'seraphim'`
+
+**`compare/index.js`** - Comparison view store (composes sub-stores)
+- `useShowedSections.js` - Section visibility (all on by default)
+- `useCompareToggles.js` - Toggle settings (compactSections, minorWeaponStats, etc.)
+- `useEfficiencySettings.js` - Efficiency calculation modes (unitMode, weaponMode, invert)
+- `useSettingsSaver.js` - Settings persistence to localStorage
+- `sectionOrder.js` - Default section order array
+
+**`utils/contenders.js`** - Unit selection management
+- Exports: `contenders`, `toggleUnitSelection()`, `clearSelection()`, `smartSelect()`
+
+---
+
+### Store Utilities: `src/stores/utils/`
+
+**`categorizer.js`** - Unit categorization
+- Exports: `categorize()`, `generateTierTree()`, `generateTypeTree()`, `getTech()`, `deriveKind()`
+- Adds to blueprints: `type`, `section`, `sortOrder`
+
+**`categorizerData/`** - Categorization data
+- `categorizeTables.js` - Lookup tables: `TypeById`, `TypeToSection`, `sectionByType`
+- `categorizeOrders.js` - Sort orders: `SECTION_ORDER`, `customOrderModifiers`, sort functions
+
+**`unitDecorator/`** - Unit data decoration
+- `decorator.js` - Main decoration (adds DPS, fireCycle to weapons)
+- `dps/index.js` - DPS API: `calculateDps()`, `calculateFiringCycle()`, `getDetailedCycle()`
+- `dps/calculations.js` - Core math: `MATH_IRound()`, `calculateProjectileDamage()`, rack processing
+- `dps/formatters.js` - Cycle text formatting for UI
+
+---
+
+### Composables: `src/composables/`
+
+**Core:**
+- `useUnitData.js` - Wrapper around unitDataStore, adds `effectiveVisibleFactions`
+- `useContainerWidth.js` - Container width observation
+- `useUnitsPerRow.js` - Calculate units per row for layout
 - `useDoubleClickHandler.js` - Double-click event handling
-- `helpers/common.js` - Common utility functions
+- `useClickOutside.js` - Click outside detection
+- `useMods.js` - Mod integration
+- `useResizeWatcher.js` - Resize observation
+- `useRowAlignment.js` - Row alignment logic
+- `useFactionColorFilter.js` - Faction color filtering
 
-**Static Assets:** `src/public/`
-- `img/` - Images (faction headers, background, sprite sources)
-  - `ui/` - UI icon sources
-  - `strategic/` - Strategic icon sources
-  - `units/` - Unit icon sources
-- `data/` - Unit JSON data
+**Layout:**
+- `useOptimalLayout.js` - Optimal section layout algorithm (subset enumeration + FFD)
 
-**Styles:** `src/sass/`
-- `normalize.sass` - CSS reset
-- `fonts.sass` - Font declarations
-- `abstracts/` - Sass variables and mixins
-  - `colors.sass` - Faction color map
-  - `vars.sass` - Global CSS variables
-  - `mixins.sass` - Responsive mixins
-- `generated/` - Auto-generated sprite sheets (git-ignored)
+**Weapon:**
+- `useWeaponGroups.js` - Weapon grouping by category
+- `useCalcEfficiency.js` - Efficiency calculation (DPS/mass, etc.)
+- `useWeaponColumns.js` - Dynamic column selection for weapon tables
 
-**Tests:** `src/__tests__/`
+**UI:**
+- `useAutoShrinkTable.js` - Auto-shrink overflowing tables
+
+**Helpers:**
+- `helpers/common.js` - Common utilities: `formatNum()`, `shorten()`, `round()`, `smartRound()`, `throttle()`
+- `helpers/weaponHelper.js` - Weapon type helpers: `isMissile()`, `isTorpedo()`, `isAntiMissile()`, etc.
+
+**Weapon modules:**
+- `weapon/useWeaponGrouping.js` - Weapon grouping for comparison tables
+- `weapon/weaponStats.js` - Stat collection and formatting for weapon tables
+- `weapon/weaponTooltips.js` - Tooltip generation for weapon stats
+- `weapon/StatsCollector.js` - Stats collection utility
+
+---
+
+### Static Assets: `src/`
+
+**`data/svgicons/`** - SVG icon data (clear, arrow_left, factions, cog, filter, plus, buildtime)
+
+**`public/`** - Public assets
+- `data/` - Generated JSON data files
+- `fonts/` - Font files
+- `img/` - Images (ui, strategic, units)
+
+**`sass/`** - Styles
+- `abstracts/` - Variables and mixins
+- `generated/` - Auto-generated sprites (git-ignored)
+- `modules/` - Style modules
+
+---
+
+### Tests: `src/__tests__/`
+- `setup.js` - Test setup
 - `stores/unitData.spec.js` - Store tests
-- `utils/dpsCalculator.spec.js` - DPS calculator tests (imports `calculateDps` from `stores/utils/unitDecorator/dps2.js`)
+- `stores/filterStore.spec.js` - Filter store tests
+- `utils/dpsCalculator.spec.js` - DPS calculation tests (22 test cases)
+
+---
+
+### Data Generator: `tools/generator/`
+
+**Purpose:** Parse FAF Lua blueprints to JSON from official FAForever repositories
+
+**Core files:**
+- `index.js` - Main generator orchestration (args: `--cached`, `--withfat`)
+- `parser.js` - Lua AST parser using luaparse
+  - `parseBlueprint()` - Parse unit blueprint
+  - `parseProjectile()` - Parse projectile data
+  - `parseProjectileScript()` - Parse projectile script (childCount, splitType)
+  - `parseVersion()` - Parse version.lua
+  - `parseShield()` - Parse shield.lua constants
+  - `parseVeterancyConstants()` - Parse veterancy multipliers
+  - `parseWreckageConstants()` - Parse wreckage multipliers
+- `fetcher.js` - Fetch blueprints from GitHub API
+- `downloader.js` - Download and cache blueprints locally
+
+**New modules:**
+- `Distillator.js` - Whitelist-based data distillation
+  - `filterUnits()` - Campaign/force-exclude filtering
+  - `distillUnit()` - Property whitelist distillation
+- `BlueprintEnricher.js` - Unit enrichment from projectiles
+  - Adds `__fragmentCount`, `Projectile` data, `childCount`, `childSplitType`, `isAntiMissileFlare`
+- `CacheManager.js` - Local cache management
+- `whitelist.js` - Property whitelist for distillation
+- `weaponExtractor.js` - Extract specific weapons for testing
+
+**Scripts:**
+```bash
+npm run download-blueprints    # Download to cache
+npm run generate               # Fetch and generate (slim)
+npm run generate:cached        # Generate from cache (slim)
+npm run generate:fat           # Fetch and generate with fat
+npm run generate:cached:fat    # Generate from cache with fat
+```
+
+**Outputs:** `src/public/data/{index.json, projectiles.json, version.json}` + optional `index.fat.json`
+
+---
 
 ### Build & Config
-- `vite-plugin-spritesmith.js` - Custom plugin for PNG sprite generation
-- `vite.config.js` - Vite config with Vue dev server (port 9001), sprite generation, Sass auto-imports
-- `vitest.config.js` - Testing config
+- `vite.config.js` - Vite config (port 9001, sprite generation, Sass auto-imports)
+- `vite-plugin-spritesmith.js` - PNG sprite generation plugin
+- `vitest.config.js` - Testing config with `@` alias resolution
 - `eslint.config.js` - ESLint flat config
 - `package.json` - Scripts
 
-### Data Generator
-**Location:** `tools/generator/`
-- Parses FAF Lua blueprints to JSON from the official FAForever repositories
-- **Files:**
-  - `fetcher.js` - Fetches blueprints from GitHub API (fa and nomads repos)
-  - `downloader.js` - Downloads and caches blueprints locally
-  - `parser.js` - Lua AST parser (handles blueprint and version files)
-  - `index.js` - Main generator orchestration, pre-calculates `ProjectileFragmentMultiplier`
-- **Scripts:**
-  - `npm run download-blueprints` - Downloads blueprints to local cache
-  - `npm run generate` - Fetches and generates on-the-fly (slim only)
-  - `npm run generate:cached` - Generates from cache (fast, slim only)
-  - `npm run generate:fat` - Fetches and generates with fat file
-  - `npm run generate:cached:fat` - Generates from cache with fat file
-- **Outputs:** `src/public/data/{index.json, projectiles.json, version.json}` + optional `index.fat.json`
-  - `index.json` - Slim version with essential properties only
-  - `projectiles.json` - Projectile fragment data for nested fragmentation DPS calculations
-  - `index.fat.json` - Full unit data (only with `--withfat` flag)
-  - `version.json` - FAF version number
+---
 
 ## Key Patterns
 
-**View Layout System:**
-- Both main views use `.home` base class with modifiers:
-  - `home_A` - Horizontal layout with top filters (HomeView)
-  - `home_B` - Vertical layout with sidebar filters (ByClassView)
-- `--factionCount` CSS variable controls grid column count
-- View preference persisted to localStorage as `faf-last-view`
+### View Layout System
+- HomeView: `.home.home_A` - Horizontal layout with top filters
+- ByTypeView: `.home.home_B` - Vertical layout with sidebar filters
+- `--factionCount` CSS variable controls grid columns
+- View preference persisted to `faf-last-view`
 
-**Unit Properties (added by decorator + categorizer):**
-- From `decorator.js`:
-  - `id` - Unit blueprint ID
-  - `name` - Unit name from blueprint
-  - `description` - Unit description
-  - `faction` - Faction name
-  - `kind` - Basic kind (Build, Land, Air, Naval, Base) via `kindMap`
-  - `tech` - Tech level (T1, T2, T3, EXP) via `getTech()`
-  - `strategicIcon` - Strategic icon path
-  - `icon` - Unit icon path
-  - `fullName` - Display name with tech prefix (e.g., "T3 Percival: T3 Assault Bot")
-  - `selected` - Boolean for compare view selection
-  - `fireCycle` / `beamCycle` - Functions for weapon cycle formatting
-- From `categorizer.js`:
-  - `type` - Specific unit type (e.g., "T3 Assault Bot", "T2 Gunship")
-  - `section` - High-level section (e.g., "Land", "Structures - Weapons")
-  - `sortOrder` - Numeric value for sorting within categories
-- Weapon properties (added to each weapon in `blueprint.Weapon` array):
-  - `dps` - Calculated using FA-accurate algorithm (`calculateDps`)
-  - `dpsShields` - DPS including DamageToShields bonus (only present if weapon has DamageToShields)
-  - `fullDamage` - Total damage per projectile including fragments
-  - `fullSalvoDamage` - `fullDamage * cycleProjs`
-  - `projectileDotText` - Formatted DoT info
-  - `isTML` - Boolean indicating if weapon is a Tactical Missile Launcher
+### Unit Properties (added by decorator + categorizer)
 
-**Categorization (categorizer.js):**
-- `categorize(bp)` - Mutates blueprint to add `type`, `section`, `sortOrder`
-- `type` is determined from `TypeById` lookup or generated from tech + description
-- `section` maps from `type` via `TypeToSection` lookup
-- `sortOrder` combines unit number, tech level, and custom modifiers
-- `generateTierTree(units)` - Returns nested structure: `section -> tech -> faction -> units[]`
-- `generateTypeTree(units)` - Returns nested structure: `section -> type -> faction -> units[]`
+**From decorator:**
+- `id` - Unit blueprint ID
+- `name` - Unit name from blueprint
+- `description` - Unit description
+- `faction` - Faction name (lowercase)
+- `kind` - Basic kind (Land, Air, Naval, Base)
+- `tech` - Tech level (T1, T2, T3, EXP)
+- `strategicIcon` - Strategic icon path
+- `icon` - Unit icon path
+- `fullName` - Display name with tech prefix
 
-**DPS Calculation (dps2.js):**
-- Implements FA game-accurate DPS calculation based on `fa\lua\ui\game\unitviewDetail.lua`
-- `MATH_IRound(val)` - Banker's rounding to 0.1 precision (rounds .05 to nearest even)
-- `calculateProjectileDamage(weapon, toShields)` - Returns damage per projectile
-  - Beams: `damage * (1 + floor(beamTicks / (collisionTicks + 1)))`
-  - Non-beams: `damage * DoTPulses + InitialDamage`
-  - Fragments: multiplies by `weapon.ProjectileFragmentMultiplier` (pre-calculated by generator)
-- `calculateFiringCycle(weapon)` - Returns `{ cycleProjs, cycleTime }`
-  - Iterates `RackBones` with proper muzzle counting
-  - Handles `RackFireTogether`, `MuzzleSalvoDelay`, `RackSalvoChargeTime`, `RackSalvoReloadTime`
-- `calculateDps(weapon, toShields)` - Returns `(damage * cycleProjs) / cycleTime`
-- Special cases:
-  - `NukeWeapon` returns -1
-  - `ForceSingleFire` returns null
-  - Weapons without `RackBones` default to `MuzzleSalvoSize || 1`
+**From categorizer:**
+- `type` - Specific type (e.g., "T3 Assault Bot")
+- `section` - High-level section (e.g., "Land")
+- `sortOrder` - Numeric sort value
 
-**Unit Selection:**
-- `unit.selected` toggled by `store.toggleUnitSelection(id)`
-- Contender IDs stored in `store.contenders`
-- Used for compare view URL generation
+**Weapon properties:**
+- `dps` - Damage per second
+- `dpsShields` - DPS including DamageToShields bonus (if applicable)
+- `fullDamage` - Total damage per projectile including fragments
+- `fullSalvoDamage` - `fullDamage * cycleProjs`
+- `projectileDotText` - Formatted DoT info
+- `firingCycle` - `{ cycleProjs, cycleTime }`
+- `__fragmentCount` - Pre-calculated fragment multiplier
+- `__splitCount` - Child projectile count
+- `Projectile` - Projectile cost/health data
 
-**Filter Behavior:**
-- Faction filters default to `['UEF', 'Cybran', 'Aeon', 'Seraphim']` (Nomads excluded)
-- Empty filter array = show all (applies to faction, kind, tech filters)
-- `effectiveVisibleFactions` computed in `useUnitData.js` handles "empty = all" logic
-- Text filter searches across `id`, `name`, `description`, `faction`, `kind`
-- Inactive filters styled with `filter: grayscale(1); opacity: 0.4`
+### DPS Calculation (`stores/utils/unitDecorator/dps/`)
 
-**Data Loading:**
-- `store.loadData()` on app startup
+**Three-layer architecture:**
+
+1. `calculations.js` - Pure math functions:
+   - `MATH_IRound(val)` - Banker's rounding to 0.1
+   - `calculateProjectileDamage(weapon, toShields)` - Damage per projectile
+   - `getBeamDamageTicks(weapon)` - Beam damage tick count
+   - `getDoTBreakdown(weapon)` - Damage over Time breakdown
+   - `getSalvoInfo(weapon)` - Salvo classification
+   - `getFiringCooldown(weapon)` - Firing cooldown calc
+   - `processRackSequence(weapon)` - Rack/muzzle processing
+
+2. `index.js` - Main API:
+   - `calculateDps(weapon, toShields)` - DPS calculation
+   - `calculateFiringCycle(weapon)` - Cycle calculation
+   - `getDetailedCycle(weapon, toShields, isOneTimeUse)` - Cycle text
+
+3. `formatters.js` - UI formatting:
+   - `formatDmg()` - Damage text
+   - `formatStandardBeamCycle()` - Beam cycle text
+   - `formatMuzzleSalvoCycle()` - Muzzle salvo text
+   - `formatMultiRackSalvoCycle()` - Multi-rack salvo text
+   - `formatCommonCycle()` - Common cycle text
+   - `formatNukeCycle()` - Nuke cycle text
+
+### Weapon Grouping
+
+**Categories:** Direct, Anti-Air, Anti-Navy, Anti-Missile, Anti-Torpedo, Nuke, Sniper mode, Kamikaze, Overcharge
+
+**Grouped by:** `WeaponCategory`, custom mappings, special cases
+
+**Sorted by:** DPS descending
+
+### Filter Behavior
+- Faction filters stored as `Set` with lowercase values: `'uef'`, `'cybran'`, `'aeon'`, `'seraphim'`
+- Empty Set = show all (applies to faction, kind, tech)
+- Text filter searches: `id`, `name`, `description`, `faction`, `kind`
+- Inactive filters: `filter: grayscale(1); opacity: 0.4`
+
+### Compare View Features
+
+**Efficiency calculations:**
+- Modes: `DPS/mass`, `DPS/energy`, `DPS/BT`, `DPM/mass`, etc.
+- Invertible: `mass/DPS`, etc.
+- Separate for units and weapons
+
+**Section toggles:**
+- All sections visible by default
+- Persisted to localStorage key `faf-compare-sections`
+
+**Dynamic columns:**
+- Only show columns with data present
+- Configurable minor stat toggles
+
+**Auto-shrink:**
+- Tables auto-shrink to fit width
+- Progressive font/cell reduction (11 levels)
+
+### Layout Algorithms
+
+**useOptimalLayout:**
+- Subset enumeration for first 2 rows
+- First-Fit Decreasing for remaining
+- Section scores prioritize Land/Air
+
+**ByTypeView:**
+- Masonry layout via `@yeger/vue-masonry-wall`
+
+### Data Loading
+- `store.loadData()` on startup
 - Fat data loads when URL has `?fat` query parameter
 - Units decorated via `decorateUnits()` after loading
 
-**Compare View Section Toggles:**
-- Section visibility stored in `ref()` object (Defense, Economy, Abilities, etc.)
-- Persisted to localStorage key `faf-compare-sections` on every toggle
-- Passed as prop to UnitComponent, controls v-if on each section
-
-**Sprite Generation:** Auto-generated on build/dev from PNG sources in `src/public/img/`
+### Sprite Generation
+- Auto-generated on build/dev from `src/public/img/`
 - Outputs to `src/sass/generated/*.sass`
-- Uses bin-pack algorithm for optimal sprite sheets
-- Watched for hot reload during development
+- Bin-pack algorithm for optimal sheets
+- Watched for hot reload
 
-**Sass Auto-imports:** Available in all `.sass`/`.vue` files via vite.config.js:
+### Sass Auto-imports
+Available in all `.sass`/`.vue` files:
 - `@/sass/abstracts/colors.sass`
 - `@/sass/abstracts/mixins.sass` (as `*`)
 - `sass:color`
 - `sass:math`
 
-**useOptimalLayout(tierTree, containerWidth, ...):**
-- Computes optimal section arrangement for ByClassView to minimize rows and wasted space
-- Uses subset enumeration for first 2 rows, First-Fit Decreasing for remaining
-- Section scores prioritize Land/Air to top rows
-- Returns computed `optimalOrder` as flattened section list with tier data
+### Section Order
+```
+Land, Air, Naval, Construction - Buildpower, Structures - Weapons,
+Structures - Support, Structures - Intelligence, Structures - Economy,
+Structures - Factories, Experimental, Unknown
+```
+
+### Faction Order
+```
+uef: 1, cybran: 2, aeon: 3, seraphim: 4, nomads: 5
+```
+
+### Tier Order
+```
+T1: 1, T2: 2, T3: 3, EXP: 4, '': 1
+```
+
+### Weapon Columns
+TYPE, DPS, DPS_PER_MASS, HP, DPS_TO_SHIELDS, DPS_TO_SHIELDS_PER_MASS,
+RANGE, AOE, DOT, MUZZLE_VELOCITY, FIRING_TOLERANCE, YAW,
+RANDOMNESS, RANDOMNESS_MOVE, CYCLE, CYCLE_TO_SHIELDS
+
+## Key Exports
+
+### DPS Module
+```javascript
+import { calculateDps, calculateFiringCycle, getDetailedCycle } from '@/stores/utils/unitDecorator/dps/index.js'
+```
+
+### Decorator
+```javascript
+import { decorateUnit, decorateUnits } from '@/stores/utils/unitDecorator/decorator.js'
+```
+
+### Categorizer
+```javascript
+import { categorize, generateTierTree, generateTypeTree } from '@/stores/utils/categorizer.js'
+```
+
+### Stores
+```javascript
+import { useUnitDataStore } from '@/stores/unitData.js'
+import { useFilterStore } from '@/stores/filterStore.js'
+import { useCompareStore } from '@/stores/compare/index.js'
+```
+
+### Composables
+```javascript
+import { useWeaponGroups } from '@/composables/useWeaponGroups.js'
+import { useCalcEfficiency } from '@/composables/useCalcEfficiency.js'
+import { useOptimalLayout } from '@/composables/useOptimalLayout.js'
+import { useWeaponColumns } from '@/composables/useWeaponColumns.js'
+```

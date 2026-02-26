@@ -26,10 +26,10 @@ export function parseVersion(content) {
         const idx = node.variables.indexOf(versionVar);
         const initValue = node.init[idx];
         if (initValue.type === 'StringLiteral') {
-          return parseString(initValue.raw);
+          return { version: parseString(initValue.raw) };
         }
         if (initValue.type === 'NumericLiteral') {
-          return String(initValue.value);
+          return { version: String(initValue.value) };
         }
       }
     }
@@ -93,6 +93,22 @@ export function parseProjectile(content) {
   } catch (error) {
     console.error(error)
     return null
+  }
+}
+
+export function parseProjectileScript(content) {
+  const childCountMatch = content.match(/ChildCount\s*=\s*(\d+)/)
+  const splitType = /OnEnterWater[\s\S]*?OnSplit/.test(content) ? 'onWater'
+    : /CLOATacticalMissileProjectile/.test(content) ? 'onDeath'
+    : null
+
+  const isAntiMissileFlare = /ClassProjectile\s*\(\s*AIMFlareProjectile\s*\)/.test(content)
+
+  if (!childCountMatch && !splitType && !isAntiMissileFlare) return null
+
+  return {
+    childCount: childCountMatch ? parseInt(childCountMatch[1]) : null,
+    splitType, isAntiMissileFlare
   }
 }
 
@@ -191,9 +207,15 @@ export function parseShield(content) {
   if (!overspillMatch) throw new Error('Failed to parse ShieldSpillOverDamageMod from shield.lua')
   if (!rechargeMatch) throw new Error('Failed to parse ShieldRechargeTime from shield.lua')
 
+  const overspill = parseFloat(overspillMatch[1])
+  const rechargeTime = parseFloat(rechargeMatch[1])
+
+  if (Number.isNaN(overspill)) throw new Error('ShieldSpillOverDamageMod is not a valid number')
+  if (Number.isNaN(rechargeTime)) throw new Error('ShieldRechargeTime is not a valid number')
+
   return {
-    overspill: parseFloat(overspillMatch[1]),
-    rechargeTime: parseFloat(rechargeMatch[1])
+    shieldDefaultOverspill: overspill,
+    shieldDefaultRechargeTime: rechargeTime
   };
 }
 
@@ -221,26 +243,42 @@ export function parseVeterancyConstants(blueprintsUnitsContent, defaultComponent
   return { techToVetMultipliers, veterancyRegenBuffs }
 }
 
-export function parseWreckageConstants(unitContent) {
-  const tech1Match = unitContent.match(/tech_category == 'TECH1'[\s\S]*?mass_tech_mult = ([\d.]+)/);
-  const tech2Match = unitContent.match(/tech_category == 'TECH2'[\s\S]*?mass_tech_mult = ([\d.]+)/);
-  const tech3Match = unitContent.match(/tech_category == 'TECH3'[\s\S]*?mass_tech_mult = ([\d.]+)/);
-  const expMatch = unitContent.match(/tech_category == 'EXPERIMENTAL'[\s\S]*?mass_tech_mult = ([\d.]+)/);
-  const waterMatch = unitContent.match(/layer == 'Water'[\s\S]*?mass = mass \* ([\d.]+)/);
+export function createConfig({ versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }) {
+  console.log('\nExtracting constants...')
+  return {
+    ...parseVersion(versionContent),
+    ...parseShield(shieldContent),
+    ...parseVeterancyConstants(blueprintsUnitsContent, defaultComponentsContent),
+    ...parseWreckageConstants(unitContent),
+  }
+}
 
-  if (!tech1Match) throw new Error("Failed to parse TECH1 mass_tech_mult from unit.lua")
-  if (!tech2Match) throw new Error("Failed to parse TECH2 mass_tech_mult from unit.lua")
-  if (!tech3Match) throw new Error("Failed to parse TECH3 mass_tech_mult from unit.lua")
-  if (!expMatch) throw new Error("Failed to parse EXPERIMENTAL mass_tech_mult from unit.lua")
+export function parseWreckageConstants(unitContent) {
+  const patterns = {
+    TECH1: /tech_category == 'TECH1'[\s\S]*?mass_tech_mult = ([\d.]+)/,
+    TECH2: /tech_category == 'TECH2'[\s\S]*?mass_tech_mult = ([\d.]+)/,
+    TECH3: /tech_category == 'TECH3'[\s\S]*?mass_tech_mult = ([\d.]+)/,
+    EXPERIMENTAL: /tech_category == 'EXPERIMENTAL'[\s\S]*?mass_tech_mult = ([\d.]+)/,
+    water: /layer == 'Water'[\s\S]*?mass = mass \* ([\d.]+)/,
+  }
+
+  const techMassMults = {}
+  for (const [key, pattern] of Object.entries(patterns)) {
+    if (key === 'water') continue
+
+    const match = unitContent.match(pattern)
+    if (!match) throw new Error(`Failed to parse ${key} mass_tech_mult from unit.lua`)
+
+    const value = parseFloat(match[1])
+    if (Number.isNaN(value)) throw new Error(`${key} mass_tech_mult is not a valid number`)
+    techMassMults[key] = value
+  }
+
+  const waterMatch = unitContent.match(patterns.water)
   if (!waterMatch) throw new Error("Failed to parse Water mass multiplier from unit.lua")
 
-  return {
-    techMassMults: {
-      TECH1: parseFloat(tech1Match[1]),
-      TECH2: parseFloat(tech2Match[1]),
-      TECH3: parseFloat(tech3Match[1]),
-      EXPERIMENTAL: parseFloat(expMatch[1]),
-    },
-    waterMult: parseFloat(waterMatch[1]),
-  };
+  const water = parseFloat(waterMatch[1])
+  if (Number.isNaN(water)) throw new Error('Water mass multiplier is not a valid number')
+
+  return { techMassMults, waterMult: water }
 }

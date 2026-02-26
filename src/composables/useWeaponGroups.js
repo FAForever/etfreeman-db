@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { isAntiMissile, isAntiTorpedo } from './helpers/weaponHelper'
 
 const CATEGORIES_MAP = {
   'Direct Fire': 'Direct',
@@ -22,9 +23,9 @@ const categorizeWeapon = (weapon) => {
   if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled)
     return 'Kamikaze'
   if (weapon.WeaponCategory == 'Defense') {
-    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('missile'))
+    if (isAntiMissile(weapon))
       return 'Anti-Missile'
-    if (weapon.TargetRestrictOnlyAllow?.toLowerCase().match('torpedo'))
+    if (isAntiTorpedo(weapon))
       return 'Anti-Torpedo'
   }
   return CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory

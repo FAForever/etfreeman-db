@@ -1,39 +1,6 @@
-import { shorten } from '@/composables/helpers/common'
 import { getDetailedCycle, getDoTBreakdown } from '@/stores/utils/unitDecorator/dps/index.js'
 import { Column } from '@/composables/useWeaponColumns'
 import { isOneTimeUse } from '../helpers/weaponHelper'
-
-const getCycleTooltip = (weapon, stat) => {
-  if (stat === Column.CYCLE_TO_SHIELDS) {
-    return getDetailedCycle(weapon, true)
-  }
-
-  if (weapon.NukeInnerRingDamage) {
-    const innerTotal = weapon.NukeInnerRingDamage + weapon.NukeOuterRingDamage
-    return shorten(innerTotal) + " damage in " + weapon.NukeInnerRingRadius + " radius,\n" + shorten(weapon.NukeOuterRingDamage) + " damage in " + weapon.NukeOuterRingRadius + " radius"
-  }
-
-  const detailed = getDetailedCycle(weapon, false)
-  if (detailed) return detailed
-
-  const dot = getDoTBreakdown(weapon)
-  if (dot.hasDoT) {
-    const { cycleProjs } = weapon.firingCycle
-    const instant = Math.round(dot.instant * cycleProjs)
-    const dotDmg = Math.round(dot.dotTotal * cycleProjs)
-
-    if (isOneTimeUse(weapon)) {
-      return instant + "dmg + " + dotDmg + " DoT"
-    }
-
-    const plural = cycleProjs > 1 ? 's' : ''
-    const cycleTime = weapon.firingCycle.cycleTime
-    const cycleTimeText = cycleTime === 1 ? '' : cycleTime?.toFixed(1)
-    return instant + "dmg + " + dotDmg + " DoT\n" + cycleProjs + " shot" + plural + " / " + cycleTimeText + "s"
-  }
-
-  return null
-}
 
 const getDoTTooltip = (weapon) => {
   const dot = getDoTBreakdown(weapon)
@@ -50,12 +17,10 @@ const getDoTTooltip = (weapon) => {
 
 export const getTooltip = (weapon, col) => {
   if (!weapon) return undefined
-  if (col === Column.CYCLE || col === Column.CYCLE_TO_SHIELDS) {
-    return getCycleTooltip(weapon, col)
+  if ([Column.CYCLE, Column.CYCLE_TO_SHIELDS].includes(col)) {
+    return getDetailedCycle(weapon, col === Column.CYCLE_TO_SHIELDS, isOneTimeUse(weapon)) || null
   }
-  if (col === Column.DOT) {
-    return getDoTTooltip(weapon)
-  }
+  if (col === Column.DOT) return getDoTTooltip(weapon)
   return undefined
 }
 

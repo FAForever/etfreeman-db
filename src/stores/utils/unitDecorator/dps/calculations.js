@@ -27,8 +27,8 @@ export const calculateProjectileDamage = (weapon, toShields = false) => {
     damage = damage * (1 + Math.floor(beamTicks / (collisionTicks + 1)))
   } else {
     damage = damage * (weapon.DoTPulses || 1) + (weapon.InitialDamage || 0)
-    if (weapon.ProjectileFragmentMultiplier) {
-      damage *= weapon.ProjectileFragmentMultiplier
+    if (weapon.__fragmentCount) {
+      damage *= weapon.__fragmentCount
     }
   }
 

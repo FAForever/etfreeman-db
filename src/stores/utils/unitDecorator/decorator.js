@@ -23,9 +23,13 @@ export const decorateUnit = (blueprint) => {
     for (const weapon of blueprint.Weapon) {
       weapon.__unitID = self.id
       if (weapon.WeaponCategory === 'Death' && !weapon.FireOnDeath) weapon.FireOnDeath = true
+      if (weapon.childCount && (weapon.childSplitType == 'onWater')) {
+        weapon.__splitCount = weapon.childCount
+      }
       weapon.firingCycle = calculateFiringCycle(weapon)
       weapon.dps = calculateDps(weapon, false)
       weapon.fullDamage = calculateProjectileDamage(weapon, false)
+      if (blueprint.SplitDamage && (weapon.childSplitType == 'onDeath')) weapon.SplitDamage = blueprint.SplitDamage
       if (weapon.DamageToShields) weapon.dpsShields = calculateDps(weapon, true)
     }
   }

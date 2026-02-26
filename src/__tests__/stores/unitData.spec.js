@@ -49,7 +49,7 @@ describe('Unit Data Store', () => {
       expect(store.version).toBe('1.0.0')
       expect(store.units).toHaveLength(1)
       expect(store.units[0].id).toBe('UEL0201')
-      expect(store.units[0].faction).toBe('UEF')
+      expect(store.units[0].faction).toBe('uef')
       expect(store.units[0].kind).toBe('Land')
     })
 
@@ -87,7 +87,7 @@ describe('Unit Data Store', () => {
     it('filters units based on filterStore state', () => {
       const store = useUnitDataStore()
       const filterStore = useFilterStore()
-      filterStore.toggleFaction('UEF')
+      filterStore.toggleFaction('uef')
 
       expect(store.visibleUnits).toHaveLength(1)
       expect(store.visibleUnits[0].id).toBe('URL0107')

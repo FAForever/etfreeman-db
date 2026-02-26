@@ -1,5 +1,5 @@
-const WHITELIST = {
-  root: ['Id', 'Description', 'Categories', 'StrategicIconName', 'VeteranMassMult', 'VeteranMass'],
+export default {
+  root: ['Id', 'Description', 'Categories', 'StrategicIconName', 'VeteranMassMult', 'VeteranMass', 'SplitDamage'],
 
   General: ['FactionName', 'Icon', 'UnitName'],
 
@@ -45,11 +45,9 @@ const WHITELIST = {
            'NukeInnerRingDamage', 'NukeOuterRingDamage', 'DoTTime', 'DoTPulses',
            'MuzzleVelocity', 'BeamLifetime', 'BeamCollisionDelay',
            'FiringRandomness', 'FiringRandomnessWhileMoving', 'FiringTolerance',
-           'TurretYawRange', 'TurretPitchRange', 'MuzzleSalvoSize', 'MuzzleSalvoDelay',
+           'TurretYawRange', 'MuzzleSalvoSize', 'MuzzleSalvoDelay',
            'MuzzleChargeDelay', 'RackFireTogether', 'RackSalvoSize', 'RackSalvoChargeTime',
            'RackSalvoReloadTime', 'RateOfFire', 'TractorDamage', 'TractorDamageInterval',
-           'ProjectileId',
+           'ProjectileId', 'DepthCharge',
            { RackBones: ['MuzzleBones'] }]
 }
-
-export default WHITELIST

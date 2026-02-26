@@ -1,389 +1,393 @@
 // DPS Calculator Tests - FA-Accurate DPS Calculation
 // Tests critical weapon DPS calculations for accuracy
 import { describe, it, expect } from 'vitest'
-import { calculateDps } from '@/stores/utils/unitDecorator/dps/index.js'
+import { calculateDps, calculateFiringCycle } from '@/stores/utils/unitDecorator/dps/index.js'
+
+const calcDps = (weapon) => {
+  weapon.firingCycle = calculateFiringCycle(weapon)
+  return calculateDps(weapon, false)
+}
 
 describe('DPS Calculator', () => {
   it('mantis (URL0107)', () => {
     const weapon = {
       'Damage': 8,
       'DamageRadius': 0,
-      'DamageType': 'Normal',
-      'DisplayName': 'Light Pulse Laser',
-      'MaxRadius': 18,
-      'MuzzleSalvoSize': 1,
-      'ProjectileId': '/projectiles/CDFLaserHeavy01/CDFLaserHeavy01_proj.bp',
-      'ProjectilesPerOnFire': 1,
+      'RateOfFire': 3.3333333333333335,
       'RackBones': [
         { 'MuzzleBones': ['Turret_Muzzle_01'] },
         { 'MuzzleBones': ['Turret_Muzzle_02'] }
       ],
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'RateOfFire': 10 / 3,
-      'TurretPitch': 0,
-      'TurretPitchRange': 45,
-      'TurretPitchSpeed': 100,
-      'TurretYaw': 0,
-      'TurretYawRange': 180,
-      'TurretYawSpeed': 100,
-      'WeaponCategory': 'Direct Fire'
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(26.67, 1)
+    expect(calcDps(weapon)).toBeCloseTo(26.67, 1)
   })
 
   it('Exodus Class (UAS0201) - Oblivion Cannon', () => {
     const weapon = {
       'Damage': 1060,
-      'DamageRadius': 1,
-      'DamageType': 'Normal',
-      'DisplayName': 'Oblivion Cannon',
-      'MaxRadius': 80,
-      'MuzzleSalvoSize': 1,
-      'ProjectileId': '/projectiles/ADFOblivionCannon01/ADFOblivionCannon01_proj.bp',
-      'RackSalvoChargeTime': 0,
+      'DamageRadius': 1.4,
       'RateOfFire': 0.2,
-      'TurretPitch': 10,
-      'TurretPitchRange': 40,
-      'TurretPitchSpeed': 30,
-      'TurretYaw': 0,
-      'TurretYawRange': 160,
-      'TurretYawSpeed': 100,
-      'WeaponCategory': 'Direct Fire Naval'
-    }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(212, 1)
-  })
-
-  it('Uashavoh (XSS0201) - Ultrachromatic Beam Generator 1', () => {
-    const weapon = {
-      'BeamCollisionDelay': 0,
-      'BeamLifetime': 1,
-      'Damage': 50,
-      'DamageRadius': 1,
-      'DamageType': 'Normal',
-      'DisplayName': 'Ultrachromatic Beam Generator',
-      'MaxRadius': 60,
-      'MuzzleSalvoSize': 1,
+      'RackBones': [
+        { 'MuzzleBones': ['Turret_Front_Muzzle'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'RateOfFire': 0.25,
-      'TurretPitch': 10,
-      'TurretPitchRange': 20,
-      'TurretPitchSpeed': 30,
-      'TurretYaw': 0,
-      'TurretYawRange': 120,
-      'TurretYawSpeed': 60,
-      'WeaponCategory': 'Direct Fire Naval'
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0,
+      'MuzzleChargeDelay': 0.1
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(137.5, 1)
+    expect(calcDps(weapon)).toBeCloseTo(212, 1)
   })
 
-  it('Uashavoh (XSS0201) - Ultrachromatic Beam Generator 2', () => {
+  it('Uashavoh (XSS0201) - Front Ultrachromatic Beam Generator', () => {
     const weapon = {
+      'Damage': 45,
+      'DamageRadius': 1,
       'BeamCollisionDelay': 0,
       'BeamLifetime': 1,
+      'RateOfFire': 0.25,
+      'RackBones': [
+        { 'MuzzleBones': ['Turret_Front_Muzzle'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
+    }
+    expect(calcDps(weapon)).toBeCloseTo(123.75, 1)
+  })
+
+  it('Uashavoh (XSS0201) - Rear Ultrachromatic Beam Generator', () => {
+    const weapon = {
       'Damage': 26,
       'DamageRadius': 1,
-      'DamageType': 'Normal',
-      'DisplayName': 'Ultrachromatic Beam Generator',
-      'MaxRadius': 60,
-      'MuzzleSalvoSize': 1,
-      'RackSalvoChargeTime': 0,
+      'BeamCollisionDelay': 0,
+      'BeamLifetime': 1,
       'RateOfFire': 0.25,
-      'TurretPitch': 10,
-      'TurretPitchRange': 20,
-      'TurretPitchSpeed': 30,
-      'TurretYaw': 0,
-      'TurretYawRange': 140,
-      'TurretYawSpeed': 60,
-      'WeaponCategory': 'Direct Fire Naval'
+      'RackBones': [
+        { 'MuzzleBones': ['Turret_Rear_Muzzle'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(71.5, 1)
+    expect(calcDps(weapon)).toBeCloseTo(71.5, 1)
   })
 
   it('Valiant Class (UES0201) - Gauss Cannon', () => {
     const weapon = {
+      'Damage': 305,
       'DamageRadius': 1,
-      'FiringRandomness': 0.35,
       'RateOfFire': 0.25,
-      'ProjectilesPerOnFire': 1,
-      'TurretYaw': 0,
       'RackBones': [
         { 'MuzzleBones': ['Front_Turret01_Muzzle01'] },
         { 'MuzzleBones': ['Front_Turret01_Muzzle02'] }
       ],
-      'Damage': 275,
-      'DamageType': 'Normal',
-      'TurretPitch': 10,
-      'TurretPitchRange': 20,
-      'DisplayName': 'Gauss Cannon',
-      'TurretPitchSpeed': 30,
-      'MaxRadius': 60,
-      'ProjectileId': '/projectiles/TDFGauss01/TDFGauss01_proj.bp',
-      'MuzzleVelocity': 30,
       'RackFireTogether': true,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'MuzzleSalvoSize': 1,
-      'TurretYawSpeed': 90,
-      'MuzzleSalvoDelay': 0,
-      'FiringTolerance': 2,
       'RackSalvoReloadTime': 0,
-      'TurretYawRange': 140,
-      'WeaponCategory': 'Direct Fire Naval',
-      'WeaponNumber': 2
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(137.5, 1)
+    expect(calcDps(weapon)).toBeCloseTo(152.5, 1)
   })
 
   it('Cooper (XES0102) - Angler Torpedo', () => {
     const weapon = {
-      'RateOfFire': 0.3,
-      'TurretYaw': 0,
+      'Damage': 80,
+      'RateOfFire': 0.3125,
       'RackBones': [
         { 'MuzzleBones': ['Projectile01'] }
       ],
-      'Damage': 80,
-      'ProjectileLifetime': 7,
-      'DamageType': 'Normal',
-      'TurretPitch': 0,
-      'TurretPitchRange': 0,
-      'DisplayName': 'Angler Torpedo',
-      'TurretPitchSpeed': 0,
-      'MaxRadius': 50,
-      'ProjectileId': '/projectiles/TANAnglerTorpedo02/TANAnglerTorpedo02_proj.bp',
-      'MuzzleVelocity': 5,
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'MuzzleSalvoDelay': 0.4,
       'RackSalvoReloadTime': 0,
-      'TurretYawSpeed': 0,
-      'TurretYawRange': 0,
-      'FiringTolerance': 2,
-      'WeaponCategory': 'Anti Navy',
-      'MuzzleSalvoSize': 4
+      'MuzzleSalvoSize': 4,
+      'MuzzleSalvoDelay': 0.4
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(96.1, 1)
+    expect(calcDps(weapon)).toBeCloseTo(100, 1)
   })
 
   it('Vesper (XAS0204) - Chrono Torpedo', () => {
     const weapon = {
+      'Damage': 90,
       'RateOfFire': 0.25,
-      'TurretYaw': 0,
       'RackBones': [
         { 'MuzzleBones': ['Projectile_Front_Right', 'Projectile_Front_Left'] }
       ],
-      'Damage': 90,
-      'ProjectileLifetime': 7,
-      'DamageType': 'Normal',
-      'TurretPitch': 0,
-      'TurretPitchRange': 0,
-      'DisplayName': 'Chrono Torpedo',
-      'TurretPitchSpeed': 0,
-      'MaxRadius': 45,
-      'ProjectileId': '/projectiles/AANTorpedo01/AANTorpedo01_proj.bp',
-      'MuzzleVelocity': 5,
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'MuzzleSalvoSize': 4,
-      'MuzzleSalvoDelay': 0.4,
       'RackSalvoReloadTime': 0,
-      'TurretYawRange': 0,
-      'FiringTolerance': 2,
-      'TurretYawSpeed': 0,
-      'WeaponCategory': 'Anti Navy'
+      'MuzzleSalvoSize': 4,
+      'MuzzleSalvoDelay': 0.4
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(90, 1)
+    expect(calcDps(weapon)).toBeCloseTo(90, 1)
   })
 
   it('Lobo (UEL0103) - Fragmentation Artillery', () => {
     const weapon = {
+      'Damage': 100,
       'DamageRadius': 1,
-      'FiringRandomness': 0.5,
-      'TurretYaw': 0,
+      'RateOfFire': 0.12048192771084337,
       'RackBones': [
         { 'MuzzleBones': ['Turret_Muzzle'] }
       ],
-      'Damage': 100,
-      'DamageType': 'Normal',
-      'TurretPitch': 45,
-      'TurretPitchRange': 90,
-      'DisplayName': 'Fragmentation Artillery',
-      'TurretPitchSpeed': 70,
-      'MinRadius': 5,
-      'MaxRadius': 30,
-      'ProjectileId': '/projectiles/TIFFragmentationSensorShell01/TIFFragmentationSensorShell01_proj.bp',
-      'ProjectileFragments': 5,
-      'ProjectileFragmentId': 'tiffragmentationsensorshell02',
-      'MuzzleVelocity': 14,
-      'RackSalvoReloadTime': 0,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
       'MuzzleSalvoSize': 1,
       'MuzzleSalvoDelay': 0,
-      'TurretYawSpeed': 70,
-      'TurretYawRange': 180,
-      'FiringTolerance': 2,
-      'RateOfFire': 0.12,
-      'WeaponCategory': 'Artillery',
-      'ProjectileFragmentMultiplier': 5
+      '__fragmentCount': 5
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(60.02, 1)
+    expect(calcDps(weapon)).toBeCloseTo(60.24, 1)
   })
 
   it('Zthuee (XSL0103) - Thuntho Artillery Cannon', () => {
     const weapon = {
+      'Damage': 45,
       'DamageRadius': 1.5,
-      'FiringRandomness': 1,
-      'RateOfFire': 0.35,
-      'TurretYaw': 0,
+      'RateOfFire': 0.3448275862068966,
       'RackBones': [
         { 'MuzzleBones': ['Turret_Muzzle'] }
       ],
-      'Damage': 45,
-      'DamageType': 'Normal',
-      'TurretPitch': 45,
-      'TurretPitchRange': 90,
-      'DisplayName': 'Thuntho Artillery Cannon',
-      'TurretPitchSpeed': 70,
-      'MinRadius': 8,
-      'MaxRadius': 30,
-      'ProjectileId': '/projectiles/SIFThunthoArtilleryShell01/SIFThunthoArtilleryShell01_proj.bp',
-      'ProjectileFragments': 5,
-      'ProjectileFragmentId': 'sifthunthoartilleryshell02',
-      'MuzzleVelocity': 14,
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'MuzzleSalvoSize': 1,
-      'TurretYawSpeed': 70,
-      'MuzzleSalvoDelay': 0,
-      'TurretYawRange': 45,
-      'FiringTolerance': 1,
       'RackSalvoReloadTime': 0,
-      'WeaponCategory': 'Artillery',
-      'ProjectileFragmentMultiplier': 5
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0,
+      '__fragmentCount': 5
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(78.67, 1)
+    expect(calcDps(weapon)).toBeCloseTo(77.59, 1)
   })
 
   it('Wailer (XRA0305) - Disintegrator Pulse Laser', () => {
     const weapon = {
       'Damage': 140,
-      'DamageType': 'Normal',
-      'DisplayName': 'Disintegrator Pulse Laser',
-      'MaxRadius': 25,
-      'MinRadius': 2,
-      'MuzzleSalvoSize': 1,
-      'ProjectileId': '/projectiles/CDFLaserDisintegrator04/CDFLaserDisintegrator04_proj.bp',
-      'ProjectilesPerOnFire': 1,
+      'RateOfFire': 1.6666666666666667,
       'RackBones': [
         { 'MuzzleBones': ['Turret_Down_Muzzle_01'] },
         { 'MuzzleBones': ['Turret_Down_Muzzle_02'] }
       ],
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'RateOfFire': 10 / 6,
-      'TurretPitch': -20,
-      'TurretPitchRange': 80,
-      'TurretPitchSpeed': 180,
-      'TurretYaw': 0,
-      'TurretYawRange': 180,
-      'TurretYawSpeed': 180,
-      'WeaponCategory': 'Direct Fire'
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(233.33, 1)
+    expect(calcDps(weapon)).toBeCloseTo(233.33, 1)
   })
 
   it('Zeus (URA0103) - Neutron Cluster Bomb', () => {
     const weapon = {
+      'Damage': 50,
       'DamageRadius': 3,
       'RateOfFire': 0.2,
       'RackBones': [
         { 'MuzzleBones': ['Muzzle_L03', 'Muzzle_R03', 'Muzzle_L02', 'Muzzle_R02', 'Muzzle_L01', 'Muzzle_R01'] }
       ],
-      'Damage': 50,
-      'DamageType': 'Normal',
-      'TurretPitch': 0,
-      'DisplayName': 'Neutron Cluster Bomb',
-      'TurretPitchSpeed': 0,
-      'MaxRadius': 40,
-      'ProjectileId': '/projectiles/CIFNeutronClusterBomb01/CIFNeutronClusterBomb01_proj.bp',
-      'MuzzleVelocity': 0,
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'MuzzleSalvoSize': 6,
-      'MuzzleSalvoDelay': 0.2,
-      'TurretYawRange': 0,
-      'TurretPitchRange': 0,
       'RackSalvoReloadTime': 0,
-      'FiringTolerance': 6,
-      'TurretYaw': 0,
-      'TurretYawSpeed': 0,
-      'WeaponCategory': 'Bomb'
+      'MuzzleSalvoSize': 6,
+      'MuzzleSalvoDelay': 0.2
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(60, 1)
+    expect(calcDps(weapon)).toBeCloseTo(60, 1)
   })
 
   it('Shimmer (UAA0103) - Graviton Bomb', () => {
     const weapon = {
+      'Damage': 200,
       'DamageRadius': 4,
-      'FiringRandomness': 0,
       'RateOfFire': 0.2,
-      'ProjectilesPerOnFire': 1,
       'RackBones': [
         { 'MuzzleBones': ['UAA0103'] }
       ],
-      'Damage': 200,
-      'DamageType': 'Normal',
-      'DisplayName': 'Graviton Bomb',
-      'MaxRadius': 40,
-      'ProjectileId': '/projectiles/AIFBombGraviton01/AIFBombGraviton01_proj.bp',
-      'MuzzleVelocity': 0,
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
-      'MuzzleSalvoSize': 1,
-      'MuzzleSalvoDelay': 0,
       'RackSalvoReloadTime': 0,
-      'FiringTolerance': 6,
-      'Buffs': [{}],
-      'WeaponCategory': 'Bomb'
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(40, 1)
+    expect(calcDps(weapon)).toBeCloseTo(40, 1)
   })
 
   it('Sinnve (XSA0103) - Othe Tactical Bomb', () => {
     const weapon = {
+      'Damage': 250,
       'DamageRadius': 4,
       'RateOfFire': 0.2,
-      'ProjectilesPerOnFire': 1,
       'RackBones': [
         { 'MuzzleBones': ['Center_Projectile'] }
       ],
-      'Damage': 250,
-      'DamageType': 'Normal',
-      'DisplayName': 'Othe Tactical Bomb',
-      'MaxRadius': 40,
-      'ProjectileId': '/projectiles/SBOOtheTacticalBomb01/SBOOtheTacticalBomb01_proj.bp',
-      'MuzzleVelocity': 0,
       'RackFireTogether': false,
+      'RackSalvoSize': 1,
       'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
+    }
+    expect(calcDps(weapon)).toBeCloseTo(50, 1)
+  })
+
+  it('Bouncer (DRLK001) - Nanodart Launcher', () => {
+    const weapon = {
+      'Damage': 100,
+      'DamageRadius': 1.5,
+      'RateOfFire': 1.6666666666666667,
+      'RackBones': [
+        { 'MuzzleBones': ['Turret_Muzzle_01', 'Turret_Muzzle_04'] },
+        { 'MuzzleBones': ['Turret_Muzzle_02', 'Turret_Muzzle_05'] },
+        { 'MuzzleBones': ['Turret_Muzzle_03', 'Turret_Muzzle_06'] },
+        { 'MuzzleBones': ['Turret_Muzzle_01', 'Turret_Muzzle_04'] },
+        { 'MuzzleBones': ['Turret_Muzzle_02', 'Turret_Muzzle_05'] },
+        { 'MuzzleBones': ['Turret_Muzzle_03', 'Turret_Muzzle_06'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 2,
+      'MuzzleSalvoSize': 2,
+      'MuzzleSalvoDelay': 0
+    }
+    expect(calcDps(weapon)).toBeCloseTo(235.29, 1)
+  })
+
+  it('Uyanah (DSLK004) - Lightning Projector', () => {
+    const weapon = {
+      'Damage': 200,
+      'DamageRadius': 1,
+      'BeamLifetime': 0.6,
+      'BeamCollisionDelay': 0,
+      'RateOfFire': 1,
+      'RackBones': [
+        { 'MuzzleBones': ['muzzle01'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 5,
       'MuzzleSalvoSize': 1,
       'MuzzleSalvoDelay': 0,
-      'RackSalvoReloadTime': 0,
-      'FiringTolerance': 6,
-      'FiringRandomness': 0,
-      'WeaponCategory': 'Bomb'
+      'MuzzleChargeDelay': 0
     }
-    const dps = calculateDps(weapon, false)
-    expect(dps).toBeCloseTo(50, 1)
+    expect(calcDps(weapon)).toBeCloseTo(274.51, 1)
+  })
+
+  it('Uosthu (XSB2205) - Heavy Cavitation Torpedo Cluster', () => {
+    const weapon = {
+      'Damage': 242,
+      'RateOfFire': 0.25,
+      'RackBones': [
+        { 'MuzzleBones': ['Muzzle01', 'Muzzle02', 'Muzzle03'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 3,
+      'MuzzleSalvoDelay': 0.3,
+      '__splitCount': 3
+    }
+    expect(calcDps(weapon)).toBeCloseTo(181.5, 1)
+  })
+
+  it('Solace (XAA0306) - Torpedo Cluster', () => {
+    const weapon = {
+      'Damage': 1000,
+      'RateOfFire': 0.1,
+      'RackBones': [
+        { 'MuzzleBones': ['Torpedo_Muzzle'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 2,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 5,
+      'MuzzleSalvoDelay': 0.2,
+      '__splitCount': 2
+    }
+    expect(calcDps(weapon)).toBeCloseTo(500, 1)
+  })
+
+  it('Serenity (UAL0304) - Sonance Artillery', () => {
+    const weapon = {
+      'Damage': 95,
+      'DamageRadius': 3,
+      'DoTTime': 4.2,
+      'DoTPulses': 15,
+      'RateOfFire': 0.05,
+      'RackBones': [
+        { 'MuzzleBones': ['Turret_Muzzle'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
+    }
+    expect(calcDps(weapon)).toBeCloseTo(71.25, 1)
+  })
+
+  it('Janus (DEA0202) - Napalm Carpet Bomb', () => {
+    const weapon = {
+      'Damage': 6,
+      'DamageRadius': 3,
+      'InitialDamage': 20,
+      'DoTTime': 5.4,
+      'DoTPulses': 10,
+      'RateOfFire': 0.1,
+      'RackBones': [
+        { 'MuzzleBones': ['Rear_Bomb', 'Left_Wing_Bomb', 'Right_Wing_Bomb'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 20,
+      'MuzzleSalvoDelay': 0.1
+    }
+    expect(calcDps(weapon)).toBeCloseTo(160, 1)
+  })
+
+  it('Scorcher (UEA0103) - Napalm Carpet Bomb', () => {
+    const weapon = {
+      'Damage': 4.5,
+      'DamageRadius': 3,
+      'InitialDamage': 42.5,
+      'DoTTime': 3.6,
+      'DoTPulses': 10,
+      'RateOfFire': 0.2,
+      'RackBones': [
+        { 'MuzzleBones': ['Projectile'] }
+      ],
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 4,
+      'MuzzleSalvoDelay': 0.2
+    }
+    expect(calcDps(weapon)).toBeCloseTo(70, 1)
   })
 })

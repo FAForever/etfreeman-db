@@ -2,7 +2,7 @@
 // Based on: fa\lua\ui\game\unitviewDetail.lua
 
 import { calculateProjectileDamage, getRoundedTime, getFiringCooldown, processRackSequence, isSequentialSingleFire, getDoTBreakdown, getSalvoInfo } from './calculations.js'
-import { formatDmg, formatStandardBeamCycle, formatContinuousBeamCycle, formatMuzzleSalvoCycle, formatMultiRackSalvoCycle, formatCommonCycle } from './formatters.js'
+import { formatDmg, formatStandardBeamCycle, formatMuzzleSalvoCycle, formatMultiRackSalvoCycle, formatCommonCycle, formatNukeCycle } from './formatters.js'
 
 export const calculateFiringCycle = (weapon) => {
   const firingCooldown = getFiringCooldown(weapon)
@@ -44,23 +44,23 @@ export const calculateDps = (weapon, toShields = false) => {
   return Number(((damage * weapon.firingCycle.cycleProjs) / weapon.firingCycle.cycleTime).toFixed(2))
 }
 
-export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true) => {
+export const getDetailedCycle = (weapon, toShields = false, isOneTimeUse) => {
   if (toShields) return null
+  if (weapon.NukeInnerRingDamage) return formatNukeCycle(weapon)
 
   const { cycleProjs, cycleTime } = weapon.firingCycle
-  if (!cycleTime) return null
+  const perProjDamage = calculateProjectileDamage(weapon)
+  const formatDmgFn = (dmg) => formatDmg(dmg, dot, perProjDamage)
+  const dot = getDoTBreakdown(weapon)
+  
+  if (!cycleTime || isOneTimeUse) {
+    return dot.hasDoT ? formatDmgFn(perProjDamage) : ''
+  }
 
   if (weapon.BeamLifetime && weapon.BeamLifetime !== 0) {
     return formatStandardBeamCycle(weapon, cycleProjs, cycleTime)
   }
 
-  if (weapon.BeamLifetime === 0) {
-    return formatContinuousBeamCycle(weapon, cycleProjs, nullIfSimple)
-  }
-
-  const perProjDamage = calculateProjectileDamage(weapon)
-  const dot = getDoTBreakdown(weapon)
-  const formatDmgFn = (dmg) => formatDmg(dmg, dot, perProjDamage)
   const { hasMuzzleSalvo, hasMultiMuzzleSingleRack, isSalvo } = getSalvoInfo(weapon)
 
   if (isSalvo && cycleProjs > 1) {
@@ -69,8 +69,7 @@ export const getDetailedCycle = (weapon, toShields = false, nullIfSimple = true)
     }
     return formatMultiRackSalvoCycle(weapon, cycleProjs, cycleTime, perProjDamage, hasMuzzleSalvo, hasMultiMuzzleSingleRack, formatDmgFn)
   }
-
-  return formatCommonCycle(cycleProjs, cycleTime, perProjDamage, dot, nullIfSimple)
+  return formatCommonCycle(weapon, cycleProjs, perProjDamage, formatDmgFn, dot.hasDoT)
 }
 
 // Re-export helpers used externally

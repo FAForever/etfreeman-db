@@ -24,6 +24,7 @@ export const DEFAULT_FILES = [
 ]
 
 export async function fetchDefaults() {
+  console.log('Fetching defaults from GitHub...')
   const faRepo = REPOS.find(r => r.name === 'fa')
 
   const [versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent] = await Promise.all([
@@ -34,6 +35,7 @@ export async function fetchDefaults() {
     fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/sim/Unit.lua'),
   ])
 
+  console.log('  ✓ Defaults fetched')
   return { versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
 }
 
@@ -83,7 +85,32 @@ export async function fetchAllProjectiles() {
   return projectiles
 }
 
-async function listFiles(owner, repo, branch, dirPath, suffix) {
+export async function fetchAllProjectileScripts() {
+  const scripts = []
+
+  for (const repo of REPOS) {
+    if (!repo.projectilePaths) continue
+
+    console.log(`Fetching projectile scripts from ${repo.owner}/${repo.name} (${repo.branch})...`)
+
+    for (const repoPath of repo.projectilePaths) {
+      const scriptFiles = await listFiles(repo.owner, repo.name, repo.branch, repoPath, '_script.lua')
+      console.log(`  ${scriptFiles.length} script files`)
+
+      for (const file of scriptFiles) {
+        const content = await fetchFile(repo.owner, repo.name, repo.branch, file.path)
+        const match = file.path.match(/([^/]+)_[Ss]cript\.lua$/)
+        if (match) {
+          scripts.push({ id: match[1], content, faction: repo.name })
+        }
+      }
+    }
+  }
+
+  return scripts
+}
+
+async function listFiles(owner, repo, branch, dirPath, suffixes) {
   const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`
 
   const headers = { 'User-Agent': 'faf-unit-generator' }
@@ -98,11 +125,12 @@ async function listFiles(owner, repo, branch, dirPath, suffix) {
   }
 
   const data = await response.json()
+  const suffixArray = Array.isArray(suffixes) ? suffixes : [suffixes]
 
   return data.tree.filter(item =>
     item.type === 'blob' &&
     item.path.startsWith(dirPath) &&
-    item.path.endsWith(suffix)
+    suffixArray.some(s => item.path.toLowerCase().endsWith(s.toLowerCase()))
   )
 }
 
