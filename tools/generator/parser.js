@@ -259,10 +259,10 @@ export function parseWreckageConstants(unitContent) {
     TECH2: /tech_category == 'TECH2'[\s\S]*?mass_tech_mult = ([\d.]+)/,
     TECH3: /tech_category == 'TECH3'[\s\S]*?mass_tech_mult = ([\d.]+)/,
     EXPERIMENTAL: /tech_category == 'EXPERIMENTAL'[\s\S]*?mass_tech_mult = ([\d.]+)/,
-    water: /layer == 'Water'[\s\S]*?mass = mass \* ([\d.]+)/,
+    water: /if layer == 'Water' or layer == 'Sub'[\s\S]*?mass = mass \* ([\d.]+)/,
   }
 
-  const techMassMults = {}
+  const wreckageTechMassMults = {}
   for (const [key, pattern] of Object.entries(patterns)) {
     if (key === 'water') continue
 
@@ -271,14 +271,14 @@ export function parseWreckageConstants(unitContent) {
 
     const value = parseFloat(match[1])
     if (Number.isNaN(value)) throw new Error(`${key} mass_tech_mult is not a valid number`)
-    techMassMults[key] = value
+    wreckageTechMassMults[key] = value
   }
 
   const waterMatch = unitContent.match(patterns.water)
   if (!waterMatch) throw new Error("Failed to parse Water mass multiplier from unit.lua")
 
-  const water = parseFloat(waterMatch[1])
-  if (Number.isNaN(water)) throw new Error('Water mass multiplier is not a valid number')
+  const wreckageWaterMult = parseFloat(waterMatch[1])
+  if (Number.isNaN(wreckageWaterMult)) throw new Error('Water mass multiplier is not a valid number')
 
-  return { techMassMults, waterMult: water }
+  return { wreckageTechMassMults, wreckageWaterMult }
 }
