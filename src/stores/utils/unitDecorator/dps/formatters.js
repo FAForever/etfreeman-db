@@ -110,6 +110,6 @@ export const formatCommonCycle = (weapon, cycleProjs, perProjDamage, formatDmgFn
     return getAllTooltips(weapon, true)
   }
   const totalDamage = perProjDamage * cycleProjs
-  if (cycleProjs == 1) return formatDmgFn(totalDamage)
-  return `${formatDmgFn(totalDamage)}\nin ${cycleProjs} projectiles` + getAllTooltips(weapon)
+  if (cycleProjs == 1) return formatDmgFn(totalDamage) + getAllTooltips(weapon)
+  return `${cycleProjs} times ${formatDmgFn(perProjDamage)},\n${formatDmgFn(totalDamage)} total\n fires all projectiles at once` + getAllTooltips(weapon)
 }
