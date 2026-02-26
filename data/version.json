@@ -47,11 +47,11 @@
       125
     ]
   ],
-  "techMassMults": {
+  "wreckageTechMassMults": {
     "TECH1": 0.9,
     "TECH2": 0.8,
     "TECH3": 0.7,
     "EXPERIMENTAL": 0.6
   },
-  "waterMult": 0.6
+  "wreckageWaterMult": 0.6
 }
