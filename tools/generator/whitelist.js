@@ -3,7 +3,7 @@ export default {
 
   General: ['FactionName', 'Icon', 'UnitName'],
 
-  Defense: ['Health', 'MaxHealth', 'RegenRate', {
+  Defense: ['Health', 'RegenRate', {
     Shield: ['ShieldMaxHealth', 'ShieldRegenRate', 'ShieldRegenStartTime',
              'ShieldRechargeTime', 'ShieldSize', 'ShieldSpillOverDamageMod',
              'PersonalShield', 'PersonalBubble']
@@ -35,8 +35,8 @@ export default {
                  'ProductionPerSecondMass', 'ProductionPerSecondEnergy',
                  'NewHealth', 'NewRegenRate', 'NewOmniRadius', 'AdditionalDamage',
                  'NewDamageRadius', 'NewBuildRate', 'ShieldMaxHealth', 'ShieldRegenRate',
-                 'ShieldSize', 'ShieldRechargeTime', 'ShieldRegenStartTime'],
-
+                 'ShieldSize', 'ShieldRechargeTime', 'ShieldRegenStartTime','Radius','RegenCeilingSCU','RegenCeilingT1','RegenCeilingT2','RegenCeilingT3','RegenCeilingT4','RegenFloor','RegenPerSecond',],
+            
   Weapon: ['DisplayName', 'Label', 'WeaponCategory', 'DamageType', 'DummyWeapon',
            'TargetRestrictOnlyAllow', 'TargetRestrictDisallow', 'IgnoreIfDisabled',
            'FireOnDeath', 'ForceSingleFire', 'ManualFire', 'WeaponUnpackAnimation',
