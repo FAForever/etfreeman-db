@@ -28,9 +28,13 @@ const stats = computed(() => {
   if (e.ShieldMaxHealth) s.push({ label: 'health', value: shorten(e.ShieldMaxHealth) })
   if (e.ShieldRegenRate) s.push({ label: 'regen', value: e.ShieldRegenRate })
   if (e.ShieldSize) s.push({ label: 'size', value: e.ShieldSize })
-  if (e.ShieldRechargeTime && e.ShieldRegenStartTime) s.push({
+  if (e.ShieldRechargeTime) s.push({
     label: 'recharge time',
-    value: e.ShieldRechargeTime + e.ShieldRegenStartTime
+    value: e.ShieldRechargeTime
+  })
+  if (e.ShieldRegenStartTime) s.push({
+    label: 'regen start time',
+    value: e.ShieldRegenStartTime
   })
   return s
 })
