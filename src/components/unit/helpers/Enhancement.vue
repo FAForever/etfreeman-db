@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { shorten } from '@/composables/helpers/common.js'
+import { shorten, round } from '@/composables/helpers/common.js'
 import { useMods } from '@/composables/useMods.js'
 import CostsList from '@/components/ui/CostsList.vue'
 import LineItem from '../helpers/LineItem.vue'
@@ -36,6 +36,12 @@ const stats = computed(() => {
     label: 'regen start time',
     value: e.ShieldRegenStartTime
   })
+  if (e.RegenPerSecond) s.push(
+    { label: 'Regen of units', 
+    value: '+' + round(e.RegenPerSecond * 100, 2) + '% / s' }
+  )
+  for (const key of ['Radius','RegenFloor','RegenCeilingSCU','RegenCeilingT1','RegenCeilingT2','RegenCeilingT3','RegenCeilingT4'])
+    if (e[key]) s.push({ label: key, value: e[key] })
   return s
 })
 
