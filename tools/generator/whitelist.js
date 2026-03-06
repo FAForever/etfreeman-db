@@ -35,7 +35,9 @@ export default {
                  'ProductionPerSecondMass', 'ProductionPerSecondEnergy',
                  'NewHealth', 'NewRegenRate', 'NewOmniRadius', 'AdditionalDamage',
                  'NewDamageRadius', 'NewBuildRate', 'ShieldMaxHealth', 'ShieldRegenRate',
-                 'ShieldSize', 'ShieldRechargeTime', 'ShieldRegenStartTime','Radius','RegenCeilingSCU','RegenCeilingT1','RegenCeilingT2','RegenCeilingT3','RegenCeilingT4','RegenFloor','RegenPerSecond',],
+                 'ShieldSize', 'ShieldRechargeTime', 'ShieldRegenStartTime','Radius',
+                 'RegenCeilingSCU','RegenCeilingT1','RegenCeilingT2','RegenCeilingT3',
+                 'RegenCeilingT4','RegenFloor','RegenPerSecond','MaxHealthFactor'],
             
   Weapon: ['DisplayName', 'Label', 'WeaponCategory', 'DamageType', 'DummyWeapon',
            'TargetRestrictOnlyAllow', 'TargetRestrictDisallow', 'IgnoreIfDisabled',

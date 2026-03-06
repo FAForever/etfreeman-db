@@ -40,7 +40,7 @@ const stats = computed(() => {
     { label: 'Regen of units', 
     value: '+' + round(e.RegenPerSecond * 100, 2) + '% / s' }
   )
-  for (const key of ['Radius','RegenFloor','RegenCeilingSCU','RegenCeilingT1','RegenCeilingT2','RegenCeilingT3','RegenCeilingT4'])
+  for (const key of ['Radius','MaxHealthFactor','RegenFloor','RegenCeilingSCU','RegenCeilingT1','RegenCeilingT2','RegenCeilingT3','RegenCeilingT4'])
     if (e[key]) s.push({ label: key, value: e[key] })
   return s
 })
