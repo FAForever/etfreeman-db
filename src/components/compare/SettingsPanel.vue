@@ -94,7 +94,7 @@ const toggleGroups = [
         />
       </div>
     </div>
-    <div class="settings-panel__group">
+    <div class="settings-panel__group settings-panel__group_customstats">
       <div class="settings-panel__group-title">Custom Stats</div>
       <div class="settings-panel__group-body">
         <button class="panel__button" @click.stop="customStatsPopupOpen = true">Manage stats</button>
@@ -123,6 +123,10 @@ const toggleGroups = [
     display: flex
     flex-direction: column
     gap: 4px
+
+    &_customstats
+      @include from(910px)
+        display: none
 
     &-title
       font-weight: 600
