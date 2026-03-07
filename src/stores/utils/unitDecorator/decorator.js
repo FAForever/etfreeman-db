@@ -26,6 +26,8 @@ export const decorateUnit = (blueprint) => {
       if (weapon.childCount && (weapon.childSplitType == 'onWater')) {
         weapon.__splitCount = weapon.childCount
       }
+      if (self.id == 'XRL0302' && weapon.WeaponCategory == "Kamikaze" && weapon.Damage == 1) // fire beetle moment
+        weapon.Damage = 0
       weapon.firingCycle = calculateFiringCycle(weapon)
       weapon.dps = calculateDps(weapon, false)
       weapon.fullDamage = calculateProjectileDamage(weapon, false)

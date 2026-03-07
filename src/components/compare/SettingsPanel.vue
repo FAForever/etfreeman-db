@@ -1,10 +1,12 @@
 <script setup>
-import { computed, toRef } from 'vue'
+import { ref, computed, toRef } from 'vue'
 import { useCompareStore } from '../../stores/compare'
 import ToggleSwitch from '../ui/ToggleSwitch.vue'
 import CalculationSelect from './CalculationSelect.vue'
+import CustomStatsPopup from './CustomStatsPopup.vue'
 
 const store = useCompareStore()
+const customStatsPopupOpen = ref(false)
 
 const flipFraction = (label) => {
   const [numerator, denominator] = label.split('/')
@@ -92,7 +94,14 @@ const toggleGroups = [
         />
       </div>
     </div>
+    <div class="settings-panel__group">
+      <div class="settings-panel__group-title">Custom Stats</div>
+      <div class="settings-panel__group-body">
+        <button class="panel__button" @click.stop="customStatsPopupOpen = true">Manage stats</button>
+      </div>
+    </div>
   </div>
+  <CustomStatsPopup :open="customStatsPopupOpen" @close="customStatsPopupOpen = false" />
 </template>
 
 <style lang="sass">
@@ -133,4 +142,21 @@ const toggleGroups = [
   align-items: center
   gap: 8px
   cursor: pointer
+
+.panel__button
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  border-radius: 5px
+  padding: 2px 10px
+  background: #111
+  color: white
+  border: 1px solid #333
+  cursor: pointer
+  font-size: 14px
+  font-family: inherit
+  transition: all 0.2s
+  height: 22px
+  &:hover
+    border-color: white
 </style>

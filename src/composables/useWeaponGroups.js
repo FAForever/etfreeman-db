@@ -31,13 +31,14 @@ const categorizeWeapon = (weapon) => {
   return CATEGORIES_MAP[weapon.WeaponCategory] || weapon.WeaponCategory
 }
 
+export { categorizeWeapon }
+
 export function useWeaponGroups(weapons) {
   const groups = computed(() => {
     if (!weapons) return {}
 
     const grouped = weapons.reduce((acc, weapon) => {
       if (!weapon.dps && !weapon.fullDamage && weapon.DamageType != "EMP") return acc
-      if (weapon.WeaponCategory == "Kamikaze" && weapon.fullDamage == 1) return acc // fire beetle moment
 
       const category = categorizeWeapon(weapon)
       weapon.__category = category

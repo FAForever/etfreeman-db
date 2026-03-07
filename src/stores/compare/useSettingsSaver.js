@@ -7,7 +7,8 @@ export function useSettingsSaver(settings) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       showedSections: toRaw(settings.showedSections),
       toggles: toRaw(settings.toggles),
-      efficiencySettings: toRaw(settings.efficiencySettings)
+      efficiencySettings: toRaw(settings.efficiencySettings),
+      customStats: toRaw(settings.customStats)
     }))
   }
 

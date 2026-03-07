@@ -1,5 +1,6 @@
 export { default as Header } from './Header.vue'
 export { default as Defense } from './Defense.vue'
+export { default as CustomStats } from './CustomStats.vue'
 export { default as Economy } from './Economy.vue'
 export { default as Offense } from './Offense.vue'
 export { default as Physics } from './Physics.vue'
