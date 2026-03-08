@@ -16,7 +16,9 @@ export default [
       'no-unused-vars': 'warn',
       'no-undef': 'warn',
       'no-console': 'off',
-      'vue/multi-word-component-names': 'off'
+      'vue/multi-word-component-names': 'off',
+      'vue/require-v-for-key': 'off',
+      'vue/valid-v-for': 'off'
     }
   }
 ]

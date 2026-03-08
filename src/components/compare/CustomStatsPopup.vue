@@ -10,6 +10,7 @@ const store = useCompareStore()
 const popupRef = ref(null)
 const selectedId = ref(null)
 const formulaInput = ref(null)
+const labelInput = ref(null)
 
 const AVAILABLE_VARS = [
   "Air.CombatTurnSpeed",
@@ -91,7 +92,7 @@ const addStat = () => {
   store.addStat()
   const newStat = store.customStats.stats[store.customStats.stats.length - 1]
   selectedId.value = newStat.id
-  nextTick(() => formulaInput.value?.focus())
+  nextTick(() => labelInput.value?.focus())
 }
 
 const removeStat = (id) => {
@@ -149,7 +150,7 @@ useClickOutside(popupRef, () => {
           <div v-if="selectedId" class="csp__edit-form">
             <label class="csp__field">
               <span>Label</span>
-              <input :value="selectedStat.label" @input="updateSelectedStat('label', $event.target.value)"
+              <input ref="labelInput" :value="selectedStat.label" @input="updateSelectedStat('label', $event.target.value)"
                 placeholder="e.g., HP/Mass" />
             </label>
             <div v-if="selectedStat.formula?.match(/Weapons\['ALL'\]/)" class="csp__hint">

@@ -1,7 +1,7 @@
 <script setup>
 import CostsList from '@/components/ui/CostsList.vue'
 
-const props = defineProps(['projectile'])
+defineProps(['projectile'])
 </script>
 
 <template>

@@ -3,7 +3,7 @@ import ThumbComponent from '../ThumbComponent.vue'
 import { useUnitData } from '@/composables/useUnitData.js'
 import { useFilterStore } from '@/stores/filterStore.js'
 
-const props = defineProps(['section'])
+defineProps(['section'])
 
 const { smartSelect } = useUnitData()
 const filterStore = useFilterStore()

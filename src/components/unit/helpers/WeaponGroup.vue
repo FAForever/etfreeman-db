@@ -16,7 +16,7 @@ const { aggregatedStats, groupedWeapons, getDisplayName, getStatText } =
   useWeaponGrouping(weapons, columns, economy, isExpanded)
 
 const shouldHighlightCollapsed = computed(() =>
-  compareStore.toggles.highlightGroupedWeapons && !isExpanded.value && weapons.length > 1
+  compareStore.toggles.highlightGroupedWeapons && !isExpanded.value && weapons.value.length > 1
 )
 </script>
 
