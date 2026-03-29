@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject, watch } from 'vue'
+import { ref, inject, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUnitData } from '@/composables/useUnitData.js'
 import { useOptimalLayout } from '@/composables/useOptimalLayout.js'
@@ -13,6 +13,7 @@ const { tierTree } = useUnitData()
 
 const isMobile = inject('isMobile')
 watch(isMobile, (notEnoughWidth) => !notEnoughWidth || router.push('/by-type'), { immediate: true })
+onMounted(() => isMobile.value && router.push('/by-type'))
 
 const containerRef = ref(null)
 const { containerWidth } = useContainerWidth(containerRef)

@@ -62,7 +62,9 @@ export default defineConfig(() => ({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg,avif,webp,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg,avif,webp,woff2}'],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/, /^\/registerSW\.js$/, /^\/manifest\.webmanifest$/]
       }
     })
   ],
