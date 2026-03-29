@@ -9,9 +9,8 @@ export function useResizeWatcher(mobileThreshold = 1120) {
     isMobile.value = mobile
   }]))
 
-  const runResize = () => resizeFunctions.value.forEach(fn => fn())
-  runResize()
-  const onResize = throttle(runResize, 50)
+  const onResize = throttle(() => resizeFunctions.value.forEach(fn => fn()), 50)
+  onResize()
 
   onMounted(() => window.addEventListener('resize', onResize))
   onUnmounted(() => window.removeEventListener('resize', onResize))

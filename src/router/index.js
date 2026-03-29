@@ -32,7 +32,10 @@ const router = createRouter({
   ]
 })
 
-router.isReady().then(() => router.currentRoute.value.name == 'compare' || router.push(initialPreferredView))
+router.isReady().then(() => {
+  if (router.currentRoute.value.name === 'compare') return
+  if (initialPreferredView !== '/') router.push(initialPreferredView)
+})
 
 export const toPreferredView = () => router.push(getPreferredView())
 export default router
