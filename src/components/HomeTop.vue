@@ -1,4 +1,5 @@
 <script setup>
+import AuthorBlock from './AuthorBlock.vue';
 import FiltersComponent from './FiltersComponent.vue'
 import Header from './Header.vue'
 </script>
@@ -7,6 +8,7 @@ import Header from './Header.vue'
   <div class="home__top">
     <Header />
     <FiltersComponent />
+    <AuthorBlock class="home__top-author" />
   </div>
 </template>
 
@@ -28,5 +30,10 @@ body.scrolled .home__top
     z-index: 1
     backdrop-filter: blur(0px)
     transition: .3s ease-out
+
+    &-author
+      margin-left: auto
+      @include from(1000px)
+        display: none
 </style>
 

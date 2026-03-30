@@ -5,6 +5,7 @@ import { useResizeWatcher } from '@/composables/useResizeWatcher'
 import SvgSprite from '@/components/SvgSprite.vue'
 import BackgroundPicture from '@/components/app/BackgroundPicture.vue'
 import * as iconData from '@/data/svgicons/index.js'
+import AuthorBlock from './components/AuthorBlock.vue'
 
 const icons = Object.values(iconData)
 provide('icons', Object.fromEntries(icons.map(i => [i.name, i])))
@@ -23,6 +24,7 @@ window.addEventListener('scroll', () => {
   <SvgSprite :icons="icons" />
   <BackgroundPicture />
   <RouterView />
+  <AuthorBlock class="app__author" />
 </template>
 
 <style lang="sass">
@@ -48,4 +50,15 @@ body
   color: #fff
   font-family: Nunito
   --titlefont: Montserrat
+
+.app
+  &__author
+    display: none
+  @include for-mob
+    flex-grow: 1
+    display: flex
+    flex-direction: column
+    &__author
+      display: block
+      margin-top: auto
 </style>
