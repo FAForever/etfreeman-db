@@ -25,13 +25,13 @@ export function useWeaponColumns(visibleWeapons, getFractionHTML) {
 
   const columnHeaders = computed(() => ({
     [Column.DPS_PER_MASS]: getFractionHTML(),
-    [Column.DPS_TO_SHIELDS]: `<span data-tooltip-params="top-center" data-tooltip="dps to shields">DPStS</span>`,
+    [Column.DPS_TO_SHIELDS]: `<span data-tooltip-params="top-center-humble" data-tooltip="dps to shields">DPStS</span>`,
     [Column.DPS_TO_SHIELDS_PER_MASS]: getFractionHTML(true),
     [Column.CYCLE_TO_SHIELDS]: `cycle<br>to shields`,
-    [Column.MUZZLE_VELOCITY]: `<span data-tooltip-params="top-center" data-tooltip="muzzle velocity">MV</span>`,
-    [Column.RANDOMNESS]: `<span data-tooltip-params="top-center" data-tooltip="fire randomness">RNG</span>`,
+    [Column.MUZZLE_VELOCITY]: `<span data-tooltip-params="top-center-humble" data-tooltip="muzzle velocity">MV</span>`,
+    [Column.RANDOMNESS]: `<span data-tooltip-params="top-center-humble" data-tooltip="fire randomness">RNG</span>`,
     [Column.RANDOMNESS_MOVE]: `fire<br>random.<br>while<br>moving`,
-    [Column.FIRING_TOLERANCE]: `<span data-tooltip-params="top-center" data-tooltip="firing tolerance">FT</span>`,
+    [Column.FIRING_TOLERANCE]: `<span data-tooltip-params="top-center-humble" data-tooltip="firing tolerance">FT</span>`,
     [Column.YAW]: 'angle'
   }))
 

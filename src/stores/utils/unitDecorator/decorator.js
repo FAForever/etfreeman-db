@@ -26,7 +26,7 @@ export const decorateUnit = (blueprint) => {
       if (weapon.childCount && (weapon.childSplitType == 'onWater')) {
         weapon.__splitCount = weapon.childCount
       }
-      if (self.id == 'XRL0302' && weapon.WeaponCategory == "Kamikaze" && weapon.Damage == 1) // fire beetle moment
+      if (self.id == 'XRL0302' && weapon.WeaponCategory == 'Kamikaze' && weapon.Damage == 1) // fire beetle moment
         weapon.Damage = 0
       weapon.firingCycle = calculateFiringCycle(weapon)
       weapon.dps = calculateDps(weapon, false)
@@ -34,6 +34,12 @@ export const decorateUnit = (blueprint) => {
       if (blueprint.SplitDamage && (weapon.childSplitType == 'onDeath')) weapon.SplitDamage = blueprint.SplitDamage
       if (weapon.DamageToShields) weapon.dpsShields = calculateDps(weapon, true)
     }
+  }
+
+  if (blueprint?.Categories.includes('SNIPEMODE') && !blueprint?.Display?.Abilities?.includes('Snipemode')) {
+    if (!blueprint.Display) blueprint.Display = {}
+    if (!blueprint.Display.Abilities) blueprint.Display.Abilities = []
+    blueprint.Display.Abilities.unshift('Snipemode')
   }
 
   return Object.assign({}, self, blueprint)

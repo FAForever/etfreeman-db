@@ -10,6 +10,9 @@
     text-decoration: underline dotted
     text-underline-offset: 4px
 
+  &[data-tooltip-params*=humble]
+    text-decoration-color: rgba(255,255,255,.3)
+
   &:hover::after
     content: attr(data-tooltip)
     position: absolute
