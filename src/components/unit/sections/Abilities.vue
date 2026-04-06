@@ -28,7 +28,7 @@ defineExpose({ name: 'Abilities', isCompact, isShown, expandScore })
     <div class="uc__section-query">
       <h2 class="uc__section-title">Abilities</h2>
       <ul class="uc__section-line">
-        <li v-for="ability in abilities" :key="ability" class="uc__li" :data-tooltip="getTooltip(ability)" data-tooltip-params="top-left-humble">{{ ability }}</li>
+        <li v-for="ability in abilities" :key="ability" class="uc__li" :data-tooltip="getTooltip(ability)" data-tooltip-params="top-right-humble">{{ ability }}</li>
       </ul>
     </div>
   </div>
