@@ -175,7 +175,7 @@ defineExpose({ sections })
     display: flex
     align-items: flex-start
     &:first-child:last-child
-      grid-column: span 12
+      grid-column: span var(--columncount)
     &::before
       content: ''
       flex-shrink: 0
