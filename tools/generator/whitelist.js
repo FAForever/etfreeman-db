@@ -25,7 +25,7 @@ export default {
   Display: ['Abilities'],
 
   Transport: ['AirClass', 'TransportClass', 'SlotsSmall', 'SlotsMedium',
-              'SlotsLarge', 'Class1Capacity', 'Class2AttachSize', 'Class3AttachSize'],
+              'SlotsLarge', 'Class1Capacity', 'Class2AttachSize', 'Class3AttachSize', 'CanFireFromTransport'],
 
   Wreckage: ['MassMult', 'HealthMult'],
 

@@ -36,10 +36,17 @@ export const decorateUnit = (blueprint) => {
     }
   }
 
-  if (blueprint?.Categories.includes('SNIPEMODE') && !blueprint?.Display?.Abilities?.includes('Snipemode')) {
+  const dynamicAbilities = [], displayedAbilities = blueprint?.Display?.Abilities || []
+  if (blueprint?.Categories.includes('SNIPEMODE') && !displayedAbilities.includes('Snipemode')) {
+    dynamicAbilities.push('Snipemode')
+  }
+  if (blueprint?.Transport?.CanFireFromTransport) {
+    dynamicAbilities.push('Fires from transport')
+  }
+  if (dynamicAbilities.length > 0) {
     if (!blueprint.Display) blueprint.Display = {}
     if (!blueprint.Display.Abilities) blueprint.Display.Abilities = []
-    blueprint.Display.Abilities.unshift('Snipemode')
+    blueprint.Display.Abilities.unshift(...dynamicAbilities)
   }
 
   return Object.assign({}, self, blueprint)
