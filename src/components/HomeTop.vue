@@ -14,8 +14,20 @@ import Header from './Header.vue'
 
 <style lang="sass">
 body.scrolled .home__top
-  background: rgba(0,0,0,.75)
-  backdrop-filter: blur(5px)
+  &::before, &::after
+    content: ''
+    position: absolute
+    left: 0
+    right: 0
+    height: 50%
+    z-index: -1
+  &::before
+    bottom: 50%
+    background-color: #111
+  &::after
+    bottom: 0
+    background: linear-gradient(to top, rgba(11,11,11,.75), #111)
+    backdrop-filter: blur(4px)
 .mobile .home__top
   padding: 5px 5px 10px
 .home
@@ -27,8 +39,7 @@ body.scrolled .home__top
     top: 0
     width: 100%
     position: sticky
-    z-index: 1
-    backdrop-filter: blur(0px)
+    z-index: 2
     transition: .3s ease-out
 
     &-author

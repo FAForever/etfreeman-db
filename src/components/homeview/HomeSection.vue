@@ -28,14 +28,13 @@ const titleParts = computed(() => props.section.name.split(/( - )/))
 <style lang="sass" scoped>
 .section
   background: linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,0))
-  background-color: rgba(0,0,0,.35)
+  background-color: rgba(9,9,9,.7)
   border: 2px solid rgba(255, 255, 255, .65)
   border-bottom-color: rgba(255, 255, 255, .15)
   border-radius: 5px
   padding: 0 6px 7px
   overflow: hidden
   box-shadow: inset 0 0 30px 5px rgb(0, 0, 0, 1)
-  backdrop-filter: blur(1px)
 
   &__title-wrap
     container-type: inline-size
