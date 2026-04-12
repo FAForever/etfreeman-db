@@ -1,12 +1,21 @@
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed, reactive, onUnmounted } from 'vue'
 
 const MAX_SHRINK_LEVEL = 11
+const readySet = reactive(new Set())
+const isGlobalReady = computed(() => {
+  for (const readyRef of readySet)
+    if (!readyRef.value) return false
+  return true
+})
 
 export function useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs) {
   const currentShrinkLevel = ref(0)
   const expandedShrinkLevel = ref(null)
   const collapsedShrinkLevel = ref(null)
   const isReady = ref(false)
+
+  readySet.add(isReady)
+  onUnmounted(() => readySet.delete(isReady))
 
   const findShrinkLevel = async (initial = 0) => {
     const wrap = tableWrapRef.value
@@ -47,7 +56,7 @@ export function useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs) {
   }
 
   return {
-    currentShrinkLevel, isReady, optimizeTableWidth,
+    currentShrinkLevel, isReady, isGlobalReady, optimizeTableWidth,
     handleExpandChange, expandedShrinkLevel, collapsedShrinkLevel
   }
 }

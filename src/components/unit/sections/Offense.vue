@@ -4,7 +4,7 @@ import { useCompareStore } from '@/stores/compare'
 import { useCalcEfficiency } from '@/composables/useCalcEfficiency'
 import { useAutoShrinkTable } from '@/composables/useAutoShrinkTable'
 import { useWeaponGroups } from '@/composables/useWeaponGroups'
-import { useWeaponColumns } from '@/composables/useWeaponColumns'
+import { useWeaponColumns, Column } from '@/composables/useWeaponColumns'
 import { EXPAND_SCORE_THRESHOLD } from '../../../composables/useRowAlignment'
 import WeaponGroup from '../helpers/WeaponGroup.vue'
 
@@ -26,7 +26,7 @@ const tableWrapRef = ref(null)
 const tableRef = ref(null)
 const weaponGroupRefs = ref([])
 
-const { currentShrinkLevel, optimizeTableWidth, handleExpandChange, isReady }
+const { currentShrinkLevel, optimizeTableWidth, handleExpandChange, isGlobalReady }
   = useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs)
 
 const anyGroupExpanded = computed(() => weaponGroupRefs.value.some(r => r?.isExpanded))
@@ -38,8 +38,8 @@ watch(weaponColumns, optimizeTableWidth)
 <template>
   <div class="uoffense uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <h2 class="uc__section-title uoffense__header">Offense</h2>
-    <div class="uoffense__table-wrap" ref="tableWrapRef">
-      <table class="uoffense__table" ref="tableRef" :data-shrink="currentShrinkLevel" :class="{ 'uoffense__table_ready': isReady }">
+    <div class="uoffense__table-wrap" ref="tableWrapRef" :class="{ 'uoffense__table-wrap_ready': isGlobalReady }" :style="{ '--groupCount': Object.keys(groups).length + weaponColumns.includes(Column.RANDOMNESS_MOVE) }">
+      <table class="uoffense__table" ref="tableRef" :data-shrink="currentShrinkLevel" :class="{ 'uoffense__table_ready': isGlobalReady }">
         <thead>
           <tr>
             <th v-for="col in weaponColumns" :key="col" v-html="columnHeaders[col] || col" />
@@ -70,6 +70,8 @@ watch(weaponColumns, optimizeTableWidth)
     text-align: center
     &_ready
       opacity: 1
+    &:not(&_ready) *
+      transition: none
     &[data-shrink="1"]
       --cellpadding: 7px
     @for $level from 2 through 11
@@ -99,6 +101,11 @@ watch(weaponColumns, optimizeTableWidth)
     &-wrap
       width: calc(100% + 16px)
       margin: 0 -8px
+      height: calc((var(--groupCount) + 1) * 35px)
+      overflow: hidden
+      &_ready
+        height: auto
+        overflow: initial
     td:not(:first-child,:last-child)
       letter-spacing: var(--customspacing)
     tr.active td
