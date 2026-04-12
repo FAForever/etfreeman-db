@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import ThumbComponent from '../ThumbComponent.vue'
 import { useUnitData } from '@/composables/useUnitData.js'
 
@@ -9,16 +10,27 @@ const selectColumn = index => {
   const units = Object.values(props.data).map(arr => arr[index - 1]).filter(Boolean)
   smartSelect(units)
 }
+
+const activeColumn = ref(null)
+const onMouseOver = (e) => {
+  if (e.target.classList.contains('thumb'))
+    activeColumn.value = Array.from(e.target.parentNode.children).indexOf(e.target) + 1
+}
+const onMouseOut = (e) => {
+  if (e.target.classList.contains('thumb'))
+    activeColumn.value = null
+}
 </script>
 
 <template>
   <div class="tier">
-    <div class="tier__rows">
+    <div class="tier__rows" @mouseover="onMouseOver" @mouseout="onMouseOut">
       <div class="tier__row tier__row_buttons">
-        <button v-for="n in buttonCount" :key="n" @click="selectColumn(n)" class="tier__colselect">+</button>
+        <button v-for="n in buttonCount" :key="n" @click="selectColumn(n)" class="tier__colselect"
+          :class="{ 'active': activeColumn == n }">+</button>
       </div>
-      <div v-for="[faction, units] in Object.entries(data)" :key="faction" class="tier__row">
-        <ThumbComponent v-for="unit in units" :key="unit.id" :item="unit"/>
+      <div v-for="[faction, units] in Object.entries(data)" :key="faction" class="tier__row" >
+        <ThumbComponent v-for="unit in units" :key="unit.id" :item="unit" />
       </div>
     </div>
   </div>
@@ -71,7 +83,7 @@ const selectColumn = index => {
     z-index: -1
     font-size: 10px
     font-weight: 800
-    will-change: opacity, transform
+
     &:hover
       --bg: #050505
       --bcolor: #ccc
@@ -96,9 +108,8 @@ const selectColumn = index => {
       bottom: -15px
       top: -15px
 
-@for $i from 1 through 10
-  .tier__rows:has(>.tier__row:not(.tier__row_buttons)>a:nth-child(#{$i}):hover)>.tier__row_buttons>button:nth-child(#{$i})
-    opacity: 1
-    transform: translateY(-15px)
-    transition-delay: 0s
+    &.active
+      opacity: 1
+      transform: translateY(-15px)
+      transition-delay: 0s
 </style>

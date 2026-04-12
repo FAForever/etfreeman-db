@@ -54,7 +54,19 @@ const thumbClasses = computed(() => [
   &:not(&_mini)
     width: var(--thumbwidth,48px)
     height: var(--thumbwidth,48px)
-    will-change: box-shadow, border-color, outline-color
+    *
+      pointer-events: none
+    &::before, &::after
+      content: ''
+      position: absolute
+      top: -1px
+      left: -1px
+      right: -1px
+      bottom: -1px
+      border-radius: 5px
+      opacity: 0
+      transition: opacity .1s
+      pointer-events: none
     .strategic
       top: 1px
       left: 1px
@@ -62,22 +74,28 @@ const thumbClasses = computed(() => [
       &.thumb_#{$name}
         background: linear-gradient(rgba(0,0,0,.27), rgba(0,0,0,.27))
         background-color: color.adjust($color, $alpha: -0.1)
-        border: 1px solid color.adjust($color, $alpha: .1, $lightness: 30%) !important
+        border: 1px solid color.adjust($color, $alpha: .1, $lightness: 30%)
         box-shadow: inset 0 0 4px 0px color.adjust($color, $alpha: .2, $saturation: 700%, $lightness: 20%)
         padding: 3px
         filter: contrast(110%)
-        outline: 1px solid transparent
-        transition: border .1s, box-shadow .1s, outline .1s, transform .1s
+        transition: transform .1s
+        &::before
+          box-shadow: inset 0 0 6px 0px color.adjust($color, $alpha: .4, $saturation: 700%, $lightness: 20%), 0 0 0 1px color.adjust($color, $alpha: .5, $lightness: 30%)
+          border: 1px solid color.adjust($color, $alpha: .5, $lightness: 30%)
         &:hover
-          border-color: color.adjust($color, $alpha: .5, $lightness: 30%) !important
-          box-shadow: inset 0 0 6px 0px color.adjust($color, $alpha: .4, $saturation: 700%, $lightness: 20%)
-          outline-color: color.adjust($color, $alpha: .5, $lightness: 30%) !important
+          &::before
+            opacity: 1
+        &::after
+          box-shadow: inset 0 0 8px 0px color.adjust($color, $alpha: 1, $saturation: 700%, $lightness: 20%), 0 0 5px 2px color.adjust($color, $alpha: 1, $saturation: 700%, $lightness: 20%), 0 0 0 1px color.adjust($color, $alpha: 1, $lightness: 30%)
+          border: 1px solid color.adjust($color, $alpha: 1, $lightness: 30%)
         &.selected
+          box-shadow: none
+          &::before
+            opacity: 0
           background-color: color.adjust($color, $alpha: 0, $lightness: 20%)
           filter: contrast(120%) brightness(120%) saturate(120%)
-          border-color: color.adjust($color, $alpha: 1, $lightness: 30%) !important
-          outline-color: color.adjust($color, $alpha: 1, $lightness: 30%) !important
-          box-shadow: inset 0 0 8px 0px color.adjust($color, $alpha: 1, $saturation: 700%, $lightness: 20%), 0 0 5px 2px color.adjust($color, $alpha: 1, $saturation: 700%, $lightness: 20%)
+          &::after
+            opacity: 1
   &__inner
     width: 100%
     height: 100%
