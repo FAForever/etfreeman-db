@@ -1,7 +1,19 @@
+<script setup>
+import { onUnmounted, ref } from 'vue';
+
+const isLoaded = () => [...document.documentElement.classList].some(c => ['units-loaded','no-avif'].includes(c))
+const unitsLoaded = ref(isLoaded())
+if (!unitsLoaded.value) {
+  const observer = new MutationObserver(() => unitsLoaded.value = isLoaded())
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+  onUnmounted(() => observer.disconnect())
+}
+</script>
+
 <template>
-  <picture>
+  <picture v-if="unitsLoaded">
     <source srcset="/img/background.avif" type="image/avif">
-    <img class="app-bg" fetchpriority="low" src="/img/background.jpg" />
+    <img class="app-bg" src="/img/background.jpg" />
   </picture>
 </template>
 
