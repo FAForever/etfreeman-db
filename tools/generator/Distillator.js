@@ -1,7 +1,7 @@
 import WHITELIST from './whitelist.js'
 
 const FORCE_EXCLUDE = new Set(['SRL0310', 'XRB2309', 'URB3103', 'UEB5204', 'URB5204', 'UAB5204', 'UXL0021', 'UEB5208'])
-const FORCE_INCLUDE = new Set(['XEA0002'])
+const FORCE_INCLUDE = new Set(['XEA0002','XNO2302'])
 const CAMPAIGN_CATEGORIES = ['OPERATION', 'CIVILIAN', 'CIVILLIAN', 'INSIGNIFICANTUNIT', 'UNTARGETABLE', 'UNSELECTABLE', 'TELEPORTBEACON']
 
 export function filterUnits(blueprints, parseBlueprint) {

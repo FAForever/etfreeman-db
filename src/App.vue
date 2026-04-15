@@ -32,6 +32,7 @@ window.addEventListener('scroll', () => {
 @use './sass/fonts.sass'
 @use './sass/abstracts/specials.sass'
 @use './sass/generated/units_sprites.sass'
+@use './sass/generated/nomads_sprites.sass'
 @use './sass/generated/strategic_sprites.sass'
 @use './sass/generated/ui_sprites.sass'
 @use './sass/modules/link.sass'

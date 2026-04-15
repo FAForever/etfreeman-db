@@ -4,7 +4,7 @@ export const typeOverrides = {
   'Air Experimental': ['URA0401', 'XRL0401', 'UAA0310', 'XSA0402', 'XNA0401'],
   'Naval Experimental': ['UES0401', 'UAS0401'],
   'Indirect Fire Experimental': ['UEB2401', 'XNL0403', 'URL0401', 'XSB2401', 'XAB2307'],
-  'Other Experimental': ['XAB1401', 'XNO0001', 'XEA0002', 'XEB2402', 'XNB2302'],
+  'Other Experimental': ['XAB1401', 'XEA0002', 'XEB2402', 'XNB2302', 'XNO2302'],
   'T1 Light Air Transport': ['XNA0107'],
   'T2 Gunship': ['XNA0203'],
   'T3 Engineering Drone': ['UEA0003'],

@@ -31,7 +31,7 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
     <a class="uheader__img" :href="blueprintUrl" target="_blank">
       <img class="uheader__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
       <div class="uheader__img-main-wrap">
-        <div :class="['uheader__img-main', 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></div>
+        <div :class="['uheader__img-main', unit.faction === 'nomads' ? 'icon_nomads' : 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></div>
       </div>
       <span :class="['uheader__img-strategic', `uheader__img-strategic_${unit.section.toLowerCase()}`, 'strategic', 'icon_strategic', `icon-${unit.faction}_${unit.strategicIcon}`]"></span>
     </a>

@@ -1,6 +1,6 @@
 <template>
   <a :class="thumbClasses" @click="handleUnitClick(item, $event)" :title="item.fullName">
-    <div :class="['thumb__inner', 'icon_units', `icon-${item.id}`]">
+    <div :class="['thumb__inner', item.faction === 'nomads' ? 'icon_nomads' : 'icon_units', `icon-${item.id}`]">
       <span :class="['strategic', 'icon_strategic', `icon-${item.faction}_${item.strategicIcon}`]" />
       <span v-if="!mini && item.fullName?.endsWith('HQ')" class="thumb__HQ">HQ</span>
     </div>

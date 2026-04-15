@@ -10,12 +10,12 @@ const assetsDir = join(__dirname, 'src', 'assets')
 const sassDir = join(__dirname, 'src', 'sass')
 const distDir = join(__dirname, 'dist')
 
-// https://vitejs.dev/config/
 export default defineConfig(() => ({
   plugins: [
     vue(),
     svgWatcherPlugin('./src/assets/img/embed_icons/', './src/data/svgicons/'),
     viteSpritesmith({
+      publicDir,
       sprites: [
         {
           name: 'ui',
@@ -40,6 +40,14 @@ export default defineConfig(() => ({
           cssDest: join(sassDir, 'generated', 'units_sprites.sass'),
           cssImageRef: '/img/units.png',
           modifier: 'units'
+        },
+        {
+          name: 'nomads',
+          src: join(assetsDir, 'img', 'units'),
+          imgDest: join(publicDir, 'img', 'nomads.png'),
+          cssDest: join(sassDir, 'generated', 'nomads_sprites.sass'),
+          cssImageRef: '/img/nomads.png',
+          modifier: 'nomads'
         }
       ]
     }),

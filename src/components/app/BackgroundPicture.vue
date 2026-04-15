@@ -6,6 +6,9 @@
 </template>
 
 <style lang="sass">
+body
+  background: url(/img/background_blur.avif)
+
 .app-bg
   position: fixed
   top: 0
@@ -15,5 +18,4 @@
   z-index: -100
   object-fit: cover
   object-position: center
-  opacity: 0.4
 </style>
