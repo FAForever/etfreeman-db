@@ -74,7 +74,7 @@ watch(weaponColumns, optimizeTableWidth)
       transition: none
     &[data-shrink="1"]
       --cellpadding: 7px
-    @for $level from 2 through 11
+    @for $level from 2 through 12
       &[data-shrink="#{$level}"]
         @if $level <= 4
           --cellpadding: #{8 - $level}px
@@ -96,6 +96,12 @@ watch(weaponColumns, optimizeTableWidth)
         @if $level >= 11
           font-size: 11.5px
           --customspacing: -0.02em
+        @if $level >= 12
+          font-size: 11px
+          --cellpadding: 1px
+          --customspacing: -0.05em
+          td:first-child
+            font-size: 10px
         .shrinkable-param
           width: min-content
     &-wrap

@@ -1,6 +1,6 @@
 import { ref, nextTick, computed, reactive, onUnmounted } from 'vue'
 
-const MAX_SHRINK_LEVEL = 11
+const MAX_SHRINK_LEVEL = 12
 const readySet = reactive(new Set())
 const isGlobalReady = computed(() => {
   for (const readyRef of readySet)

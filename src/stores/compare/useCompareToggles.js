@@ -16,7 +16,9 @@ const MINOR_WEAPON_STATS_DEFAULTS = {
   Yaw: false
 }
 
-export function useCompareToggles() {
+const ABNORMAL_FAT_UNITS = ['XNS0205','XNS0302','XNS0303']
+
+export function useCompareToggles(unitIDs) {
   const toggles = reactive({
     ...TOGGLE_DEFAULTS,
     minorWeaponStats: { ...MINOR_WEAPON_STATS_DEFAULTS }
@@ -25,7 +27,9 @@ export function useCompareToggles() {
   const unitWidth = computed(() => {
     const { MuzzleVelocity, FiringTolerance, Yaw } = toggles.minorWeaponStats
     const count = +MuzzleVelocity + +FiringTolerance + +Yaw
-    return [356, 370, 385, 400][count]
+    const veryFat = unitIDs.value.some(ID => ABNORMAL_FAT_UNITS.includes(ID))
+
+    return [356, 370, 385, 400][count] + (veryFat ? 35 : 0)
   })
 
   return { toggles, unitWidth, gap: 8 }

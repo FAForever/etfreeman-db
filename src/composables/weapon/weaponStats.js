@@ -99,6 +99,7 @@ const aggregateColumn = (ctx, stats, column) => {
     case Column.CYCLE:
     case Column.CYCLE_TO_SHIELDS: {
       const [sum, times] = values.reduce((acc, val) => val ? [acc[0] + val[0], acc[1].add(val[1])] : acc, [0, new Set()])
+      if (!times.size) return '-'
       if (times.size != 1 || times.has(null)) return 'different'
       return getCycleTextFromVal([sum, Array.from(times)[0]], null)
     }

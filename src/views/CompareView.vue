@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { useUnitData } from '@/composables/useUnitData.js'
 import { useCompareStore } from '@/stores/compare'
 import { toPreferredView } from '../router'
@@ -13,13 +12,12 @@ import SectionFilters from '../components/compare/SectionFilters.vue'
 import SettingsPanel from '../components/compare/SettingsPanel.vue'
 import Resizer from '../components/ui/Resizer.vue'
 
-const route = useRoute()
 const { unitsMap } = useUnitData()
 const compareStore = useCompareStore()
 
 const containerRef = ref(null)
 const { unitsPerRow } = useUnitsPerRow(containerRef)
-const units = computed(() => (route.params.ids?.split(',') || []).map(id => unitsMap.value[id]).filter(Boolean))
+const units = computed(() => compareStore.unitIDs.map(id => unitsMap.value[id]).filter(Boolean))
 watch(units, u => u.length || toPreferredView())
 const unitRows = computed(() =>
   Array.from({ length: Math.ceil(units.value.length / unitsPerRow.value) },
