@@ -1,7 +1,7 @@
 <template>
   <picture>
     <source srcset="/img/background.avif" type="image/avif">
-    <img class="app-bg" src="/img/background.jpg" />
+    <img class="app-bg" fetchpriority="low" src="/img/background.jpg" />
   </picture>
 </template>
 
