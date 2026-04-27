@@ -21,12 +21,17 @@ const speedValue = computed(() => {
   return physics.MaxSpeed || 0
 })
 
+const getFinalSpeed = (speed, multiplier) => {
+  const power = multiplier < 1 ? 2 : 1
+  return round(speed * multiplier ** power, 2)
+}
+
 const physicsItems = [
   { text: 'Speed', value: speedValue.value },
-  { text: 'Speed (on land)', value: round(physics.MaxSpeed * physics.LandSpeedMultiplier ** 2, 2) },
-  { text: 'Speed (submerged)', value: round(physics.MaxSpeed * physics.SubSpeedMultiplier ** 2, 2) },
-  { text: 'Speed (in water)', value: round(physics.MaxSpeed * physics.WaterSpeedMultiplier ** 2, 2) },
-  { text: 'Sniper mode speed', value: round(physics.MaxSpeed * physics.SniperModeSpeedMultiplier ** 2, 2) },
+  { text: 'Speed (on land)', value: getFinalSpeed(physics.MaxSpeed, physics.LandSpeedMultiplier) },
+  { text: 'Speed (submerged)', value: getFinalSpeed(physics.MaxSpeed, physics.SubSpeedMultiplier) },
+  { text: 'Speed (in water)', value: getFinalSpeed(physics.MaxSpeed, physics.WaterSpeedMultiplier) },
+  { text: 'Sniper mode speed', value: getFinalSpeed(physics.MaxSpeed, physics.SniperModeSpeedMultiplier) },
   { text: 'Turn rate', value: physics.TurnRate },
   { text: 'Turn speed', value: air.TurnSpeed },
   { text: 'StartTurnDistance ', value: air.StartTurnDistance },

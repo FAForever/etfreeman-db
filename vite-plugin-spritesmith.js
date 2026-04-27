@@ -174,12 +174,9 @@ export default function viteSpritesmith(options = {}) {
         const columnCount = packed.width / TILE
         const avifRef = cssImageRef.replace('.png', '.avif')
 
-        let defaultPosition = '0.0000% 0.0000%'
-
         cssContent += `${iconClass}\n`
         cssContent += `  background-image: url(${avifRef})\n`
         cssContent += `  background-size: calc(100% * ${columnCount}) auto\n`
-        cssContent += `  background-position: ${defaultPosition}\n\n`
 
         cssContent += `.no-avif ${iconClass}\n`
         cssContent += `  background-image: url(${cssImageRef})\n\n`
