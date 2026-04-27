@@ -20,7 +20,7 @@ const capitalize = s => s[0].toUpperCase() + s.slice(1)
 <template>
   <div class="search-input">
     <Input id="filter" placeholder="filter" v-model="filterSearch" />
-    <SettingsButton v-model="dropdownOpen" class="search-input__btn" @mousedown.prevent @click.stop />
+    <SettingsButton v-model="dropdownOpen" class="search-input__btn" width="22" @mousedown.prevent @click.stop />
     <div v-if="dropdownOpen" class="search-input__dropdown" ref="dropdownRef">
       <span class="search-input__title">Search in...</span>
       <label v-for="field in fields" :key="field" class="search-input__field">
@@ -50,9 +50,6 @@ const capitalize = s => s[0].toUpperCase() + s.slice(1)
     opacity: 0
     pointer-events: none
     transition: opacity .2s, transform .2s
-    :deep(svg)
-      width: 18px
-      height: 18px
     .search-input:focus-within &
       opacity: 1
       pointer-events: auto
