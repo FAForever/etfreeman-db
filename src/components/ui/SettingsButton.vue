@@ -1,18 +1,18 @@
 <template>
   <button
-    :class="['tool-btn', 'settings-btn', { active: compareStore.settingsOpen }]"
+    class="tool-btn settings-btn"
+    :class="{ active: active }"
     title="settings"
-    @click="compareStore.toggleSettings"
+    @click="active = !active"
   >
     <Icon name="cog" width="24" />
   </button>
 </template>
 
 <script setup>
-import { useCompareStore } from '@/stores/compare'
 import Icon from '../Icon.vue'
 
-const compareStore = useCompareStore()
+const active = defineModel({ type: Boolean, default: false })
 </script>
 
 <style lang="sass">

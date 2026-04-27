@@ -13,6 +13,8 @@ export const decorateUnit = (blueprint) => {
     rawTech: getTech(blueprint, ''),
     strategicIcon: blueprint.StrategicIconName || '',
     icon: blueprint.General?.Icon || '',
+    categories: blueprint.Categories,
+    abilities: blueprint.Display?.Abilities,
     selected: false
   }
 

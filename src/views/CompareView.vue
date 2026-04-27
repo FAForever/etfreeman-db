@@ -7,7 +7,7 @@ import { useUnitsPerRow } from '@/composables/useUnitsPerRow.js'
 import UnitRow from '../components/compare/UnitRow.vue'
 import BackButton from '../components/compare/BackButton.vue'
 import FilterButton from '../components/compare/FilterButton.vue'
-import SettingsButton from '../components/compare/SettingsButton.vue'
+import SettingsButton from '../components/ui/SettingsButton.vue'
 import SectionFilters from '../components/compare/SectionFilters.vue'
 import SettingsPanel from '../components/compare/SettingsPanel.vue'
 import Resizer from '../components/ui/Resizer.vue'
@@ -34,7 +34,7 @@ const unitRows = computed(() =>
     <header class="compare__tools">
       <BackButton />
       <FilterButton />
-      <SettingsButton />
+      <SettingsButton v-model="compareStore.settingsOpen" />
     </header>
     <Resizer :open="compareStore.settingsOpen">
       <div class="compare__settings">

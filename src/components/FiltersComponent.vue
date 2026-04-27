@@ -1,18 +1,13 @@
 <script setup>
-import { storeToRefs } from 'pinia'
-import { useFilterStore } from '@/stores/filterStore.js'
-import Input from './ui/Input.vue'
 import FiltersHeader from './filters/FiltersHeader.vue'
+import SearchInput from './filters/SearchInput.vue'
 import FilterGroups from './filters/FilterGroups.vue'
-
-const filterStore = useFilterStore()
-const { search: filterSearch } = storeToRefs(filterStore)
 </script>
 
 <template>
   <aside class="filters">
     <FiltersHeader />
-    <Input class="input" id="filter" placeholder="filter" v-model="filterSearch" />
+    <SearchInput class="input" />
     <FilterGroups />
   </aside>
 </template>
