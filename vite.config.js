@@ -52,7 +52,7 @@ export default defineConfig(() => ({
       ]
     }),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon-precomposed.png'],
       manifest: {
         name: 'FAF Unit Database',
@@ -69,6 +69,8 @@ export default defineConfig(() => ({
         ]
       },
       workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
         globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg,avif,webp,woff2}'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/, /^\/registerSW\.js$/, /^\/manifest\.webmanifest$/]
