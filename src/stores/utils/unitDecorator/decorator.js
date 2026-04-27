@@ -14,7 +14,7 @@ export const decorateUnit = (blueprint) => {
     strategicIcon: blueprint.StrategicIconName || '',
     icon: blueprint.General?.Icon || '',
     categories: blueprint.Categories,
-    abilities: blueprint.Display?.Abilities,
+    abilities: blueprint.Display?.Abilities || [],
     selected: false
   }
 
@@ -47,8 +47,8 @@ export const decorateUnit = (blueprint) => {
   }
   if (dynamicAbilities.length > 0) {
     if (!blueprint.Display) blueprint.Display = {}
-    if (!blueprint.Display.Abilities) blueprint.Display.Abilities = []
-    blueprint.Display.Abilities.unshift(...dynamicAbilities)
+    if (!blueprint.Display.Abilities) blueprint.Display.Abilities = self.abilities = dynamicAbilities
+    else blueprint.Display.Abilities.unshift(...dynamicAbilities)
   }
 
   return Object.assign({}, self, blueprint)
