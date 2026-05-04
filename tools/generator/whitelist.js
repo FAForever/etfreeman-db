@@ -30,9 +30,9 @@ export default {
   Wreckage: ['MassMult', 'HealthMult'],
 
   Enhancements: ['Name', 'Slot', 'RemoveEnhancements', 'Prerequisite',
-                 'BuildCostMass', 'BuildCostEnergy', 'BuildTime',
+                 'BuildCostMass', 'BuildCostEnergy', 'BuildTime', 'ShieldSpillOverDamageMod',
                  'NewMaxRadius', 'NewRateOfFire', 'MaintenanceConsumptionPerSecondEnergy',
-                 'ProductionPerSecondMass', 'ProductionPerSecondEnergy',
+                 'ProductionPerSecondMass', 'ProductionPerSecondEnergy', 'PersonalShield',
                  'NewHealth', 'NewRegenRate', 'NewOmniRadius', 'AdditionalDamage',
                  'NewDamageRadius', 'NewBuildRate', 'ShieldMaxHealth', 'ShieldRegenRate',
                  'ShieldSize', 'ShieldRechargeTime', 'ShieldRegenStartTime','Radius',
