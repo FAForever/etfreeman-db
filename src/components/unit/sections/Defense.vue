@@ -44,7 +44,7 @@ const getEfficiencyDisplay = (hpValue) => {
 
 const isShieldAndHpUnited = ref(false)
 
-const rechargeTime = computed(() => shield.value.ShieldRechargeTime || unitDefaults.value.shieldDefaultRechargeTime)
+const rechargeTime = computed(() => shield.value.ShieldRechargeTime ?? unitDefaults.value.shieldDefaultRechargeTime)
 const rechargeRate = computed(() => round(shield.value.ShieldMaxHealth / rechargeTime.value, 2))
 const rechargeText = computed(() => `${rechargeTime.value}s<span>, so recharges</span> ${rechargeRate.value} hp/s`)
 
@@ -78,7 +78,7 @@ defineExpose({ name: 'Defense', isCompact: false, isShown })
       <div class="uc__section-line" v-if="shieldType == 'Bubble'">
         <LineItem text="Shield size:" :value="shield.ShieldSize" />
         <LineItem text="Shield overspill:"
-          :value="shield.ShieldSpillOverDamageMod || unitDefaults.shieldDefaultOverspill" />
+          :value="shield.ShieldSpillOverDamageMod ?? unitDefaults.shieldDefaultOverspill" />
       </div>
       <div class="uc__section-line">
         <LineItem text="Recharge time:" span="12" :value="rechargeText" />

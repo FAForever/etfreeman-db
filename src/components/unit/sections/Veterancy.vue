@@ -14,11 +14,11 @@ const isACU = computed(() => unit.Categories?.includes('COMMAND'))
 const isSACU = computed(() => unit.Categories?.includes('SUBCOMMANDER'))
 
 const vetMultiplier = computed(() => {
-  if (isACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.COMMAND
-  if (isSACU.value) return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.SUBCOMMANDER
-  if (unit.tech === 'EXP') return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.EXPERIMENTAL
+  if (isACU.value) return unit?.VeteranMassMult ?? unitDefaults.value.techToVetMultipliers?.COMMAND
+  if (isSACU.value) return unit?.VeteranMassMult ?? unitDefaults.value.techToVetMultipliers?.SUBCOMMANDER
+  if (unit.tech === 'EXP') return unit?.VeteranMassMult ?? unitDefaults.value.techToVetMultipliers?.EXPERIMENTAL
   const techKey = unit.tech.replace('T', 'TECH')
-  return unit?.VeteranMassMult || unitDefaults.value.techToVetMultipliers?.[techKey]
+  return unit?.VeteranMassMult ?? unitDefaults.value.techToVetMultipliers?.[techKey]
 })
 
 const regenBuffIndex = computed(() => {
