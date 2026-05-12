@@ -45,7 +45,7 @@ export default {
            'MaxRadius', 'MinRadius', 'Damage', 'DamageRadius', 'DamageToShields',
            'InitialDamage', 'NukeInnerRingRadius', 'NukeOuterRingRadius',
            'NukeInnerRingDamage', 'NukeOuterRingDamage', 'DoTTime', 'DoTPulses',
-           'MuzzleVelocity', 'BeamLifetime', 'BeamCollisionDelay',
+           'MuzzleVelocity', 'BeamLifetime', 'BeamCollisionDelay', 'FireTargetLayerCapsTable',
            'FiringRandomness', 'FiringRandomnessWhileMoving', 'FiringTolerance',
            'TurretYawRange', 'MuzzleSalvoSize', 'MuzzleSalvoDelay',
            'MuzzleChargeDelay', 'RackFireTogether', 'RackSalvoSize', 'RackSalvoChargeTime',

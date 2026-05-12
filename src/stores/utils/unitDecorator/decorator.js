@@ -29,7 +29,7 @@ export const decorateUnit = (blueprint) => {
         weapon.__splitCount = weapon.childCount
       }
       if (weapon.WeaponCategory === 'Anti Navy') {
-        weapon.WeaponCategory = weapon.isTorpedo ? 'Torpedoes' : 'Depth Charges'
+        weapon.WeaponCategory = weapon.isTorpedo ? 'Torpedo' : 'Depth charge'
       }
       if (self.id == 'XRL0302' && weapon.WeaponCategory == 'Kamikaze' && weapon.Damage == 1) // fire beetle moment
         weapon.Damage = 0

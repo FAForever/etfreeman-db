@@ -56,7 +56,7 @@ export function useWeaponColumns(visibleWeapons, getFractionHTML) {
       present.add(Column.DPS_PER_MASS)
     }
     if (visibleWeapons.value.some(w => w.MaxRadius != null)) present.add(Column.RANGE)
-    if (visibleWeapons.value.some(w => w.Projectile?.Health > 0 && !['Defense', 'Torpedoes', 'Depth Charges'].includes(w.WeaponCategory))) {
+    if (visibleWeapons.value.some(w => w.Projectile?.Health > 0 && !['Defense', 'Torpedo', 'Depth charge'].includes(w.WeaponCategory))) {
       present.add(Column.HP)
     }
 

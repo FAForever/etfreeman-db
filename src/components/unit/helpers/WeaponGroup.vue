@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, toRefs } from 'vue'
 import { useCompareStore } from '@/stores/compare'
-import { getTooltip, tractorTooltip } from '@/composables/weapon/weaponTooltips'
+import { getTooltipAttrs, tractorTooltip } from '@/composables/weapon/weaponTooltips'
 import { useWeaponGrouping } from '@/composables/weapon/useWeaponGrouping'
 
 const props = defineProps(['weapons', 'columns', 'economy'])
@@ -22,7 +22,7 @@ const shouldHighlightCollapsed = computed(() =>
 
 <template>
   <tr v-if="weapons.length == 1">
-    <td v-for="col in columns" :key="col" :data-tooltip="getTooltip(weapons[0], col)" data-tooltip-params="big-top-left" v-html="getStatText(weapons[0], col)" />
+    <td v-for="col in columns" :key="col" v-bind="getTooltipAttrs(weapons[0], col)" v-html="getStatText(weapons[0], col)" />
   </tr>
   <template v-else>
     <tr class="weaponGroup" :class="{ active: isExpanded, highlighted: shouldHighlightCollapsed }" @click="toggleExpanded" style="cursor: pointer">
@@ -39,8 +39,7 @@ const shouldHighlightCollapsed = computed(() =>
     <template v-if="isExpanded">
       <tr v-for="group, index in groupedWeapons" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
         <td v-for="col, colIndex in columns" :key="col"
-        :data-tooltip="colIndex ? getTooltip(group.weapons[0], col) : undefined"
-        data-tooltip-params="big-top-left"
+        v-bind="colIndex ? getTooltipAttrs(group.weapons[0], col) : {}"
         v-html="colIndex ? getStatText(group.weapons[0], col) : getDisplayName(group)"></td>
       </tr>
     </template>
