@@ -1,6 +1,6 @@
 import { round } from '@/composables/helpers/common.js'
 import { getBeamDamageTicks, getRoundedTime } from './calculations.js'
-import { isAntiMissileFlare, isAntiTorpedo, isMissile, isTorpedo } from '@/composables/helpers/weaponHelper.js'
+import { isAntiMissileFlare, isAntiTorpedo, isDepthCharge, isMissile, isTorpedo } from '@/composables/helpers/weaponHelper.js'
 
 const roughRound = (num) => round(num, 1)
 
@@ -75,7 +75,7 @@ export const formatMultiRackSalvoCycle = (weapon, cycleProjs, cycleTime, perProj
   const reloadText = actualReloadTime > 0 ? ` +\n ${actualReloadTime.toFixed(1)}s reload` : ''
 
   let damagePerShot = roughRound(splitDamage(weapon, dmgPerShot))
-  if (projsPerShot > 1 && (isAntiTorpedo(weapon) || isTorpedo(weapon))) {
+  if (projsPerShot > 1 && (isAntiTorpedo(weapon) || isTorpedo(weapon) || isDepthCharge(weapon))) {
     damagePerShot =  projsPerShot + 'x' + roughRound(splitDamage(weapon, perProjDamage))
   }
   return `${splitProjCount(weapon, shots)}\xA0times ${damagePerShot}dmg in\xA0${actualFiringTime.toFixed(1)}s${reloadText} = ${cycleTime.toFixed(1)}s\xA0total, ${formatDmgFn(perProjDamage * cycleProjs)}` + getAllTooltips(weapon)
@@ -100,8 +100,8 @@ export const formatCommonCycle = (weapon, cycleProjs, perProjDamage, formatDmgFn
     if (cycleProjs > 1) { 
       if (isMissile(weapon))
         return 'Launches ' + cycleProjs + ' missiles at once' + generateMissileSplitTooltip(weapon)
-      if (isTorpedo(weapon))
-        return 'Launches ' + cycleProjs + ' torpedoes at once'
+      if (isTorpedo(weapon) || isDepthCharge(weapon))
+        return 'Launches ' + cycleProjs + (isTorpedo(weapon) ? ' torpedoes' : ' depth charges') + ' at once'
       if (isAntiTorpedo(weapon))
         return 'Launches ' + cycleProjs + ' anti-torpedoes at once' + generateAntitorpedoFlareTooltip(weapon)
       if (isAntiMissileFlare(weapon))

@@ -6,7 +6,6 @@ const CATEGORIES_MAP = {
   'Direct Fire Naval': 'Direct',
   'Direct Fire Experimental': 'Direct',
   'Anti Air': 'Anti-Air',
-  'Anti Navy': 'Anti-Navy'
 }
 
 const categorizeWeapon = (weapon) => {

@@ -80,6 +80,10 @@ export function parseProjectile(content) {
       projectileData.Health = health
     }
 
+    if (projectile.Categories?.length) {
+      projectileData.Categories = projectile.Categories
+    }
+
     // Extract cost data if any cost exists
     const eco = projectile.Economy || {}
     if (eco.BuildCostMass > 0 || eco.BuildCostEnergy > 0 || eco.BuildTime > 0) {
@@ -104,11 +108,14 @@ export function parseProjectileScript(content) {
 
   const isAntiMissileFlare = /ClassProjectile\s*\(\s*AIMFlareProjectile\s*\)/.test(content)
 
-  if (!childCountMatch && !splitType && !isAntiMissileFlare) return null
+  const childProjMatch = content.match(/ChildProjectileBlueprint\s*=\s*['"]([^'"]*?)['"]/)
+  const childProjectileId = childProjMatch?.[1].match(/([^/]+)_proj\.bp$/i)?.[1].toLowerCase() || null
+
+  if (!childCountMatch && !splitType && !isAntiMissileFlare && !childProjectileId) return null
 
   return {
     childCount: childCountMatch ? parseInt(childCountMatch[1]) : null,
-    splitType, isAntiMissileFlare
+    splitType, isAntiMissileFlare, childProjectileId
   }
 }
 

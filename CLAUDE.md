@@ -311,7 +311,7 @@ npm run generate:cached:fat    # Generate from cache with fat
 
 ### Weapon Grouping
 
-**Categories:** Direct, Anti-Air, Anti-Navy, Anti-Missile, Anti-Torpedo, Nuke, Sniper mode, Kamikaze, Overcharge
+**Categories:** Direct, Anti-Air, Torpedoes, Depth Charges, Anti-Missile, Anti-Torpedo, Nuke, Sniper mode, Kamikaze, Overcharge
 
 **Grouped by:** `WeaponCategory`, custom mappings, special cases
 

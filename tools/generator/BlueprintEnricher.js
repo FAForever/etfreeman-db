@@ -117,6 +117,12 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
           weapon.isAntiMissileFlare = { deflectLimit: 3, deflectRadius: 23  } // The values are hardcoded in if statement, in fa repo, requires PR to fix
           this.weaponsWithAntiMissileFlare++
         }
+
+        if (weapon.WeaponCategory === 'Anti Navy') {
+          const childProj = script?.childProjectileId ? projectiles[script.childProjectileId] : null
+          const categories = childProj?.Categories || proj?.Categories || []
+          weapon.isTorpedo = categories.includes('TORPEDO')
+        }
       }
     }
   }
