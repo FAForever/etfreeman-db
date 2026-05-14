@@ -10,7 +10,8 @@ const { showedSections } = useCompareStore()
 const physics = unit.Physics || {}
 const air = unit.Air || {}
 
-const formatTime = (val) => {
+const formatTime = (val, formatMap = {}) => {
+  if (formatMap[val] !== undefined) return formatMap[val]
   const m = Math.floor(val / 60)
   const s = round(val % 60, 1)
   return m ? `${m}m ${s}s` : `${s}s`
@@ -39,9 +40,9 @@ const physicsItems = [
   { text: 'Elevation', value: physics.Elevation, dontSkipZero: true },
   { text: 'Combat turn speed', value: air.CombatTurnSpeed },
   { text: 'Fuel use time', value: physics.FuelUseTime, format: formatTime },
-  { text: 'Fuel recharge', value: 10 * physics.FuelUseTime / physics.FuelRechargeRate, format: formatTime }
+  { text: 'Fuel recharge', value: 10 * physics.FuelUseTime / physics.FuelRechargeRate, format: formatTime, formatMap: { Infinity: '-' } }
 ].filter(item => item.value || (item.value === 0 && item.dontSkipZero))
-.map(item => item.format ? { ...item, value: item.format(item.value) } : item)
+.map(item => item.format ? { ...item, value: item.format(item.value, item.formatMap) } : item)
 
 const isCompact = computed(() => physicsItems.length <= 3)
 const isShown = computed(() => showedSections['Physics'] && physicsItems.length > 0)
