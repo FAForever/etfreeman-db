@@ -31,7 +31,7 @@ export default {
 
   Enhancements: ['Name', 'Slot', 'RemoveEnhancements', 'Prerequisite',
                  'BuildCostMass', 'BuildCostEnergy', 'BuildTime', 'ShieldSpillOverDamageMod',
-                 'NewMaxRadius', 'NewRateOfFire', 'MaintenanceConsumptionPerSecondEnergy',
+                 'NewMaxRadius', 'NewDamageRadiusMod', 'NewRateOfFire', 'MaintenanceConsumptionPerSecondEnergy',
                  'ProductionPerSecondMass', 'ProductionPerSecondEnergy', 'PersonalShield',
                  'NewHealth', 'NewRegenRate', 'NewOmniRadius', 'AdditionalDamage',
                  'NewDamageRadius', 'NewBuildRate', 'ShieldMaxHealth', 'ShieldRegenRate',

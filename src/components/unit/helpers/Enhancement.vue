@@ -26,6 +26,7 @@ const stats = computed(() => {
   if (e.NewOmniRadius) s.push({ label: 'new omni radius', value: e.NewOmniRadius })
   if (e.AdditionalDamage) s.push({ label: 'additional damage', value: e.AdditionalDamage })
   if (e.NewDamageRadius) s.push({ label: 'new damage radius', value: e.NewDamageRadius })
+  if (e.NewDamageRadiusMod) s.push({ label: 'new damage radius', value: e.NewDamageRadiusMod })
   if (e.NewBuildRate) s.push({ label: 'new build rate', value: e.NewBuildRate })
   if (e.ShieldMaxHealth) s.push({ label: 'health', value: shorten(e.ShieldMaxHealth) })
   if (e.ShieldRegenRate) s.push({ label: 'regen / s', value: e.ShieldRegenRate })
