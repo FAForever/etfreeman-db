@@ -15,9 +15,11 @@ export function loadFromCache() {
   const blueprintFiles = files.filter(f => f.endsWith('_unit.bp'))
 
   const blueprints = blueprintFiles.map(file => {
-    const content = fs.readFileSync(path.join(CACHE_DIR, file), 'utf8')
     const id = file.replace('_unit.bp', '')
-    return { id, content }
+    const content = fs.readFileSync(path.join(CACHE_DIR, file), 'utf8')
+    const scriptPath = path.join(CACHE_DIR, `${id}_script.lua`)
+    const scriptContent = fs.existsSync(scriptPath) ? fs.readFileSync(scriptPath, 'utf8') : null
+    return { id, content, scriptContent }
   })
 
   const versionContent = fs.readFileSync(path.join(CACHE_DIR, 'version.lua'), 'utf8')
@@ -26,7 +28,8 @@ export function loadFromCache() {
   const defaultComponentsContent = fs.readFileSync(path.join(CACHE_DIR, 'defaultcomponents.lua'), 'utf8')
   const unitContent = fs.readFileSync(path.join(CACHE_DIR, 'unit.lua'), 'utf8')
 
-  console.log(`  ✓ Loaded ${blueprints.length} blueprints from cache`)
+  const withScripts = blueprints.filter(b => b.scriptContent).length
+  console.log(`  ✓ Loaded ${blueprints.length} blueprints from cache (${withScripts} with scripts)`)
 
   return { blueprints, versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
 }

@@ -141,9 +141,10 @@ function astToObject(node) {
     case 'BinaryExpression':
       return evaluateBinary(node);
 
-    case 'UnaryExpression':
+    case 'UnaryExpression': {
       const arg = astToObject(node.argument);
       return node.operator === '-' ? -arg : arg;
+    }
 
     case 'TableCallExpression':
     case 'CallExpression':
@@ -258,6 +259,92 @@ export function createConfig({ versionContent, shieldContent, blueprintsUnitsCon
     ...parseVeterancyConstants(blueprintsUnitsContent, defaultComponentsContent),
     ...parseWreckageConstants(unitContent),
   }
+}
+
+export function extractOnKilledStunParams(content) {
+  try {
+    const ast = luaparse.parse(content, { comments: false, scope: true })
+
+    const onKilled = findOnKilledFn(ast)
+    if (!onKilled) return null
+
+    const setStunned = findCall(onKilled.body, 'SetStunned')
+    if (!setStunned) return null
+
+    const durationArg = setStunned.arguments[0]
+    if (!durationArg || durationArg.type !== 'NumericLiteral') return null
+
+    const getEnemies = findCall(onKilled.body, 'GetTrueEnemyUnitsInSphere')
+    if (!getEnemies) return null
+
+    const catsArg = getEnemies.arguments[getEnemies.arguments.length - 1]
+    const { allowed, disallowed } = flattenCategories(catsArg)
+    if (!allowed.length && !disallowed.length) return null
+
+    return { duration: durationArg.value, allowed, disallowed }
+  } catch (err) {
+    console.warn('extractOnKilledStunParams failed:', err?.message ?? err)
+    return null
+  }
+}
+
+function findOnKilledFn(node) {
+  if (!node || typeof node !== 'object') return null
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const found = findOnKilledFn(child)
+      if (found) return found
+    }
+    return null
+  }
+  if (node.type === 'TableKeyString' &&
+      node.key?.name === 'OnKilled' &&
+      node.value?.type === 'FunctionDeclaration') {
+    return node.value
+  }
+  for (const k in node) {
+    if (k === 'loc' || k === 'range') continue
+    const found = findOnKilledFn(node[k])
+    if (found) return found
+  }
+  return null
+}
+
+function findCall(node, name) {
+  if (!node || typeof node !== 'object') return null
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const found = findCall(child, name)
+      if (found) return found
+    }
+    return null
+  }
+  if (node.type === 'CallExpression') {
+    const base = node.base
+    if (base?.type === 'Identifier' && base.name === name) return node
+    if (base?.type === 'MemberExpression' && base.identifier?.name === name) return node
+  }
+  for (const k in node) {
+    if (k === 'loc' || k === 'range') continue
+    const found = findCall(node[k], name)
+    if (found) return found
+  }
+  return null
+}
+
+function flattenCategories(node, sign = 1, out = { allowed: [], disallowed: [] }) {
+  if (!node) return out
+  if (node.type === 'BinaryExpression' && (node.operator === '+' || node.operator === '-')) {
+    flattenCategories(node.left, sign, out)
+    flattenCategories(node.right, node.operator === '-' ? -sign : sign, out)
+  } else if (
+    node.type === 'MemberExpression' &&
+    node.base?.type === 'Identifier' && node.base.name === 'categories' &&
+    node.identifier?.type === 'Identifier'
+  ) {
+    (sign > 0 ? out.allowed : out.disallowed).push(node.identifier.name)
+  }
+  return out
 }
 
 export function parseWreckageConstants(unitContent) {

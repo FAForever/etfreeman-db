@@ -63,7 +63,7 @@ export function distillUnit(unit) {
       result.Enhancements = Object.fromEntries(
         Object.entries(unit.Enhancements)
           .map(([k, v]) => [k, distill(v, schema)])
-          .filter(([_, v]) => Object.keys(v).length)
+          .filter(([ , v]) => Object.keys(v).length)
       )
     } else if (unit[section]) {
       result[section] = distill(unit[section], schema)

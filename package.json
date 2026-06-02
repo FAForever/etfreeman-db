@@ -30,7 +30,7 @@
     "serve": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext .js,.vue",
+    "lint": "eslint src tools --ext .js,.vue",
     "generate": "node tools/generator/index.js",
     "generate:cached": "node tools/generator/index.js --cached",
     "generate:fat": "node tools/generator/index.js --withfat",

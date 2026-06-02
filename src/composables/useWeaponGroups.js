@@ -37,7 +37,7 @@ export function useWeaponGroups(weapons) {
     if (!weapons) return {}
 
     const grouped = weapons.reduce((acc, weapon) => {
-      if (!weapon.dps && !weapon.fullDamage && weapon.DamageType != "EMP") return acc
+      if (!weapon.dps && !weapon.fullDamage && weapon.DamageType != "EMP" && !weapon.Buffs?.some(b => b.BuffType === 'STUN') && !weapon.deathStunParams) return acc
 
       const category = categorizeWeapon(weapon)
       weapon.__category = category

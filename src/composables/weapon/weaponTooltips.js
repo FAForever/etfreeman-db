@@ -1,6 +1,7 @@
 import { getDetailedCycle, getDoTBreakdown } from '@/stores/utils/unitDecorator/dps/index.js'
 import { Column } from '@/composables/useWeaponColumns'
 import { isOneTimeUse, isTorpedo, isDepthCharge } from '../helpers/weaponHelper'
+import { getStunTooltip } from './stunTooltip.js'
 
 const getDoTTooltip = (weapon) => {
   const dot = getDoTBreakdown(weapon)
@@ -38,15 +39,24 @@ const getLayerTargetTooltip = (weapon) => {
 export const getTooltipAttrs = (weapon, col) => {
   if (!weapon) return {}
   let tooltip
-  if (col === Column.TYPE) tooltip = getLayerTargetTooltip(weapon)
+  let stunActive = false
+  if (col === Column.TYPE) {
+    const layer = getLayerTargetTooltip(weapon)
+    const stun = getStunTooltip(weapon)
+    stunActive = !!stun
+    tooltip = [layer, stun].filter(Boolean).join('\n')
+  }
   else if ([Column.CYCLE, Column.CYCLE_TO_SHIELDS].includes(col))
     tooltip = getDetailedCycle(weapon, col === Column.CYCLE_TO_SHIELDS, isOneTimeUse(weapon)) || null
   else if (col === Column.DOT) tooltip = getDoTTooltip(weapon)
 
   if (!tooltip) return {}
+  const params = col === Column.TYPE
+    ? (stunActive ? 'widest-top-right' : 'big-top-right')
+    : 'big-top-left'
   return {
     'data-tooltip': tooltip,
-    'data-tooltip-params': col === Column.TYPE ? 'big-top-right' : 'big-top-left'
+    'data-tooltip-params': params
   }
 }
 

@@ -50,6 +50,6 @@ export default {
            'TurretYawRange', 'MuzzleSalvoSize', 'MuzzleSalvoDelay',
            'MuzzleChargeDelay', 'RackFireTogether', 'RackSalvoSize', 'RackSalvoChargeTime',
            'RackSalvoReloadTime', 'RateOfFire', 'TractorDamage', 'TractorDamageInterval',
-           'ProjectileId', 'DepthCharge',
+           'ProjectileId', 'DepthCharge', 'Buffs',
            { RackBones: ['MuzzleBones'] }]
 }

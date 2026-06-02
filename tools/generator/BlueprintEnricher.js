@@ -41,7 +41,7 @@ function getTotalFragmentMultiplier(fragmentId, projectiles) {
   return multiplier
 }
 
-export async function createEnricher(fetchProjectiles, parseProjectile, fetchProjectileScripts, parseProjectileScript) {
+export async function createEnricher(fetchProjectiles, parseProjectile, fetchProjectileScripts, parseProjectileScript, unitScriptByUnitId, extractOnKilledStunParams) {
   console.log('\nLoading projectiles...')
   const projectilesRaw = await fetchProjectiles()
   const projectiles = buildProjectileIndex(projectilesRaw, parseProjectile)
@@ -60,6 +60,7 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
     weaponsWithCost: 0,
     weaponsWithChildCount: 0,
     weaponsWithAntiMissileFlare: 0,
+    weaponsWithDeathStun: 0,
 
     enrich(unit) {
       // this how it works in faforever/fa repo, have to do it here until they fix the code
@@ -122,6 +123,18 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
           const childProj = script?.childProjectileId ? projectiles[script.childProjectileId] : null
           const categories = childProj?.Categories || proj?.Categories || []
           weapon.isTorpedo = categories.includes('TORPEDO')
+        }
+      }
+
+      const scriptContent = unitScriptByUnitId.get(unit.Id)
+      if (scriptContent) {
+        const weapon = unit.Weapon.find(w => w.Label === 'DeathStun')
+        if (weapon) {
+          const params = extractOnKilledStunParams(scriptContent)
+          if (params) {
+            weapon.deathStunParams = params
+            this.weaponsWithDeathStun++
+          }
         }
       }
     }

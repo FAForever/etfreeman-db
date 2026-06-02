@@ -39,7 +39,7 @@ export async function fetchDefaults() {
   return { versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
 }
 
-export async function fetchAllBlueprints() {
+export async function fetchAllBlueprintsAndScripts() {
   const blueprints = []
 
   for (const repo of REPOS) {
@@ -48,13 +48,24 @@ export async function fetchAllBlueprints() {
     for (const repoPath of repo.paths) {
       if (repoPath.endsWith('.lua')) continue
 
-      const files = await listFiles(repo.owner, repo.name, repo.branch, repoPath, '_unit.bp')
-      console.log(`  ${files.length} blueprint files`)
+      const files = await listFiles(repo.owner, repo.name, repo.branch, repoPath, ['_unit.bp', '_script.lua'])
+      const byId = new Map()
+      for (const f of files) {
+        const m = f.path.match(/([^/]+?)_(unit\.bp|script\.lua)$/i)
+        if (!m) continue
+        const [, id, suffix] = m
+        if (!byId.has(id)) byId.set(id, { id, faction: repo.name, bp: null, script: null })
+        suffix.toLowerCase() === 'unit.bp'
+          ? (byId.get(id).bp = f.path)
+          : (byId.get(id).script = f.path)
+      }
+      console.log(`  ${byId.size} unit ids`)
 
-      for (const file of files) {
-        const content = await fetchFile(repo.owner, repo.name, repo.branch, file.path)
-        const unitId = file.path.match(/([^/]+)_unit\.bp$/)[1]
-        blueprints.push({ id: unitId, content, faction: repo.name })
+      for (const { id, faction, bp, script } of byId.values()) {
+        if (!bp) continue
+        const content = await fetchFile(repo.owner, repo.name, repo.branch, bp)
+        const scriptContent = script ? await fetchFile(repo.owner, repo.name, repo.branch, script) : null
+        blueprints.push({ id, content, scriptContent, faction })
       }
     }
   }

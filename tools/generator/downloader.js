@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { fetchDefaults, fetchAllBlueprints, fetchAllProjectiles, fetchAllProjectileScripts, DEFAULT_FILES } from './fetcher.js'
+import { fetchDefaults, fetchAllBlueprintsAndScripts, fetchAllProjectiles, fetchAllProjectileScripts, DEFAULT_FILES } from './fetcher.js'
 import { CACHE_DIR } from './CacheManager.js'
 
 async function download() {
@@ -17,15 +17,20 @@ async function download() {
 
   console.log(`\n✓ Downloaded defaults: ${DEFAULT_FILES.map(([, f]) => f).join(', ')}`)
 
-  console.log('\nDownloading blueprints...\n')
-  const { blueprints } = await fetchAllBlueprints()
+  console.log('\nDownloading blueprints + scripts...\n')
+  const { blueprints } = await fetchAllBlueprintsAndScripts()
 
   console.log(`\nSaving ${blueprints.length} blueprints to ${CACHE_DIR}...`)
+  let scriptsCount = 0
   for (const bp of blueprints) {
     fs.writeFileSync(path.join(CACHE_DIR, `${bp.id}_unit.bp`), bp.content)
+    if (bp.scriptContent) {
+      fs.writeFileSync(path.join(CACHE_DIR, `${bp.id}_script.lua`), bp.scriptContent)
+      scriptsCount++
+    }
   }
 
-  console.log(`\n✓ Downloaded ${blueprints.length} blueprints`)
+  console.log(`\n✓ Downloaded ${blueprints.length} blueprints (${scriptsCount} with scripts)`)
 
   console.log('\nDownloading projectiles...\n')
   const projectiles = await fetchAllProjectiles()

@@ -26,7 +26,7 @@
     line-height: 1.25
     white-space: pre-line
 
-$tooltip-mods: (big: (width: max-content, max-width: 250px, padding: 8px), top: (bottom: calc(100% + 5px)), bottom: (top: calc(100% + 5px)), right: (left: 0), left: (right: 0), center: (left: 50%, transform: translateX(-50%)))
+$tooltip-mods: (big: (width: max-content, max-width: 250px, padding: 8px), widest: (width: max-content, max-width: 350px, padding: 8px, font-size: 13px), top: (bottom: calc(100% + 5px)), bottom: (top: calc(100% + 5px)), right: (left: 0), left: (right: 0), center: (left: 50%, transform: translateX(-50%)))
 
 @each $name, $styles in $tooltip-mods
   [data-tooltip-params*="#{$name}"]:hover::after

@@ -39,7 +39,7 @@ const shouldHighlightCollapsed = computed(() =>
     <template v-if="isExpanded">
       <tr v-for="group, index in groupedWeapons" class="active" :class="{'lastWeapon': index == groupedWeapons.length - 1}">
         <td v-for="col, colIndex in columns" :key="col"
-        v-bind="colIndex ? getTooltipAttrs(group.weapons[0], col) : {}"
+        v-bind="getTooltipAttrs(group.weapons[0], col)"
         v-html="colIndex ? getStatText(group.weapons[0], col) : getDisplayName(group)"></td>
       </tr>
     </template>
