@@ -13,7 +13,7 @@ export default {
             'ProductionPerSecondMass', 'ProductionPerSecondEnergy',
             'MaintenanceConsumptionPerSecondEnergy', 'StorageMass', 'StorageEnergy'],
 
-  Intel: ['VisionRadius', 'WaterVisionRadius', 'RadarRadius', 'SonarRadius',
+  Intel: ['OmniRadius','VisionRadius', 'WaterVisionRadius', 'RadarRadius', 'SonarRadius',
           'RadarStealthFieldRadius', 'SonarStealthFieldRadius', 'ReactivateTime',
           'MaxVisionRadius', 'MinVisionRadius'],
 

@@ -9,6 +9,7 @@ const { showedSections } = useCompareStore()
 const intel = unit.Intel || {}
 
 const intelConfig = [
+  { key: 'OmniRadius', label: 'Omni radius' },
   { key: 'VisionRadius', label: 'Vision radius' },
   { key: 'WaterVisionRadius', label: 'Water vision radius' },
   { key: 'RadarRadius', label: 'Radar radius' },
