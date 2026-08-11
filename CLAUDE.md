@@ -226,11 +226,11 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 
 **Scripts:**
 ```bash
-npm run download-blueprints    # Download to cache
-npm run generate               # Fetch and generate (slim)
-npm run generate:cached        # Generate from cache (slim)
-npm run generate:fat           # Fetch and generate with fat
-npm run generate:cached:fat    # Generate from cache with fat
+pnpm run download-blueprints    # Download to cache
+pnpm run generate               # Fetch and generate (slim)
+pnpm run generate:cached        # Generate from cache (slim)
+pnpm run generate:fat           # Fetch and generate with fat
+pnpm run generate:cached:fat    # Generate from cache with fat
 ```
 
 **Outputs:** `src/public/data/{index.json, projectiles.json, version.json}` + optional `index.fat.json`

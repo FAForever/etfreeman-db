@@ -24,22 +24,22 @@ Web-based unit database for Forged Alliance Forever (FAF).
 ## Installation
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## Development
 
 ```bash
 # Development server (http://localhost:9001)
-npm run serve
+pnpm run serve
 
 # Production build
-npm run build
+pnpm run build
 
 # Run tests
-npm run test
-npm run test:watch
-npm run test:ui
+pnpm run test
+pnpm run test:watch
+pnpm run test:ui
 ```
 
 ## Data Generation
@@ -48,17 +48,17 @@ The project parses FAF Lua blueprints from the official repositories into JSON f
 
 ```bash
 # Download blueprints to local cache
-npm run download-blueprints
+pnpm run download-blueprints
 
 # Generate data from cache (recommended for development)
-npm run generate:cached
+pnpm run generate:cached
 
 # Fetch and generate data on-the-fly
-npm run generate
+pnpm run generate
 
 # Generate with fat file (complete unit data)
-npm run generate:fat
-npm run generate:cached:fat
+pnpm run generate:fat
+pnpm run generate:cached:fat
 ```
 
 ### Data Sources
