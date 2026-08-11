@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "repository": "https://github.com/FAForever/etfreeman-db",
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
-    "@vitest/ui": "^3.2.4",
+    "@vitest/ui": "^3.2.7",
     "bin-pack": "^1.0.2",
     "chokidar": "^4.0.3",
     "eslint": "^9.35.0",
@@ -16,11 +18,11 @@
     "luaparse": "^0.3.1",
     "pixelmatch": "^7.1.0",
     "sass": "^1.93.3",
-    "sharp": "^0.34.4",
+    "sharp": "^0.35.3",
     "svgo": "^3.3.2",
     "vite": "^7.1.6",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^3.2.4",
+    "vitest": "^3.2.7",
     "xml2js": "^0.6.2"
   },
   "scripts": {
