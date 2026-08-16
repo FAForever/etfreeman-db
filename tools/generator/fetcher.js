@@ -3,7 +3,7 @@ const REPOS = [
     name: 'fa',
     owner: 'FAForever',
     branch: 'deploy/faf',
-    paths: ['units', 'lua/version.lua', 'lua/shield.lua', 'lua/system/blueprints-units.lua', 'lua/defaultcomponents.lua', 'lua/sim/Unit.lua'],
+    paths: ['units', 'lua/version.lua', 'lua/shield.lua', 'lua/shared/overcharge.lua', 'lua/system/blueprints-units.lua', 'lua/defaultcomponents.lua', 'lua/sim/Unit.lua'],
     projectilePaths: ['projectiles']
   },
   {
@@ -18,6 +18,7 @@ const REPOS = [
 export const DEFAULT_FILES = [
   ['versionContent', 'version.lua'],
   ['shieldContent', 'shield.lua'],
+  ['overchargeContent', 'overcharge.lua'],
   ['blueprintsUnitsContent', 'blueprints-units.lua'],
   ['defaultComponentsContent', 'defaultcomponents.lua'],
   ['unitContent', 'unit.lua'],
@@ -27,16 +28,17 @@ export async function fetchDefaults() {
   console.log('Fetching defaults from GitHub...')
   const faRepo = REPOS.find(r => r.name === 'fa')
 
-  const [versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent] = await Promise.all([
+  const [versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent] = await Promise.all([
     fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/version.lua'),
     fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/shield.lua'),
+    fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/shared/overcharge.lua'),
     fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/system/blueprints-units.lua'),
     fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/defaultcomponents.lua'),
     fetchFile(faRepo.owner, faRepo.name, faRepo.branch, 'lua/sim/Unit.lua'),
   ])
 
   console.log('  ✓ Defaults fetched')
-  return { versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
+  return { versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
 }
 
 export async function fetchAllBlueprintsAndScripts() {

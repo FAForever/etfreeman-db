@@ -2,6 +2,8 @@ import { getDetailedCycle, getDoTBreakdown } from '@/stores/utils/unitDecorator/
 import { Column } from '@/composables/useWeaponColumns'
 import { isOneTimeUse, isTorpedo, isDepthCharge } from '../helpers/weaponHelper'
 import { getStunTooltip } from './stunTooltip.js'
+import { useUnitDataStore } from '@/stores/unitData.js'
+import { shorten, round } from '../helpers/common.js'
 
 const getDoTTooltip = (weapon) => {
   const dot = getDoTBreakdown(weapon)
@@ -36,6 +38,27 @@ const getLayerTargetTooltip = (weapon) => {
   return `Can only target ${targetLayers.join(' / ')} layer${targetLayers.length > 1 ? 's' : ''}`
 }
 
+const getOCTooltip = (weapon, energyRatio) => {
+  const { minDamage, maxDamage, commandDamage, structureDamage, energyMult } = weapon.Overcharge
+  const base = minDamage * energyRatio
+  const cap = Math.round(base / energyMult)
+  const low = weapon.EnergyRequired < base
+    ? `\nBelow ${shorten(base)} E stored dmg scales down to ${round(energyMult * 100, 1)}% of available energy / ${energyRatio} (min shot: ${shorten(Math.round(weapon.EnergyRequired * energyMult / energyRatio))} dmg for ${shorten(Math.round(weapon.EnergyRequired * energyMult))} E).`
+    : ''
+  return `Deals ${shorten(commandDamage)} dmg to ACUs for ${shorten(base)} E.
+Deals ${shorten(structureDamage)} dmg to structures for ${shorten(base)} E.
+Deals ${shorten(minDamage)}–${shorten(maxDamage)} dmg to units for ${shorten(base)}–${shorten(maxDamage * energyRatio)} E.
+Fires only above ${shorten(weapon.EnergyRequired)} E stored; above ${shorten(cap)} E never drains more than ${round(energyMult * 100, 1)}% of available energy.${low}`
+}
+
+const getEnergyTooltip = (weapon) => {
+  if (weapon.Overcharge)
+    return getOCTooltip(weapon, useUnitDataStore().unitDefaults.overchargeEnergyRatio)
+  if (!(weapon.EnergyRequired > 0)) return null
+  return `Requires ${shorten(weapon.EnergyRequired)} energy per cycle`
+    + (weapon.EnergyDrainPerSecond > 0 ? `\n(drains ${shorten(weapon.EnergyDrainPerSecond)} E/s while charging)` : '')
+}
+
 export const getTooltipAttrs = (weapon, col) => {
   if (!weapon) return {}
   let tooltip
@@ -44,7 +67,7 @@ export const getTooltipAttrs = (weapon, col) => {
     const layer = getLayerTargetTooltip(weapon)
     const stun = getStunTooltip(weapon)
     stunActive = !!stun
-    tooltip = [layer, stun].filter(Boolean).join('\n')
+    tooltip = [[layer, stun].filter(Boolean).join('\n'), getEnergyTooltip(weapon)].filter(Boolean).join('\n\n')
   }
   else if ([Column.CYCLE, Column.CYCLE_TO_SHIELDS].includes(col))
     tooltip = getDetailedCycle(weapon, col === Column.CYCLE_TO_SHIELDS, isOneTimeUse(weapon)) || null
@@ -52,7 +75,7 @@ export const getTooltipAttrs = (weapon, col) => {
 
   if (!tooltip) return {}
   const params = col === Column.TYPE
-    ? (stunActive ? 'widest-top-right' : 'big-top-right')
+    ? (stunActive || weapon.Overcharge ? 'widest-top-right' : 'big-top-right')
     : 'big-top-left'
   return {
     'data-tooltip': tooltip,

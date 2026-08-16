@@ -19,20 +19,20 @@ async function generate() {
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true })
 
-  let blueprints, versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent
+  let blueprints, versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent
 
   if (useCached) {
     const cached = loadFromCache();
-    ({ blueprints, versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent } = cached)
+    ({ blueprints, versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent } = cached)
   } else {
     const defaults = await fetchDefaults();
-    ({ versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent } = defaults);
+    ({ versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent } = defaults);
     ({ blueprints } = await fetchAllBlueprintsAndScripts())
   }
 
   const { units } = filterUnits(blueprints, parseBlueprint)
 
-  const config = createConfig({ versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent })
+  const config = createConfig({ versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent })
   console.log(`  ✓ Version: ${config.version}`)
 
   const fetchProjectiles = useCached ? loadProjectilesFromCache : fetchAllProjectiles

@@ -28,7 +28,8 @@ export const useUnitDataStore = defineStore('unitData', () => {
       techToVetMultipliers: json.techToVetMultipliers || {},
       veterancyRegenBuffs: json.veterancyRegenBuffs || [],
       wreckageTechMassMults: json.wreckageTechMassMults || {},
-      wreckageWaterMult: json.wreckageWaterMult
+      wreckageWaterMult: json.wreckageWaterMult,
+      overchargeEnergyRatio: json.overchargeEnergyRatio
     }
 
     unitsMap.value = Object.fromEntries(units.value.map(u => [u.id, u]))

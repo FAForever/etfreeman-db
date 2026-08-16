@@ -251,11 +251,18 @@ export function parseVeterancyConstants(blueprintsUnitsContent, defaultComponent
   return { techToVetMultipliers, veterancyRegenBuffs }
 }
 
-export function createConfig({ versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }) {
+export function parseOvercharge(content) {
+  const match = content.match(/local\s+energyRatio\s*=\s*([\d.]+)/)
+  if (!match) throw new Error('Failed to parse energyRatio from overcharge.lua')
+  return { overchargeEnergyRatio: parseFloat(match[1]) }
+}
+
+export function createConfig({ versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }) {
   console.log('\nExtracting constants...')
   return {
     ...parseVersion(versionContent),
     ...parseShield(shieldContent),
+    ...parseOvercharge(overchargeContent),
     ...parseVeterancyConstants(blueprintsUnitsContent, defaultComponentsContent),
     ...parseWreckageConstants(unitContent),
   }

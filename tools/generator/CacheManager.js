@@ -24,6 +24,7 @@ export function loadFromCache() {
 
   const versionContent = fs.readFileSync(path.join(CACHE_DIR, 'version.lua'), 'utf8')
   const shieldContent = fs.readFileSync(path.join(CACHE_DIR, 'shield.lua'), 'utf8')
+  const overchargeContent = fs.readFileSync(path.join(CACHE_DIR, 'overcharge.lua'), 'utf8')
   const blueprintsUnitsContent = fs.readFileSync(path.join(CACHE_DIR, 'blueprints-units.lua'), 'utf8')
   const defaultComponentsContent = fs.readFileSync(path.join(CACHE_DIR, 'defaultcomponents.lua'), 'utf8')
   const unitContent = fs.readFileSync(path.join(CACHE_DIR, 'unit.lua'), 'utf8')
@@ -31,7 +32,7 @@ export function loadFromCache() {
   const withScripts = blueprints.filter(b => b.scriptContent).length
   console.log(`  ✓ Loaded ${blueprints.length} blueprints from cache (${withScripts} with scripts)`)
 
-  return { blueprints, versionContent, shieldContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
+  return { blueprints, versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }
 }
 
 export function loadProjectilesFromCache() {
