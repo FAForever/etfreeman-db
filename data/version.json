@@ -2,6 +2,7 @@
   "version": "3837",
   "shieldDefaultOverspill": 0.15,
   "shieldDefaultRechargeTime": 5,
+  "overchargeEnergyRatio": 6,
   "techToVetMultipliers": {
     "TECH1": 2,
     "TECH2": 1.5,
