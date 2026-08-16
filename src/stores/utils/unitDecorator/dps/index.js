@@ -41,7 +41,7 @@ export const calculateFiringCycle = (weapon) => {
 export const calculateDps = (weapon, toShields = false) => {
   if (!weapon.RateOfFire || weapon.ForceSingleFire || weapon.FireOnDeath || ['Teleport', "Kamikaze"].includes(weapon.WeaponCategory)) return null
   const damage = calculateProjectileDamage(weapon, toShields)
-  return Number(((damage * weapon.firingCycle.cycleProjs) / weapon.firingCycle.cycleTime).toFixed(2))
+  return (damage * weapon.firingCycle.cycleProjs) / weapon.firingCycle.cycleTime
 }
 
 export const getDetailedCycle = (weapon, toShields = false, isOneTimeUse) => {

@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import { useCompareStore } from '@/stores/compare'
+import { AVAILABLE_VARS, parseStatLabel } from '@/stores/compare/customStatsVars'
 import { useClickOutside } from '@/composables/useClickOutside'
 
 const props = defineProps(['open'])
@@ -12,70 +13,9 @@ const selectedId = ref(null)
 const formulaInput = ref(null)
 const labelInput = ref(null)
 
-const AVAILABLE_VARS = [
-  "Air.CombatTurnSpeed",
-  "Air.MaxAirspeed",
-  "Air.MinAirspeed",
-  "Air.StartTurnDistance",
-  "Air.TurnSpeed",
-  "Defense.Health",
-  "Defense.RegenRate",
-  "Defense.Shield.PersonalBubble",
-  "Defense.Shield.PersonalShield",
-  "Defense.Shield.ShieldMaxHealth",
-  "Defense.Shield.ShieldRechargeTime",
-  "Defense.Shield.ShieldRegenRate",
-  "Defense.Shield.ShieldRegenStartTime",
-  "Defense.Shield.ShieldSize",
-  "Defense.Shield.ShieldSpillOverDamageMod",
-  "Economy.BuildCostEnergy",
-  "Economy.BuildCostMass",
-  "Economy.BuildRate",
-  "Economy.BuildTime",
-  "Economy.MaintenanceConsumptionPerSecondEnergy",
-  "Economy.ProductionPerSecondEnergy",
-  "Economy.ProductionPerSecondMass",
-  "Economy.StorageEnergy",
-  "Economy.StorageMass",
-  "ID",
-  "Intel.MaxVisionRadius",
-  "Intel.MinVisionRadius",
-  "Intel.OmniRadius",
-  "Intel.RadarRadius",
-  "Intel.RadarStealthFieldRadius",
-  "Intel.ReactivateTime",
-  "Intel.SonarRadius",
-  "Intel.SonarStealthFieldRadius",
-  "Intel.VisionRadius",
-  "Intel.WaterVisionRadius",
-  "Physics.BackUpDistance",
-  "Physics.Elevation",
-  "Physics.FuelRechargeRate",
-  "Physics.FuelUseTime",
-  "Physics.LandSpeedMultiplier",
-  "Physics.MaxSpeed",
-  "Physics.SniperModeSpeedMultiplier",
-  "Physics.SubSpeedMultiplier",
-  "Physics.TurnRate",
-  "Physics.WaterSpeedMultiplier",
-  "Transport.Class1Capacity",
-  "Transport.Class2AttachSize",
-  "Transport.Class3AttachSize",
-  "Transport.SlotsLarge",
-  "Transport.SlotsMedium",
-  "Transport.SlotsSmall",
-  "VeteranMassMult",
-  "Weapons['ALL'].DPS",
-  "Weapons['ALL'].FullCycleDamage",
-  "Weapons['ALL'].MaxDamageRadius",
-  "Weapons['ALL'].MaxMaxRadius",
-  "Weapons['ALL'].MinDamageRadius",
-  "Weapons['ALL'].MinMaxRadius",
-  "Wreckage.HealthMult",
-  "Wreckage.MassMult",
-]
-
 const selectedStat = ref({ label: '', formula: '', fullLine: false })
+const parsed = computed(() => parseStatLabel(selectedStat.value.label))
+const storeStat = computed(() => store.customStats.stats.find(s => s.id === selectedId.value))
 
 watch(selectedId, (id) => {
   const stat = store.customStats.stats.find(s => s.id === id)
@@ -110,20 +50,26 @@ const updateSelectedStat = (field, value) => {
   store.updateStat(selectedId.value, { [field]: value })
 }
 
-const insertVariable = (varPath) => {
-  if (!formulaInput.value) return
-  const input = formulaInput.value
-  const start = input.selectionStart || 0
-  const end = input.selectionEnd || 0
-  const text = selectedStat.value.formula || ''
-  const toInsert = `unit.${varPath}`
-  const newFormula = text.slice(0, start) + toInsert + text.slice(end)
-  updateSelectedStat('formula', newFormula)
+const insertAtCaret = (el, text, apply) => {
+  const start = el.selectionStart ?? 0
+  const end = el.selectionEnd ?? 0
+  const value = el.value || ''
+  apply(value.slice(0, start) + text + value.slice(end))
   nextTick(() => {
-    input.focus()
-    const newPos = start + toInsert.length
-    input.setSelectionRange(newPos, newPos)
+    el.focus()
+    const pos = start + text.length
+    el.setSelectionRange(pos, pos)
   })
+}
+
+const insertVariable = (varPath) => {
+  const active = document.activeElement
+  const el = active?.dataset?.varInput ? active : formulaInput.value
+  if (!el) return
+  const apply = el.dataset.varInput
+    ? v => store.setVar(selectedId.value, el.dataset.varInput, { value: v })
+    : v => updateSelectedStat('formula', v)
+  insertAtCaret(el, `unit.${varPath}`, apply)
 }
 
 useClickOutside(popupRef, () => {
@@ -153,8 +99,16 @@ useClickOutside(popupRef, () => {
             <label class="csp__field">
               <span>Label</span>
               <input ref="labelInput" :value="selectedStat.label" @input="updateSelectedStat('label', $event.target.value)"
-                placeholder="e.g., HP/Mass" />
+                placeholder="e.g., HP/Mass or power(X, Y)" />
             </label>
+            <div v-if="parsed.error" class="csp__hint csp__hint_error">{{ parsed.error }}</div>
+            <div v-for="v in parsed.vars" :key="v" class="csp__var-row">
+              <span class="csp__var-name">Default value for {{ v }}</span>
+              <input class="csp__var-value" :data-var-input="v" :value="storeStat?.vars?.[v]?.value ?? ''"
+                @input="store.setVar(selectedId, v, { value: $event.target.value })" />
+              <input class="csp__var-color" type="color" :value="storeStat?.vars?.[v]?.color || '#fff'"
+                @input="store.setVar(selectedId, v, { color: $event.target.value })" />
+            </div>
             <div v-if="selectedStat.formula?.match(/Weapons\['ALL'\]/)" class="csp__hint">
               You can use any weapon category instead of 'ALL', f.e. 'Direct'
             </div>
@@ -178,7 +132,7 @@ useClickOutside(popupRef, () => {
         <div class="csp__right">
           <div class="csp__section-title">Variables</div>
           <div class="csp__vars-list">
-            <button v-for="v in AVAILABLE_VARS" :key="v" class="csp__var-item" @click="insertVariable(v)">
+            <button v-for="v in AVAILABLE_VARS" :key="v" class="csp__var-item" @mousedown.prevent @click="insertVariable(v)">
               {{ v }}
             </button>
           </div>
@@ -295,6 +249,39 @@ useClickOutside(popupRef, () => {
     background: rgba(255,200,100,.1)
     padding: 6px 10px
     border-radius: 4px
+    &_error
+      color: rgba(255,100,100,.9)
+      background: rgba(255,100,100,.1)
+
+  &__var-row
+    display: flex
+    align-items: center
+    gap: 8px
+    font-size: 13px
+
+  &__var-name
+    color: rgba(255,255,255,.6)
+
+  &__var-value
+    width: 90px
+    background: #111
+    border: 1px solid #333
+    border-radius: 4px
+    padding: 4px 8px
+    color: white
+    font-size: 13px
+    &:focus
+      border-color: rgba(100,150,255,.7)
+      outline: none
+
+  &__var-color
+    width: 32px
+    height: 26px
+    padding: 0
+    border: 1px solid #333
+    border-radius: 4px
+    background: none
+    cursor: pointer
 
   &__field
     display: flex

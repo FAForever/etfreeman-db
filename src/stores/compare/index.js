@@ -12,7 +12,7 @@ export const useCompareStore = defineStore('compare', () => {
   const { showedSections, toggleSection } = useShowedSections()
   const { toggles, unitWidth, gap } = useCompareToggles(unitIDs)
   const { efficiencySettings } = useEfficiencySettings()
-  const { customStats, addStat, removeStat, updateStat } = useCustomStats()
+  const { customStats, addStat, removeStat, updateStat, setVar, getVarValue, setVarOverrides } = useCustomStats()
 
   const filterOpen = ref(false)
   const settingsOpen = ref(false)
@@ -27,7 +27,7 @@ export const useCompareStore = defineStore('compare', () => {
     showedSections, toggles, efficiencySettings, customStats,
     filterOpen, settingsOpen, unitIDs,
     gap, unitWidth,
-    toggleSection, addStat, removeStat, updateStat,
+    toggleSection, addStat, removeStat, updateStat, setVar, getVarValue, setVarOverrides,
     toggleFilter: () => filterOpen.value = !filterOpen.value,
     toggleSettings: () => settingsOpen.value = !settingsOpen.value
   }
