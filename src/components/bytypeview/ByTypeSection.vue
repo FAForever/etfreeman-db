@@ -12,12 +12,17 @@ const toggleUnitsOfTheSameType = (unitsByFaction) => {
   const units = Object.values(unitsByFaction).flat()
   smartSelect(units)
 }
+
+const hasSelected = (unitsByFaction) => {
+  const units = filterStore.effectiveVisibleFactions.flatMap(f => unitsByFaction[f] || [])
+  return units.some(u => u.selected)
+}
 </script>
 
 <template>
   <div class="section">
     <h1 class="section__title">{{ section.name }}</h1>
-    <div v-for="[typeName, unitsByFaction] in Object.entries(section.types)" :key="typeName" class="section__type">
+    <div v-for="[typeName, unitsByFaction] in Object.entries(section.types)" :key="typeName" class="section__type" :class="{ active: hasSelected(unitsByFaction) }">
       <div v-for="faction in filterStore.effectiveVisibleFactions" :key="faction" class="section__faction">
         <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit" :mini="true" />
       </div>
@@ -50,6 +55,8 @@ const toggleUnitsOfTheSameType = (unitsByFaction) => {
       padding-bottom: 5px
     &:hover
       background: rgba(255,255,255,.1)
+    &.active
+      background: color.adjust(#fda005, $alpha: -.8, $lightness: 15%)
 
   &__type-title
     flex-grow: 1
