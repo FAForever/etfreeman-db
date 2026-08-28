@@ -40,11 +40,20 @@ window.addEventListener('scroll', () => {
 @use './sass/modules/tooltip.sass'
 @use './sass/modules/tool-btn.sass'
 
+html
+  @include since(2500px)
+    --app-zoom: 1.2
+  @include since(3500px)
+    --app-zoom: 1.74
+  zoom: var(--app-zoom)
+.app-bg
+  zoom: calc(1 / var(--app-zoom))
+
 body
   display: flex
   flex-direction: column
-  min-height: 100vh
-  min-height: 100dvh
+  min-height: calc(100vh / var(--app-zoom, 1))
+  min-height: calc(100dvh / var(--app-zoom, 1))
   background-color: #090909
   @include specials.thinScrollbar
 

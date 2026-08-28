@@ -44,7 +44,7 @@ export function useOptimalLayout(tierTree, containerWidth, options = {}) {
 
   const findBestArrangement = (allIndexes, widths, maxWidth, highPriorityIndexes, sectionNames) => {
     const rows = []
-    let remaining = allIndexes
+    let remaining = [...allIndexes].sort((a, b) => getSectionPriority(sectionNames[b]) - getSectionPriority(sectionNames[a]))
     let priorityQueue = [...highPriorityIndexes]
 
     while (remaining.length) {

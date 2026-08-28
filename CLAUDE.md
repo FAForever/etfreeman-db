@@ -151,7 +151,7 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 - `useFactionColorFilter.js` - Faction color filtering
 
 **Layout:**
-- `useOptimalLayout.js` - Optimal section layout algorithm (subset enumeration + FFD)
+- `useOptimalLayout.js` - Optimal section layout algorithm (full subset enumeration)
 
 **Weapon:**
 - `useWeaponGroups.js` - Weapon grouping by category
@@ -345,9 +345,10 @@ pnpm run generate:cached:fat    # Generate from cache with fat
 ### Layout Algorithms
 
 **useOptimalLayout:**
-- Subset enumeration for first 2 rows
-- First-Fit Decreasing for remaining
-- Section scores prioritize Land/Air
+- Full subset enumeration (2^n) per row: widest fitting combination wins
+- Indexes priority-sorted before enumeration, so width ties favor important sections
+- Rows then sorted by summed section priority (`sectionSortScores`: Land > Air > Naval, negative for Intelligence/Support)
+- Output is a flat section order; actual lines are drawn by CSS `flex-wrap` in `.home__units`
 
 **ByTypeView:**
 - Masonry layout via `@yeger/vue-masonry-wall`

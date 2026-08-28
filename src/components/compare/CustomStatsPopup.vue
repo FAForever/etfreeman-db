@@ -164,7 +164,7 @@ useClickOutside(popupRef, () => {
   padding: 20px
   min-width: 700px
   max-width: 900px
-  max-height: 80vh
+  max-height: calc(80vh / var(--app-zoom, 1))
   position: relative
 
 .csp
