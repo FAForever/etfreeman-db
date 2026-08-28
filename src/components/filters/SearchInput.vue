@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFilterStore } from '@/stores/filterStore.js'
 import { useClickOutside } from '@/composables/useClickOutside.js'
@@ -15,11 +15,19 @@ useClickOutside(dropdownRef, () => { dropdownOpen.value = false })
 
 const fields = ['id', 'name', 'description', 'faction', 'kind', 'type', 'categories', 'abilities']
 const capitalize = s => s[0].toUpperCase() + s.slice(1)
+
+function onKeydown(e) {
+  if (e.key.length !== 1 || e.key.match(/\s/) || e.ctrlKey || e.metaKey || e.altKey) return
+  if (e.target.closest('input, textarea, select, button, a[href], [contenteditable]')) return
+  document.getElementById('filter-input').focus()
+}
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
   <div class="search-input">
-    <Input id="filter" placeholder="filter" v-model="filterSearch" />
+    <Input id="filter-input" placeholder="filter" v-model="filterSearch" />
     <SettingsButton v-model="dropdownOpen" class="search-input__btn" width="22" @mousedown.prevent @click.stop />
     <div v-if="dropdownOpen" class="search-input__dropdown" ref="dropdownRef">
       <span class="search-input__title">Search in...</span>
