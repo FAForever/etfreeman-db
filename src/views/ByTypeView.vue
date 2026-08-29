@@ -17,8 +17,8 @@ import HomeTop from '../components/HomeTop.vue'
 import ByTypeSection from '../components/bytypeview/ByTypeSection.vue'
 
 const { typeTree } = useUnitData()
-const isWideScreen = inject('isWideScreen')
-const columnWidth = computed(() => isWideScreen.value ? 420 : 350)
+const zoomModifier = inject('zoomModifier')
+const columnWidth = computed(() => 350 * zoomModifier.value)
 const sections = computed(() => Object.entries(typeTree.value).map(([name, types]) => ({ name, types })))
 </script>
 
