@@ -12,7 +12,7 @@ export const categorize = (bp) => {
   bp.sortOrder = getUnitSortOrder(bp)
 }
 
-const buildSortedTree = (units, groupKey, keySortOrOrder) => {
+const buildSortedTree = (units, sectionOrder, groupKey, keySortOrOrder) => {
   const raw = {}
 
   for (const unit of units) {
@@ -32,7 +32,7 @@ const buildSortedTree = (units, groupKey, keySortOrOrder) => {
     ? keySortOrOrder
     : (a, b) => keySortOrOrder?.[a] - keySortOrOrder?.[b]
 
-  for (const section of SECTION_ORDER) {
+  for (const section of sectionOrder) {
     if (!raw[section]) continue
     sorted[section] = {}
     for (const key of Object.keys(raw[section]).sort(keySort)) {
@@ -61,8 +61,8 @@ const calculateTypeOrders = (units) => {
   return typeOrders
 }
 
-export const generateTierTree = (units) => buildSortedTree(units, 'tech', sortTierKey)
-export const generateTypeTree = (units) => buildSortedTree(units, 'type', calculateTypeOrders(units))
+export const generateTierTree = (units) => buildSortedTree(units, SECTION_ORDER.viewA, 'tech', sortTierKey)
+export const generateTypeTree = (units) => buildSortedTree(units, SECTION_ORDER.viewB, 'type', calculateTypeOrders(units))
 
 export const deriveKind = (categories = []) => {
   const has = (c) => categories.includes(c)

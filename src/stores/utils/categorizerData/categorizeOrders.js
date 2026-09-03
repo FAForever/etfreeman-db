@@ -1,8 +1,15 @@
-export const SECTION_ORDER = [
-  'Land', 'Air', 'Naval', 'Construction - Buildpower', 'Structures - Weapons',
-  'Structures - Support', 'Structures - Intelligence', 'Structures - Economy',
-  'Structures - Factories', 'Experimental', 'Unknown'
-]
+export const SECTION_ORDER = {
+  viewA: [
+    'Land', 'Air', 'Naval', 'Construction - Buildpower', 'Structures - Weapons',
+    'Structures - Support', 'Structures - Intelligence', 'Structures - Economy',
+    'Structures - Factories', 'Experimental', 'Unknown'
+  ],
+  viewB: [
+    'Land', 'Air', 'Naval', 'Construction - Buildpower', 'Structures - Weapons',
+    'Structures - Factories', 'Structures - Support', 'Structures - Economy',
+    'Structures - Intelligence', 'Experimental', 'Unknown'
+  ]
+}
 
 export const customOrderModifiers = {
   'T2 Mobile Bomb': 1e3,
