@@ -108,8 +108,7 @@ const thumbClasses = computed(() => [
     align-items: center
     .strategic
       position: static
-      zoom: var(--experimental-disable-icon-scaling)
-      transform: scale(var(--icon-scale-ratio))
+      zoom: calc(var(--experimental-disable-icon-scaling) * var(--icon-scale-ratio))
       image-rendering: var(--icon-rendering)
   &_mini &__inner
     display: contents
