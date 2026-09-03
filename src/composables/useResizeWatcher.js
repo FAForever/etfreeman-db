@@ -6,6 +6,7 @@ export function useResizeWatcher(mobileThreshold = 1120, wideScreenThreshold = 2
   const isWideScreen = ref(false)
   const isUltraWideScreen = ref(false)
   const zoomModifier = ref(1)
+  const pixelRatio = ref(window.devicePixelRatio)
   const resizeFunctions = ref(new Set([() => {
     const mobile = window.innerWidth < mobileThreshold
     document.body.classList.toggle('mobile', mobile)
@@ -13,6 +14,7 @@ export function useResizeWatcher(mobileThreshold = 1120, wideScreenThreshold = 2
     isWideScreen.value = window.innerWidth >= wideScreenThreshold
     isUltraWideScreen.value = window.innerWidth >= ultraWideScreenThreshold
     zoomModifier.value = isUltraWideScreen.value ? 1.74 : isWideScreen.value ? 1.2 : 1
+    pixelRatio.value = window.devicePixelRatio
   }]))
 
   const onResize = throttle(() => resizeFunctions.value.forEach(fn => fn()), 50)
@@ -26,6 +28,7 @@ export function useResizeWatcher(mobileThreshold = 1120, wideScreenThreshold = 2
   provide('isUltraWideScreen', isUltraWideScreen)
   provide('zoomModifier', zoomModifier)
   provide('resizeFunctions', resizeFunctions)
+  provide('pixelRatio', pixelRatio)
 
-  return { isMobile, isWideScreen, isUltraWideScreen, zoomModifier, resizeFunctions }
+  return { isMobile, isWideScreen, isUltraWideScreen, zoomModifier, resizeFunctions, pixelRatio }
 }

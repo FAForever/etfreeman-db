@@ -101,14 +101,16 @@ const thumbClasses = computed(() => [
     height: 100%
   &_mini
     background: none
-    width: 21px
-    height: 21px
+    width: var(--thumb-width, 21px)
+    height: var(--thumb-height, 21px)
     display: flex
     justify-content: center
     align-items: center
-
     .strategic
       position: static
+      zoom: var(--experimental-disable-icon-scaling)
+      transform: scale(var(--icon-scale-ratio))
+      image-rendering: var(--icon-rendering)
   &_mini &__inner
     display: contents
 </style>
