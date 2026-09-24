@@ -7,11 +7,7 @@ export const useContainerWidth = (containerRef, scrollbarGap = 10) => {
   const onResize = () => rawWidth.value = containerRef.value?.clientWidth ?? 0
   const resizeFunctions = inject('resizeFunctions')
 
-  onMounted(() => {
-    onResize()
-    resizeFunctions.value.add(onResize)
-  })
-
+  onMounted(() => resizeFunctions.value.callAndAdd(onResize))
   onUnmounted(() => resizeFunctions.value.delete(onResize))
 
   return { containerWidth }

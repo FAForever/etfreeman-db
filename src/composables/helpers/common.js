@@ -70,3 +70,5 @@ export const throttle = (fn, ms) => {
     }
   }
 }
+
+export const storageBool = { 'true': true, 'false': false}

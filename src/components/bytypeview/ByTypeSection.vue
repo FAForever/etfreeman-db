@@ -1,20 +1,21 @@
 <script setup>
 import ThumbComponent from '../ThumbComponent.vue'
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { useUnitData } from '@/composables/useUnitData.js'
 import { useFilterStore } from '@/stores/filterStore.js'
-import { useSmartIconScaling } from '@/composables/useSmartIconScaling.js'
 
 defineProps(['section'])
 
 const { smartSelect } = useUnitData()
 const filterStore = useFilterStore()
-const { iconsScaled, scaleRatio } = useSmartIconScaling()
+const iconsScaled = inject('iconsScaled')
+const scaleRatio = inject('scaleRatio')
 
 const sizeClass = computed(() => {
   if (!iconsScaled.value) return null
   if (scaleRatio.value > 1.5) return 'section_scaled'
   if (scaleRatio.value > 1.2) return 'section_scaled-small'
+  if (scaleRatio.value <= 0.8) return 'section_scaled-nano'
   return null
 })
 
@@ -30,7 +31,7 @@ const hasSelected = (unitsByFaction) => {
 </script>
 
 <template>
-  <div class="section" :class="[{ section_experimental: iconsScaled }, sizeClass]" :style="{ '--icon-scale-ratio': iconsScaled ? scaleRatio : null, '--icon-rendering': iconsScaled ? 'pixelated' : null }">
+  <div class="section" :class="[sizeClass]">
     <h1 class="section__title">{{ section.name }}</h1>
     <div v-for="[typeName, unitsByFaction] in Object.entries(section.types)" :key="typeName" class="section__type" :class="{ active: hasSelected(unitsByFaction) }">
       <div v-for="faction in filterStore.effectiveVisibleFactions" :key="faction" class="section__faction">
@@ -52,8 +53,9 @@ const hasSelected = (unitsByFaction) => {
   border: 1px solid rgba(255,255,255,.2)
   box-shadow: inset 0 0 30px 5px rgb(0, 0, 0, 1)
 
-  &_experimental
-    --experimental-disable-icon-scaling: calc(1 / var(--app-zoom))
+  &_scaled-nano
+    --thumb-width: calc(15px / var(--app-zoom) * 1.2)
+    --thumb-height: calc(15px / var(--app-zoom) * 1.2)
 
   &_scaled-small
     --thumb-width: calc(25px / var(--app-zoom) * 1.2)

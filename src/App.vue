@@ -2,6 +2,7 @@
 import { provide } from 'vue'
 import { RouterView } from 'vue-router'
 import { useResizeWatcher } from '@/composables/useResizeWatcher'
+import { useSmartScaling } from '@/composables/useSmartScaling'
 import SvgSprite from '@/components/SvgSprite.vue'
 import BackgroundPicture from '@/components/app/BackgroundPicture.vue'
 import * as iconData from '@/data/svgicons/index.js'
@@ -9,7 +10,8 @@ import AuthorBlock from './components/AuthorBlock.vue'
 
 const icons = Object.values(iconData)
 provide('icons', Object.fromEntries(icons.map(i => [i.name, i])))
-useResizeWatcher()
+const { windowWidth, resizeFunctions } = useResizeWatcher()
+useSmartScaling({ windowWidth, resizeFunctions })
 
 window.addEventListener('scroll', () => {
   if (window.pageYOffset > 0) {
@@ -39,21 +41,20 @@ window.addEventListener('scroll', () => {
 @use './sass/modules/fraction.sass'
 @use './sass/modules/tooltip.sass'
 @use './sass/modules/tool-btn.sass'
+@use './sass/modules/popup.sass'
 
 html
-  @include since(2500px)
-    --app-zoom: 1.2
-  @include since(3500px)
-    --app-zoom: 1.74
+  --app-zoom: 1
   zoom: var(--app-zoom)
+
 .app-bg
   zoom: calc(1 / var(--app-zoom))
 
 body
   display: flex
   flex-direction: column
-  min-height: calc(100vh / var(--app-zoom, 1))
-  min-height: calc(100dvh / var(--app-zoom, 1))
+  min-height: calc(100vh / var(--app-zoom))
+  min-height: calc(100dvh / var(--app-zoom))
   background-color: #090909
   @include specials.thinScrollbar
 

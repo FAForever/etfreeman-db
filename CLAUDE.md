@@ -30,6 +30,7 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 ### Components: `src/components/`
 
 **App-level:**
+- `app/AppSettingsPopup.vue` - App settings popup (search fields, zoom, sharp icons); opened from cog in SearchInput
 - `BackgroundPicture.vue` - Background image display
 - `Icon.vue` - Icon component
 - `SvgSprite.vue` - SVG sprite display
@@ -37,7 +38,6 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 - `FiltersComponent.vue` - Faction/kind/tech filters
 - `Header.vue` - Version display + view switcher
 - `HomeTop.vue` - Home view header
-- `SettingsPanel.vue` - Settings panel
 
 **ByType view:**
 - `ByTypeSection.vue` - Section component for type-based view
@@ -51,14 +51,15 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 - `BackButton.vue` - Navigation back
 - `FilterButton.vue` - Filter toggle
 - `SectionFilters.vue` - Section visibility filters
-- `SettingsButton.vue` - Settings toggle
 - `SettingsPanel.vue` - Comparison settings
 - `UnitRow.vue` - Row of units in comparison
 - `CalculationSelect.vue` - Efficiency calculation selector
+- `compare/CustomStatsPopup.vue` - Custom stats editor (uses ui/Popup shell)
 
 **Filters:**
 - `FiltersHeader.vue` - Filter header bar
 - `FilterGroups.vue` - Filter group display
+- `SearchInput.vue` - Search input + settings cog (`dim` SettingsButton) + AppSettingsPopup
 
 **Unit detail:**
 - `UnitComponent.vue` - Main unit card with dynamic layout
@@ -82,6 +83,8 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
   - `Enhancement.vue` - Enhancement item display
 
 **UI components:**
+- `Popup.vue` - Shared popup shell: Teleport + fade Transition + overlay + card + close btn; slot content sizes the card (no padding in shell)
+- `SettingsButton.vue` - Cog tool-btn, v-model active, `dim` prop = disabled-look resting state
 - `ToggleSwitch.vue` - On/off toggle
 - `Select.vue` - Dropdown select
 - `Input.vue` - Text input
@@ -103,8 +106,8 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 - Actions: `loadData()`, `setData()`, `toggleUnitSelection()`
 
 **`filterStore.js`** - Filter state
-- State: `factions` (Set), `kinds` (Set), `tech` (Set), `search` (string)
-- Actions: `passesFilters()`, `toggleFaction()`, etc.
+- State: `factions` (Set), `kinds` (Set), `tech` (Set), `search` (string), `searchFields` (Set)
+- Actions: `passesFilters()`, `toggleFaction()`, `toggleSearchField()`, etc.
 - Note: Factions stored lowercase: `'uef'`, `'cybran'`, `'aeon'`, `'seraphim'`
 
 **`compare/index.js`** - Comparison view store (composes sub-stores)
@@ -141,12 +144,13 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 
 **Core:**
 - `useUnitData.js` - Wrapper around unitDataStore, adds `effectiveVisibleFactions`
+- `useSmartScaling.js` - Single source of truth for zoom + pixel-art icon scaling (see Key Patterns)
 - `useContainerWidth.js` - Container width observation
 - `useUnitsPerRow.js` - Calculate units per row for layout
 - `useDoubleClickHandler.js` - Double-click event handling
 - `useClickOutside.js` - Click outside detection
 - `useMods.js` - Mod integration
-- `useResizeWatcher.js` - Resize observation
+- `useResizeWatcher.js` - Resize observation (returns `windowWidth`, `resizeFunctions` with `callAndAdd()`)
 - `useRowAlignment.js` - Row alignment logic
 - `useFactionColorFilter.js` - Faction color filtering
 
@@ -162,7 +166,7 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 - `useAutoShrinkTable.js` - Auto-shrink overflowing tables
 
 **Helpers:**
-- `helpers/common.js` - Common utilities: `formatNum()`, `shorten()`, `round()`, `smartRound()`, `throttle()`
+- `helpers/common.js` - Common utilities: `formatNum()`, `shorten()`, `round()`, `smartRound()`, `throttle()`, `storageBool`
 - `helpers/weaponHelper.js` - Weapon type helpers: `isMissile()`, `isTorpedo()`, `isAntiMissile()`, etc.
 
 **Weapon modules:**
@@ -175,7 +179,7 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 
 ### Static Assets: `src/`
 
-**`data/svgicons/`** - SVG icon data (clear, arrow_left, factions, cog, filter, plus, buildtime)
+**`data/svgicons/`** - SVG icon data, auto-generated from `src/assets/img/embed_icons/*.svg` by `vite-plugin-svgmaker.js` (on dev/build start; the watcher regenerates only edited files, new files need a server restart). Icons: aeon, arrow_left, buildtime, clear, close, cog, cybran, filter, nomads, plus, seraphim, uef
 
 **`public/`** - Public assets
 - `data/` - Generated JSON data files
@@ -320,8 +324,18 @@ pnpm run generate:cached:fat    # Generate from cache with fat
 ### Filter Behavior
 - Faction filters stored as `Set` with lowercase values: `'uef'`, `'cybran'`, `'aeon'`, `'seraphim'`
 - Empty Set = show all (applies to faction, kind, tech)
-- Text filter searches: `id`, `name`, `description`, `faction`, `kind`
+- Text filter searches configurable via settings popup (`searchFields` Set): `id`, `name`, `description`, `faction`, `kind`, `type`, `categories`, `abilities`
 - Inactive filters: `filter: grayscale(1); opacity: 0.4`
+
+### Zoom & Icon Scaling
+**JS single source of truth:** `useSmartScaling.js` (App.vue) — no CSS media queries.
+- `zoomModifier = manualZoomModifier || autoZoom` (auto: 1 / 1.2 @≥2500px / 1.74 @≥3500px); sets `--app-zoom` inline on `<html>` → `zoom: var(--app-zoom)`
+- Size compensation pattern: `calc(1px-value / var(--app-zoom))` for elements that must stay constant-size
+- Pixel-art strategic icons (`iconsScaled`, persisted): `image-rendering: pixelated` + `zoom: calc((1 / var(--app-zoom)) * var(--…))` on `.strategic`
+- `scaleRatio = 2/dpr` normalized to `[1,2)` (scale up) or `[0.5,1)` (`scalingDown`) → physical size = integer multiple of native sprite px; dpr tracked via `pixelRatio` ref on resize
+- Two tiers: `--icon-scale-ratio` (View B mini thumbs, always when enabled) and `--secondary-icon-scaling` (View A thumbs + compare unit card, only when `scaleRatio` ∈ [0.7, 1.3])
+- Vars are removed when off → consumers' `zoom: calc(...)` invalidates → native size
+- localStorage keys: `zoomModifier` (removed = auto), `iconsScaled`, `scalingDown` (via `storageBool`)
 
 ### Compare View Features
 
@@ -352,6 +366,7 @@ pnpm run generate:cached:fat    # Generate from cache with fat
 
 **ByTypeView:**
 - Masonry layout via `@yeger/vue-masonry-wall`
+- `columnWidth = base * zoomModifier` compensates the lib's zoom-insensitive `getBoundingClientRect` measurements
 
 ### Data Loading
 - `store.loadData()` on startup

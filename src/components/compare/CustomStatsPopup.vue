@@ -2,13 +2,12 @@
 import { ref, watch, nextTick, computed } from 'vue'
 import { useCompareStore } from '@/stores/compare'
 import { AVAILABLE_VARS, parseStatLabel } from '@/stores/compare/customStatsVars'
-import { useClickOutside } from '@/composables/useClickOutside'
+import Popup from '@/components/ui/Popup.vue'
 
-const props = defineProps(['open'])
+defineProps(['open'])
 const emit = defineEmits(['close'])
 
 const store = useCompareStore()
-const popupRef = ref(null)
 const selectedId = ref(null)
 const formulaInput = ref(null)
 const labelInput = ref(null)
@@ -72,102 +71,81 @@ const insertVariable = (varPath) => {
   insertAtCaret(el, `unit.${varPath}`, apply)
 }
 
-useClickOutside(popupRef, () => {
-  if (props.open) emit('close')
-})
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="open" class="custom-stats-popup-overlay">
-      <div ref="popupRef" class="custom-stats-popup" @click.stop>
-        <div class="csp__left">
-          <div class="csp__section-title">Stats</div>
-          <div class="csp__stats-list">
-            <div v-for="stat in store.customStats.stats" :key="stat.id" class="csp__stat-item"
-              :class="{ selected: selectedId === stat.id }" @click="selectStat(stat.id)">
-              <span class="csp__stat-label">{{ stat.label || '(unnamed)' }}</span>
-              <button class="csp__stat-delete" @click.stop="removeStat(stat.id)">×</button>
-            </div>
-          </div>
-          <button class="csp__add-btn" @click="addStat">+ Add</button>
-        </div>
-
-        <div class="csp__center">
-          <div class="csp__section-title">Edit</div>
-          <div v-if="selectedId" class="csp__edit-form">
-            <label class="csp__field">
-              <span>Label</span>
-              <input ref="labelInput" :value="selectedStat.label" @input="updateSelectedStat('label', $event.target.value)"
-                placeholder="e.g., HP/Mass or power(X, Y)" />
-            </label>
-            <div v-if="parsed.error" class="csp__hint csp__hint_error">{{ parsed.error }}</div>
-            <div v-for="v in parsed.vars" :key="v" class="csp__var-row">
-              <span class="csp__var-name">Default value for {{ v }}</span>
-              <input class="csp__var-value" :data-var-input="v" :value="storeStat?.vars?.[v]?.value ?? ''"
-                @input="store.setVar(selectedId, v, { value: $event.target.value })" />
-              <input class="csp__var-color" type="color" :value="storeStat?.vars?.[v]?.color || '#fff'"
-                @input="store.setVar(selectedId, v, { color: $event.target.value })" />
-            </div>
-            <div v-if="selectedStat.formula?.match(/Weapons\['ALL'\]/)" class="csp__hint">
-              You can use any weapon category instead of 'ALL', f.e. 'Direct'
-            </div>
-            <label class="csp__field csp__field_formula">
-              <span>Formula (JS function)</span>
-              <textarea ref="formulaInput" :value="selectedStat.formula"
-                @input="updateSelectedStat('formula', $event.target.value)"
-                placeholder="e.g., unit.Defense.Health / unit.Economy.BuildCostMass" />
-            </label>
-            <label class="csp__field csp__field_checkbox">
-              <input type="checkbox" :checked="selectedStat.fullLine"
-                @change="updateSelectedStat('fullLine', $event.target.checked)" />
-              <span>Takes full line</span>
-            </label>
-          </div>
-          <div v-else class="csp__no-selection">
-            Select a stat to edit
+  <Popup :open="open" @close="emit('close')">
+    <div class="csp">
+      <div class="csp__left">
+        <div class="csp__section-title">Stats</div>
+        <div class="csp__stats-list">
+          <div v-for="stat in store.customStats.stats" :key="stat.id" class="csp__stat-item"
+            :class="{ selected: selectedId === stat.id }" @click="selectStat(stat.id)">
+            <span class="csp__stat-label">{{ stat.label || '(unnamed)' }}</span>
+            <button class="csp__stat-delete" @click.stop="removeStat(stat.id)">×</button>
           </div>
         </div>
+        <button class="csp__add-btn" @click="addStat">+ Add</button>
+      </div>
 
-        <div class="csp__right">
-          <div class="csp__section-title">Variables</div>
-          <div class="csp__vars-list">
-            <button v-for="v in AVAILABLE_VARS" :key="v" class="csp__var-item" @mousedown.prevent @click="insertVariable(v)">
-              {{ v }}
-            </button>
+      <div class="csp__center">
+        <div class="csp__section-title">Edit</div>
+        <div v-if="selectedId" class="csp__edit-form">
+          <label class="csp__field">
+            <span>Label</span>
+            <input ref="labelInput" :value="selectedStat.label"
+              @input="updateSelectedStat('label', $event.target.value)" placeholder="e.g., HP/Mass or power(X, Y)" />
+          </label>
+          <div v-if="parsed.error" class="csp__hint csp__hint_error">{{ parsed.error }}</div>
+          <div v-for="v in parsed.vars" :key="v" class="csp__var-row">
+            <span class="csp__var-name">Default value for {{ v }}</span>
+            <input class="csp__var-value" :data-var-input="v" :value="storeStat?.vars?.[v]?.value ?? ''"
+              @input="store.setVar(selectedId, v, { value: $event.target.value })" />
+            <input class="csp__var-color" type="color" :value="storeStat?.vars?.[v]?.color || '#fff'"
+              @input="store.setVar(selectedId, v, { color: $event.target.value })" />
           </div>
+          <div v-if="selectedStat.formula?.match(/Weapons\['ALL'\]/)" class="csp__hint">
+            You can use any weapon category instead of 'ALL', f.e. 'Direct'
+          </div>
+          <label class="csp__field csp__field_formula">
+            <span>Formula (JS function)</span>
+            <textarea ref="formulaInput" :value="selectedStat.formula"
+              @input="updateSelectedStat('formula', $event.target.value)"
+              placeholder="e.g., unit.Defense.Health / unit.Economy.BuildCostMass" />
+          </label>
+          <label class="csp__field csp__field_checkbox">
+            <input type="checkbox" :checked="selectedStat.fullLine"
+              @change="updateSelectedStat('fullLine', $event.target.checked)" />
+            <span>Takes full line</span>
+          </label>
         </div>
+        <div v-else class="csp__no-selection">
+          Select a stat to edit
+        </div>
+      </div>
 
-        <button class="csp__close" @click="emit('close')">×</button>
+      <div class="csp__right">
+        <div class="csp__section-title">Variables</div>
+        <div class="csp__vars-list">
+          <button v-for="v in AVAILABLE_VARS" :key="v" class="csp__var-item" @mousedown.prevent
+            @click="insertVariable(v)">
+            {{ v }}
+          </button>
+        </div>
       </div>
     </div>
-  </Teleport>
+  </Popup>
 </template>
 
 <style lang="sass" scoped>
 @use '@/sass/abstracts/specials.sass'
-.custom-stats-popup-overlay
-  position: fixed
-  inset: 0
-  background: rgba(0, 0, 0, 0.7)
-  display: flex
-  align-items: center
-  justify-content: center
-  z-index: 1000
-
-.custom-stats-popup
+.csp
   display: flex
   gap: 16px
-  background: linear-gradient(rgba(40,40,40,.95), rgba(20,20,20,.98))
-  border: 1px solid rgba(255, 255, 255, .3)
-  border-radius: 8px
-  padding: 20px
+  padding: 10px
   min-width: 700px
   max-width: 900px
-  max-height: calc(80vh / var(--app-zoom, 1))
-  position: relative
 
-.csp
   &__section-title
     font-weight: 600
     font-size: 13px
@@ -346,17 +324,4 @@ useClickOutside(popupRef, () => {
     overflow-wrap: anywhere
     &:hover
       background: rgba(100,150,255,.3)
-
-  &__close
-    position: absolute
-    top: 10px
-    right: 10px
-    background: none
-    border: none
-    color: rgba(255,255,255,.5)
-    font-size: 24px
-    cursor: pointer
-    line-height: 1
-    &:hover
-      color: white
 </style>

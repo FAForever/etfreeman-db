@@ -70,6 +70,8 @@ const thumbClasses = computed(() => [
     .strategic
       top: 1px
       left: 1px
+      zoom: calc((1 / var(--app-zoom)) * var(--secondary-icon-scaling))
+      image-rendering: var(--icon-rendering)
     @each $name, $color in colors.$factions
       &.thumb_#{$name}
         background: linear-gradient(rgba(0,0,0,.27), rgba(0,0,0,.27))
@@ -108,7 +110,7 @@ const thumbClasses = computed(() => [
     align-items: center
     .strategic
       position: static
-      zoom: calc(var(--experimental-disable-icon-scaling) * var(--icon-scale-ratio))
+      zoom: calc((1 / var(--app-zoom)) * var(--icon-scale-ratio))
       image-rendering: var(--icon-rendering)
   &_mini &__inner
     display: contents
