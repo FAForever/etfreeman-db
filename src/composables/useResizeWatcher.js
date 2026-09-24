@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, provide, ref } from 'vue'
 import { throttle } from './helpers/common.js'
 
-export function useResizeWatcher(mobileThreshold = 1120) {
+export function useResizeWatcher(mobileThreshold = 1140) {
   const isMobile = ref(false)
   const windowWidth = ref(window.innerWidth)
 
