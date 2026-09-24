@@ -13,8 +13,8 @@ const { searchFields } = storeToRefs(filterStore)
 const zoomModifier = inject('zoomModifier')
 const manualZoomModifier = inject('manualZoomModifier')
 const autoZoom = inject('autoZoom')
-const iconsScaled = inject('iconsScaled')
-const scalingDown = inject('scalingDown')
+const manualIconScaling = inject('manualIconScaling')
+const manualScalingDown = inject('manualScalingDown')
 
 const fields = ['id', 'name', 'description', 'faction', 'kind', 'type', 'categories', 'abilities']
 const capitalize = s => s[0].toUpperCase() + s.slice(1)
@@ -22,6 +22,11 @@ const capitalize = s => s[0].toUpperCase() + s.slice(1)
 const mode = computed({
   get: () => (manualZoomModifier.value ? 'manual' : 'auto'),
   set: v => { manualZoomModifier.value = v === 'manual' ? zoomModifier.value : null }
+})
+
+const iconMode = computed({
+  get: () => manualIconScaling.value == null ? 'auto' : (manualIconScaling.value ? 'on' : 'off'),
+  set: v => { manualIconScaling.value = { auto: null, on: true, off: false }[v] }
 })
 
 </script>
@@ -62,21 +67,29 @@ const mode = computed({
 
         <section class="asp__section">
           <div class="asp__label">APP: sharp icons</div>
-          <div class="asp__check-row">
-            <label class="asp__check">
-              <input v-model="iconsScaled" type="checkbox">
-              <span>Enable</span>
+          <div class="asp__radios">
+            <label class="asp__radio">
+              <input v-model="iconMode" type="radio" name="iconScaling" value="auto">
+              <span>Auto</span>
             </label>
-            <div v-if="iconsScaled" class="asp__radios asp__radios_inline">
-              <label class="asp__radio">
-                <input v-model="scalingDown" type="radio" name="iconScalingDir" :value="false">
-                <span>Scale up</span>
-              </label>
-              <label class="asp__radio">
-                <input v-model="scalingDown" type="radio" name="iconScalingDir" :value="true">
-                <span>Scale down</span>
-              </label>
-            </div>
+            <label class="asp__radio">
+              <input v-model="iconMode" type="radio" name="iconScaling" value="on">
+              <span>On</span>
+            </label>
+            <label class="asp__radio">
+              <input v-model="iconMode" type="radio" name="iconScaling" value="off">
+              <span>Off</span>
+            </label>
+          </div>
+          <div v-if="iconMode === 'on'" class="asp__radios asp__radios_inline">
+            <label class="asp__radio">
+              <input v-model="manualScalingDown" type="radio" name="iconScalingDir" :value="false">
+              <span>Scale up</span>
+            </label>
+            <label class="asp__radio">
+              <input v-model="manualScalingDown" type="radio" name="iconScalingDir" :value="true">
+              <span>Scale down</span>
+            </label>
           </div>
           <div class="asp__hint">
             Changes the size of the icons on the View B screen up to 2x using crisp pixel-art scaling instead
@@ -143,11 +156,6 @@ const mode = computed({
       height: 13px
       cursor: pointer
 
-  &__check-row
-    display: flex
-    align-items: center
-    gap: 16px
-
   &__radios
     display: flex
     gap: 16px
@@ -176,17 +184,6 @@ const mode = computed({
     font-family: monospace
     min-width: 44px
     text-align: right
-
-  &__check
-    display: flex
-    align-items: center
-    gap: 8px
-    font-size: 13px
-    cursor: pointer
-    input
-      width: 16px
-      height: 16px
-      cursor: pointer
 
   &__hint
     font-size: 12px
