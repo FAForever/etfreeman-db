@@ -81,7 +81,7 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
       top: 2px
       transform-origin: top left
       zoom: calc((1 / var(--app-zoom)) * var(--secondary-icon-scaling))
-      image-rendering: var(--icon-rendering)
+      image-rendering: var(--secondary-icon-rendering)
       &_naval
         left: 3px
         top: 3px

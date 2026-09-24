@@ -71,7 +71,7 @@ const thumbClasses = computed(() => [
       top: 1px
       left: 1px
       zoom: calc((1 / var(--app-zoom)) * var(--secondary-icon-scaling))
-      image-rendering: var(--icon-rendering)
+      image-rendering: var(--secondary-icon-rendering)
     @each $name, $color in colors.$factions
       &.thumb_#{$name}
         background: linear-gradient(rgba(0,0,0,.27), rgba(0,0,0,.27))

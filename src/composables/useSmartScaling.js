@@ -41,12 +41,15 @@ export function useSmartScaling({ resizeFunctions, windowWidth }) {
       style.setProperty('--icon-rendering', 'pixelated')
       if (scaleRatio.value >= 0.7 && scaleRatio.value <= 1.3) {
         style.setProperty('--secondary-icon-scaling', scaleRatio.value)
+        style.setProperty('--secondary-icon-rendering', 'pixelated')
       } else {
         style.removeProperty('--secondary-icon-scaling')
+        style.removeProperty('--secondary-icon-rendering')
       }
     } else {
       style.removeProperty('--icon-scale-ratio')
       style.removeProperty('--secondary-icon-scaling')
+      style.removeProperty('--secondary-icon-rendering')
       style.removeProperty('--icon-rendering')
     }
   })
