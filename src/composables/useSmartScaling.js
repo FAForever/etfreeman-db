@@ -55,8 +55,10 @@ export function useSmartScaling({ resizeFunctions, windowWidth }) {
   })
 
   watchEffect(() => {
-    if (manualZoomModifier.value) localStorage.setItem('zoomModifier', manualZoomModifier.value)
-    else localStorage.removeItem('zoomModifier')
+    if (manualZoomModifier.value) {
+      localStorage.setItem('zoomModifier', manualZoomModifier.value)
+      localStorage.setItem('lastManualZoom', manualZoomModifier.value)
+    } else localStorage.removeItem('zoomModifier')
     if (manualIconScaling.value == null) localStorage.removeItem('iconsScaled')
     else localStorage.setItem('iconsScaled', manualIconScaling.value)
     localStorage.setItem('scalingDown', manualScalingDown.value)

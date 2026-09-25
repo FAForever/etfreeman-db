@@ -24,7 +24,7 @@ const capitalize = s => s[0].toUpperCase() + s.slice(1)
 
 const mode = computed({
   get: () => (manualZoomModifier.value ? 'manual' : 'auto'),
-  set: v => { manualZoomModifier.value = v === 'manual' ? zoomModifier.value : null }
+  set: v => { manualZoomModifier.value = v === 'manual' ? (localStorage.getItem('lastManualZoom') - 0 || zoomModifier.value) : null }
 })
 
 const iconMode = computed({
