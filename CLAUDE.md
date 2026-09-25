@@ -59,7 +59,7 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
 **Filters:**
 - `FiltersHeader.vue` - Filter header bar
 - `FilterGroups.vue` - Filter group display
-- `SearchInput.vue` - Search input + settings cog (`dim` SettingsButton) + AppSettingsPopup
+- `SearchInput.vue` - Search input + settings cog (dimmed unless `:focus-within`/hover) + AppSettingsPopup
 
 **Unit detail:**
 - `UnitComponent.vue` - Main unit card with dynamic layout
@@ -83,8 +83,8 @@ Supreme Commander: Forged Alliance Forever (FAF) unit database web application b
   - `Enhancement.vue` - Enhancement item display
 
 **UI components:**
-- `Popup.vue` - Shared popup shell: Teleport + fade Transition + overlay + card + close btn; slot content sizes the card (no padding in shell)
-- `SettingsButton.vue` - Cog tool-btn, v-model active, `dim` prop = disabled-look resting state
+- `Popup.vue` - Shared popup shell: Teleport + fade Transition + overlay + card + close btn; slot content sizes the card (no padding in shell); `overflowVisible` prop = `overflow: visible` card modifier
+- `SettingsButton.vue` - Cog tool-btn, v-model active (dim resting state styled by consumer via CSS)
 - `ToggleSwitch.vue` - On/off toggle
 - `Select.vue` - Dropdown select
 - `Input.vue` - Text input
@@ -331,6 +331,7 @@ pnpm run generate:cached:fat    # Generate from cache with fat
 **JS single source of truth:** `useSmartScaling.js` (App.vue) — no CSS media queries.
 - `zoomModifier = manualZoomModifier || autoZoom` (auto: 1 / 1.2 @≥2500px / 1.74 @≥3500px); sets `--app-zoom` inline on `<html>` → `zoom: var(--app-zoom)`
 - Size compensation pattern: `calc(1px-value / var(--app-zoom))` for elements that must stay constant-size
+- Settings popup zoom range: `--app-initial-zoom` on `.asp` (captured on `focus`/`change` of the range); `.asp__range` counter-scales while dragging (`:active, :has(input:active)`) so the row stays constant while app zoom changes
 - Pixel-art strategic icons (`iconsScaled`, persisted): `image-rendering: pixelated` + `zoom: calc((1 / var(--app-zoom)) * var(--…))` on `.strategic`
 - `scaleRatio = 2/dpr` normalized to `[1,2)` (scale up) or `[0.5,1)` (`scalingDown`) → physical size = integer multiple of native sprite px; dpr tracked via `pixelRatio` ref on resize
 - Two tiers: `--icon-scale-ratio` (View B mini thumbs, always when enabled) and `--secondary-icon-scaling` (View A thumbs + compare unit card, only when `scaleRatio` ∈ [0.7, 1.3])

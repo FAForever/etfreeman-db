@@ -23,7 +23,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 <template>
   <div class="search-input">
     <Input id="filter-input" placeholder="filter" v-model="filterSearch" />
-    <SettingsButton v-model="settingsOpen" width="22" dim @click.stop />
+    <SettingsButton class="search-input__settings" v-model="settingsOpen" width="22" @click.stop />
     <AppSettingsPopup :open="settingsOpen" @close="settingsOpen = false" />
   </div>
 </template>
@@ -34,4 +34,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   display: flex
   gap: 5px
   width: 100%
+
+  &:not(:focus-within) &__settings:not(:hover, :active, .active)
+    --bcolor: #333
+    box-shadow: none
+    opacity: 0.5
 </style>

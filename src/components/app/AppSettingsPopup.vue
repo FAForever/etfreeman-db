@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFilterStore } from '@/stores/filterStore.js'
 import Popup from '@/components/ui/Popup.vue'
@@ -15,6 +15,9 @@ const manualZoomModifier = inject('manualZoomModifier')
 const autoZoom = inject('autoZoom')
 const manualIconScaling = inject('manualIconScaling')
 const manualScalingDown = inject('manualScalingDown')
+
+const initialZoom = ref(zoomModifier.value)
+const captureZoom = () => initialZoom.value = zoomModifier.value
 
 const fields = ['id', 'name', 'description', 'faction', 'kind', 'type', 'categories', 'abilities']
 const capitalize = s => s[0].toUpperCase() + s.slice(1)
@@ -32,72 +35,74 @@ const iconMode = computed({
 </script>
 
 <template>
-  <Popup :open="open" @close="emit('close')">
-    <div class="asp">
+  <Popup :open="open" @close="emit('close')" overflow-visible>
+    <div class="asp" :style="{ '--app-initial-zoom': initialZoom }">
       <div class="asp__title">Settings</div>
 
-        <section class="asp__section">
-          <div class="asp__label">Unit filter: search in...</div>
-          <div class="asp__fields">
-            <label v-for="field in fields" :key="field" class="asp__field">
-              <input type="checkbox" :checked="searchFields.has(field)" @change="filterStore.toggleSearchField(field)">
-              <span>{{ capitalize(field) }}</span>
-            </label>
-          </div>
-        </section>
+      <section class="asp__section">
+        <div class="asp__label">Unit filter: search in...</div>
+        <div class="asp__fields">
+          <label v-for="field in fields" :key="field" class="asp__field">
+            <input type="checkbox" :checked="searchFields.has(field)" @change="filterStore.toggleSearchField(field)">
+            <span>{{ capitalize(field) }}</span>
+          </label>
+        </div>
+      </section>
 
-        <section class="asp__section">
-          <div class="asp__label">App: zoom level</div>
-          <div class="asp__radios">
-            <label class="asp__radio">
-              <input v-model="mode" type="radio" name="appZoomMode" value="auto">
-              <span>Auto ({{ Math.round(autoZoom * 100) }}%)</span>
-            </label>
-            <label class="asp__radio">
-              <input v-model="mode" type="radio" name="appZoomMode" value="manual">
-              <span>Manual</span>
-            </label>
-          </div>
+      <section class="asp__section">
+        <div class="asp__label">App: zoom level</div>
+        <div class="asp__radios">
+          <label class="asp__radio">
+            <input v-model="mode" type="radio" name="appZoomMode" value="auto">
+            <span>Auto ({{ Math.round(autoZoom * 100) }}%)</span>
+          </label>
+          <label class="asp__radio">
+            <input v-model="mode" type="radio" name="appZoomMode" value="manual">
+            <span>Manual</span>
+          </label>
+        </div>
 
-          <div v-if="mode === 'manual'" class="asp__range">
-            <input v-model.number="manualZoomModifier" type="range" min="0.5" max="2.5" step="0.05">
+        <div v-if="mode === 'manual'" class="asp__range-wrapper">
+          <div class="asp__range">
+            <input v-model.number="manualZoomModifier" type="range" min="0.5" max="2.5" step="0.05" @focus="captureZoom" @change="captureZoom">
             <span class="asp__value">{{ Math.round(zoomModifier * 100) }}%</span>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="asp__section">
-          <div class="asp__label">APP: sharp icons</div>
-          <div class="asp__radios">
-            <label class="asp__radio">
-              <input v-model="iconMode" type="radio" name="iconScaling" value="auto">
-              <span>Auto</span>
-            </label>
-            <label class="asp__radio">
-              <input v-model="iconMode" type="radio" name="iconScaling" value="on">
-              <span>On</span>
-            </label>
-            <label class="asp__radio">
-              <input v-model="iconMode" type="radio" name="iconScaling" value="off">
-              <span>Off</span>
-            </label>
-          </div>
-          <div v-if="iconMode === 'on'" class="asp__radios asp__radios_inline">
-            <label class="asp__radio">
-              <input v-model="manualScalingDown" type="radio" name="iconScalingDir" :value="false">
-              <span>Scale up</span>
-            </label>
-            <label class="asp__radio">
-              <input v-model="manualScalingDown" type="radio" name="iconScalingDir" :value="true">
-              <span>Scale down</span>
-            </label>
-          </div>
-          <div class="asp__hint">
-            Changes the size of the icons on the View B screen up to 2x using crisp pixel-art scaling instead
-            of browser smoothing
-            <br>Always works on view B, not always in other places (it depends)
-            <br>Turn this on if the icons look blurry on your display
-          </div>
-        </section>
+      <section class="asp__section">
+        <div class="asp__label">APP: sharp icons</div>
+        <div class="asp__radios">
+          <label class="asp__radio">
+            <input v-model="iconMode" type="radio" name="iconScaling" value="auto">
+            <span>Auto</span>
+          </label>
+          <label class="asp__radio">
+            <input v-model="iconMode" type="radio" name="iconScaling" value="on">
+            <span>On</span>
+          </label>
+          <label class="asp__radio">
+            <input v-model="iconMode" type="radio" name="iconScaling" value="off">
+            <span>Off</span>
+          </label>
+        </div>
+        <div v-if="iconMode === 'on'" class="asp__radios asp__radios_inline">
+          <label class="asp__radio">
+            <input v-model="manualScalingDown" type="radio" name="iconScalingDir" :value="false">
+            <span>Scale up</span>
+          </label>
+          <label class="asp__radio">
+            <input v-model="manualScalingDown" type="radio" name="iconScalingDir" :value="true">
+            <span>Scale down</span>
+          </label>
+        </div>
+        <div class="asp__hint">
+          Changes the size of the icons on the View B screen up to 2x using crisp pixel-art scaling instead
+          of browser smoothing
+          <br>Always works on view B, not always in other places (it depends)
+          <br>Turn this on if the icons look blurry on your display
+        </div>
+      </section>
     </div>
   </Popup>
 </template>
@@ -172,9 +177,22 @@ const iconMode = computed({
       cursor: pointer
 
   &__range
+    &-wrapper
+      height: 16px
+      position: relative
+      display: flex
+      align-items: center
     display: flex
+    position: absolute
     align-items: center
     gap: 10px
+    left: 50%
+    top: 50%
+    height: 100%
+    translate: -50% -50%
+    width: 100%
+    &:active, &:has(input:active)
+      scale: calc(1 / var(--app-zoom, 1) * var(--app-initial-zoom, 1))
     input
       flex: 1
       accent-color: rgba(100,150,255,.8)
@@ -190,6 +208,6 @@ const iconMode = computed({
     line-height: 1.4
     color: rgba(255,255,255,.55)
     background: rgba(255,255,255,.06)
-    padding: 6px 10px
+    padding: 10px 8px
     border-radius: 4px
 </style>

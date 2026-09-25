@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useClickOutside } from '@/composables/useClickOutside'
 import Icon from '@/components/Icon.vue'
 
-defineProps(['open'])
+defineProps({ open: Boolean, overflowVisible: Boolean })
 const emit = defineEmits(['close'])
 const popupRef = ref(null)
 useClickOutside(popupRef, () => emit('close'))
@@ -13,7 +13,7 @@ useClickOutside(popupRef, () => emit('close'))
   <Teleport to="body">
     <Transition name="popup">
       <div v-if="open" class="popup-overlay">
-        <div ref="popupRef" class="popup-card">
+        <div ref="popupRef" class="popup-card" :class="{ 'popup-card_ov-v': overflowVisible }">
           <slot />
           <button class="popup-close" @click="emit('close')"><Icon name="close" width="10" /></button>
         </div>
@@ -41,9 +41,11 @@ useClickOutside(popupRef, () => emit('close'))
   background: linear-gradient(rgba(40,40,40,.95), rgba(20,20,20,.98))
   border: 1px solid rgba(255, 255, 255, .3)
   border-radius: 8px
-  max-height: calc(80vh / var(--app-zoom))
+  max-height: calc(90vh / var(--app-zoom))
   overflow: auto
   position: relative
+  &_ov-v
+    overflow: visible
 
 .popup-close
   position: absolute
