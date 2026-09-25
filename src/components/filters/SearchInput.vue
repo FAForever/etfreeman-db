@@ -35,6 +35,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   gap: 5px
   width: 100%
 
+  &__settings
+    @include for-mob
+      display: none
+
   &:not(:focus-within) &__settings:not(:hover, :active, .active)
     --bcolor: #333
     box-shadow: none
