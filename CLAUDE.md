@@ -335,7 +335,7 @@ pnpm run generate:cached:fat    # Generate from cache with fat
 - Pixel-art strategic icons (`iconsScaled`, persisted): `image-rendering: pixelated` + `zoom: calc((1 / var(--app-zoom)) * var(--…))` on `.strategic`
 - `scaleRatio = 2/dpr` normalized to `[1,2)` up / `[0.5,1)` down; at zoom >1.5 (up) / >0.75 (down) intervals become `(min,max]` (`maxInclusive` flag) → boundary dprs (powers of two) snap to ratio 2. Physical size = integer multiple of native sprite px; dpr tracked via `pixelRatio` ref on resize
 - Auto windows are zoom-relative: scaling on when `up <= 1.3*zoom || down >= 0.85*zoom`, direction down iff `up > 1.3*zoom` — icons follow app zoom stepwise (ratio jumps at threshold crossings)
-- Two tiers: `--icon-scale-ratio` (View B mini thumbs, always when enabled) and `--secondary-icon-scaling` (View A thumbs + compare unit card, only when `scaleRatio` ∈ [0.7, 1.3] × zoomModifier)
+- Two tiers: `--icon-scale-ratio` (View B mini thumbs, always when enabled) and `--secondary-icon-scaling` (View A thumbs + compare unit card, only when `scaleRatio` ∈ [0.7, 1.3×zoomModifier] — lower bound absolute: it guards against too-small down-ratios, not up)
 - Vars are removed when off → consumers' `zoom: calc(...)` invalidates → native size
 - localStorage keys: `zoomModifier` (removed = auto), `iconsScaled`, `scalingDown` (via `storageBool`)
 

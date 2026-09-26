@@ -39,7 +39,7 @@ export function useSmartScaling({ resizeFunctions, windowWidth }) {
     if (iconsScaled.value) {
       style.setProperty('--icon-scale-ratio', scaleRatio.value)
       style.setProperty('--icon-rendering', 'pixelated')
-      if (scaleRatio.value >= 0.7 * zoomModifier.value && scaleRatio.value <= 1.3 * zoomModifier.value) {
+      if (scaleRatio.value >= 0.7 && scaleRatio.value <= 1.3 * zoomModifier.value) {
         style.setProperty('--secondary-icon-scaling', scaleRatio.value)
         style.setProperty('--secondary-icon-rendering', 'pixelated')
       } else {
