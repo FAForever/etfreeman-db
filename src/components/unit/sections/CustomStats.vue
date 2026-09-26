@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { formatNum, round } from '@/composables/helpers/common'
+import { formatNum, round, shorten } from '@/composables/helpers/common'
 import LineItem from '../helpers/LineItem.vue'
 import { useCompareStore } from '@/stores/compare'
 import { parseStatLabel, resolveRef } from '@/stores/compare/customStatsVars'
@@ -15,6 +15,7 @@ const { unitDefaults } = useUnitData()
 const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 
 const popupFor = ref(null)
+const popupVar = ref(null)
 
 const val = (stat, n, enriched) => {
   const raw = resolveRef(store.getVarValue(stat, unit.id, n), enriched)
@@ -36,9 +37,9 @@ const enrich = (u) => {
   }
   if (u.VeteranMassMult == null) {
     const vetKey = u.Categories?.includes('COMMAND') ? 'COMMAND'
-                  : u.Categories?.includes('SUBCOMMANDER') ? 'SUBCOMMANDER'
-                  : u.tech === 'EXP' ? 'EXPERIMENTAL'
-                  : 'TECH' + u.tech?.charAt(1)
+      : u.Categories?.includes('SUBCOMMANDER') ? 'SUBCOMMANDER'
+        : u.tech === 'EXP' ? 'EXPERIMENTAL'
+          : 'TECH' + u.tech?.charAt(1)
     result.VeteranMassMult = unitDefaults.value.techToVetMultipliers?.[vetKey]
   }
   if (u.Wreckage?.MassMult) {
@@ -92,22 +93,31 @@ const computedStats = computed(() => {
   return customStats.stats
     .filter(stat => stat.label && stat.formula)
     .map(stat => {
+      const { pre, post, vars } = parseStatLabel(stat.label)
+      const text = vars.length
+        ? pre + vars.map(n => `<b data-var="${n}" style="color:${stat.vars?.[n]?.color || '#fff'}">${val(stat, n, enriched)}</b>`).join(', ') + post
+        : stat.label
       try {
-        const { pre, post, vars } = parseStatLabel(stat.label)
         const fn = new Function('unit', ...vars, `return ${stat.formula}`)
         const value = fn(enriched, ...vars.map(n => val(stat, n, enriched)))
         let finalvalue = value
 
-        if ([null, undefined, NaN].includes(value)) return null
-        if (typeof(value) == 'number') {
-          if (!Number.isFinite(value)) return null
-          finalvalue = formatNum(round(value, 3))
+        if ([null, undefined, NaN].includes(value)) {
+          if (stat.alwaysShown)
+            finalvalue = '—'
+          else
+            return null
         }
-        const text = vars.length
-          ? pre + vars.map(n => `<b style="color:${stat.vars?.[n]?.color || '#fff'}">${val(stat, n, enriched)}</b>`).join(', ') + post
-          : stat.label
+        if (typeof (value) == 'number') {
+          if (Number.isFinite(value))
+            finalvalue = stat.shortenValue ? shorten(value, true, true) : formatNum(round(value, 3))
+          else if (!stat.alwaysShown)
+            return null
+        }
         return { id: stat.id, stat, text, vars, value: finalvalue, isfat: stat.fullLine }
       } catch {
+        if (stat.alwaysShown)
+          return { id: stat.id, stat, text, vars, value: '—', isfat: stat.fullLine }
         return null
       }
     })
@@ -115,9 +125,9 @@ const computedStats = computed(() => {
 })
 
 const isSomeStatTakesFullLine = computed(() => computedStats.value.some(stat => stat.isfat))
-const isCompact = computed(() => isSomeStatTakesFullLine.value? false : computedStats.value.length <= 3)
+const isCompact = computed(() => isSomeStatTakesFullLine.value ? false : computedStats.value.length <= 3)
 const isShown = computed(() => showedSections['CustomStats'] && computedStats.value.length > 0)
-const expandScore = computed(() => isSomeStatTakesFullLine.value? EXPAND_SCORE_THRESHOLD : computedStats.value.length / 3)
+const expandScore = computed(() => isSomeStatTakesFullLine.value ? EXPAND_SCORE_THRESHOLD : computedStats.value.length / 3)
 
 defineExpose({ name: 'CustomStats', isCompact, isShown, expandScore })
 </script>
@@ -127,12 +137,11 @@ defineExpose({ name: 'CustomStats', isCompact, isShown, expandScore })
     <div class="uc__section-query">
       <h2 class="uc__section-title">Custom Stats</h2>
       <div class="uc__section-line">
-        <LineItem v-for="item in computedStats" :key="item.id" :value="item.value" :span="item.isfat? 12 : undefined">
-          <span class="lineItem-text" v-html="item.text + ':'"
-            :style="item.vars.length ? 'cursor: pointer' : undefined"
-            @click.stop="item.vars.length && (popupFor = item.stat)" />
+        <LineItem v-for="item in computedStats" :key="item.id" :value="item.value" :span="item.isfat ? 12 : undefined">
+          <span class="lineItem-text" v-html="item.text + ':'" :style="item.vars.length ? 'cursor: pointer' : undefined"
+            @click.stop="item.vars.length && (popupFor = item.stat, popupVar = $event.target.closest('b')?.dataset.var || null)" />
         </LineItem>
-        <StatVarsPopup v-if="popupFor" :stat="popupFor" :unit-id="unit.id" @close="popupFor = null" />
+        <StatVarsPopup v-if="popupFor" :stat="popupFor" :unit-id="unit.id" :focus-var="popupVar" @close="popupFor = null" />
       </div>
     </div>
   </div>

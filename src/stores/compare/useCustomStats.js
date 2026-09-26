@@ -13,7 +13,9 @@ export function useCustomStats() {
       id: Date.now(),
       label: '',
       formula: '',
-      fullLine: false
+      fullLine: false,
+      alwaysShown: false,
+      shortenValue: false
     })
   }
 

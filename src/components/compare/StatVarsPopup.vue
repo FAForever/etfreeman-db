@@ -1,15 +1,18 @@
+<script>
+const forAll = ref(true)
+</script>
+
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useCompareStore } from '@/stores/compare'
 import { parseStatLabel } from '@/stores/compare/customStatsVars'
 import { useClickOutside } from '@/composables/useClickOutside'
 
-const props = defineProps(['stat', 'unitId'])
+const props = defineProps(['stat', 'unitId', 'focusVar'])
 const emit = defineEmits(['close'])
 
 const store = useCompareStore()
 const popupRef = ref(null)
-const forAll = ref(true)
 const vars = computed(() => parseStatLabel(props.stat.label).vars)
 const form = reactive(Object.fromEntries(vars.value.map(n => [n, String(store.getVarValue(props.stat, props.unitId, n))])))
 
@@ -19,6 +22,11 @@ const save = () => {
 }
 
 useClickOutside(popupRef, () => emit('close'))
+
+onMounted(() => {
+  const input = props.focusVar && popupRef.value?.querySelector(`input[data-var-input="${props.focusVar}"]`)
+  if (input) input.select()
+})
 </script>
 
 <template>
@@ -28,7 +36,7 @@ useClickOutside(popupRef, () => emit('close'))
         <div class="svp__title">{{ stat.label }}</div>
         <label v-for="n in vars" :key="n" class="svp__row">
           <span>{{ n }}</span>
-          <input v-model="form[n]" />
+          <input v-model="form[n]" :data-var-input="n" @keyup.enter="save" />
         </label>
         <div class="svp__actions">
           <label class="svp__check">

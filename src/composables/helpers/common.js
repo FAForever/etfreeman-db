@@ -7,11 +7,12 @@ export const formatNum = (val) => {
   return parts.join('.')
 }
 
-export const shorten = (num, locale = true) => {
-  let short, localed = locale ? formatNum(num) : (num + '')
-  if (num > 1e9 - 1) short = num / 1e9 + 'B'
-  else if (num > 1e6 - 1) short = num / 1e6 + 'M'
-  else if (num > 999) short = num / 1000 + 'k'
+export const shorten = (num, locale = true, twoDecimals = false) => {
+  const cap = (v) => twoDecimals ? round(v, 2) : v
+  let short, localed = locale ? formatNum(cap(num)) : cap(num) + ''
+  if (num > 1e9 - 1) short = cap(num / 1e9) + 'B'
+  else if (num > 1e6 - 1) short = cap(num / 1e6) + 'M'
+  else if (num > 999) short = cap(num / 1000) + 'k'
   if (short && short.length < localed.length) return short
   return localed
 }

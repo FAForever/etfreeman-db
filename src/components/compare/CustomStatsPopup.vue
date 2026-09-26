@@ -3,6 +3,7 @@ import { ref, watch, nextTick, computed } from 'vue'
 import { useCompareStore } from '@/stores/compare'
 import { AVAILABLE_VARS, parseStatLabel } from '@/stores/compare/customStatsVars'
 import Popup from '@/components/ui/Popup.vue'
+import InfoTip from '@/components/ui/InfoTip.vue'
 
 defineProps(['open'])
 const emit = defineEmits(['close'])
@@ -12,16 +13,16 @@ const selectedId = ref(null)
 const formulaInput = ref(null)
 const labelInput = ref(null)
 
-const selectedStat = ref({ label: '', formula: '', fullLine: false })
+const selectedStat = ref({ label: '', formula: '', fullLine: false, alwaysShown: false, shortenValue: false })
 const parsed = computed(() => parseStatLabel(selectedStat.value.label))
 const storeStat = computed(() => store.customStats.stats.find(s => s.id === selectedId.value))
 
 watch(selectedId, (id) => {
   const stat = store.customStats.stats.find(s => s.id === id)
   if (stat) {
-    selectedStat.value = { label: stat.label, formula: stat.formula, fullLine: stat.fullLine || false }
+    selectedStat.value = { label: stat.label, formula: stat.formula, fullLine: stat.fullLine || false, alwaysShown: stat.alwaysShown || false, shortenValue: stat.shortenValue || false }
   } else {
-    selectedStat.value = { label: '', formula: '', fullLine: false }
+    selectedStat.value = { label: '', formula: '', fullLine: false, alwaysShown: false, shortenValue: false }
   }
 })
 
@@ -117,6 +118,17 @@ const insertVariable = (varPath) => {
             <input type="checkbox" :checked="selectedStat.fullLine"
               @change="updateSelectedStat('fullLine', $event.target.checked)" />
             <span>Takes full line</span>
+          </label>
+          <label class="csp__field csp__field_checkbox">
+            <input type="checkbox" :checked="selectedStat.alwaysShown"
+              @change="updateSelectedStat('alwaysShown', $event.target.checked)" />
+            <span>Always show</span>
+            <InfoTip text="Usually custom stat is hidden if the value doesnt exist or the calculation function has errors" />
+          </label>
+          <label class="csp__field csp__field_checkbox">
+            <input type="checkbox" :checked="selectedStat.shortenValue"
+              @change="updateSelectedStat('shortenValue', $event.target.checked)" />
+            <span>Shorten value</span>
           </label>
         </div>
         <div v-else class="csp__no-selection">
@@ -285,6 +297,7 @@ const insertVariable = (varPath) => {
         min-height: 80px
         resize: none
     &_checkbox
+      cursor: pointer
       flex-direction: row
       align-items: center
       gap: 8px
