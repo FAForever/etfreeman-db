@@ -20,7 +20,7 @@ const categorizeWeapon = (weapon) => {
   if (weapon.DisplayName == 'Sih Energy Rifle Sniper Mode')
     return 'Sniper mode'
   if (weapon.__unitID == 'XRL0302' && weapon.IgnoreIfDisabled)
-    return 'Kamikaze'
+    return 'Death'
   if (weapon.WeaponCategory == 'Defense') {
     if (isAntiMissile(weapon))
       return 'Anti-Missile'

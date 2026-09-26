@@ -60,7 +60,7 @@ const formatBuffsLine = (weapon, buff) => {
     line += ` in\u00A0main\u00A0gun\u00A0radius`
     line += ` for\u00A0up\u00A0to\u00A0${buff.Duration}s`
   } else {
-    if (typeof buff.Radius === 'number' && buff.Radius > 0) line += ` in\u00A0radius\u00A0${buff.Radius}`
+    if (buff.Radius > 0) line += ` in\u00A0radius\u00A0${buff.Radius}`
     line += ` for\u00A0${buff.Duration}s`
   }
   return line
@@ -71,6 +71,7 @@ const formatDeathLine = (params) => {
   const disallow = cleanDisallow(allow, params.disallowed)
   let line = allow.join(', ')
   if (disallow.length) line += ` (except ${disallow.join(', ')})`
+  if (params.radius > 0) line += ` in\u00A0radius\u00A0${params.radius}`
   line += ` for\u00A0${params.duration}s`
   return line
 }

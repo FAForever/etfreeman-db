@@ -1,5 +1,7 @@
 const DEFAULT_NAVAL_WRECKAGE = { MassMult: 0.9, HealthMult: 0.9 }
 
+const splitTags = (str) => String(str ?? '').split(',').map(s => s.trim()).filter(Boolean)
+
 function buildProjectileIndex(projectilesRaw, parseProjectile) {
   const projectiles = {}
   for (const proj of projectilesRaw) {
@@ -69,6 +71,20 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
       }
 
       if (!unit.Weapon || !Array.isArray(unit.Weapon)) return
+
+      const deathBuff = Object.values(unit.Buffs || {}).find(b => b.BuffType === 'STUN' && b.Add?.OnDeath)
+      if (deathBuff) {
+        const weapon = unit.Weapon.find(w => w.Label === 'DeathWeapon')
+        if (weapon) {
+          weapon.deathStunParams = {
+            allowed: splitTags(deathBuff.TargetAllow),
+            disallowed: splitTags(deathBuff.TargetDisallow),
+            duration: deathBuff.Duration,
+            radius: deathBuff.Radius,
+          }
+          this.weaponsWithDeathStun++
+        }
+      }
 
       for (const weapon of unit.Weapon) {
         if (!weapon.ProjectileId) continue
