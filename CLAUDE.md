@@ -333,8 +333,9 @@ pnpm run generate:cached:fat    # Generate from cache with fat
 - Size compensation pattern: `calc(1px-value / var(--app-zoom))` for elements that must stay constant-size
 - Settings popup zoom range: `--app-initial-zoom` on `.asp` (captured on `focus`/`change` of the range); `.asp__range` counter-scales while dragging (`:active, :has(input:active)`) so the row stays constant while app zoom changes
 - Pixel-art strategic icons (`iconsScaled`, persisted): `image-rendering: pixelated` + `zoom: calc((1 / var(--app-zoom)) * var(--…))` on `.strategic`
-- `scaleRatio = 2/dpr` normalized to `[1,2)` (scale up) or `[0.5,1)` (`scalingDown`) → physical size = integer multiple of native sprite px; dpr tracked via `pixelRatio` ref on resize
-- Two tiers: `--icon-scale-ratio` (View B mini thumbs, always when enabled) and `--secondary-icon-scaling` (View A thumbs + compare unit card, only when `scaleRatio` ∈ [0.7, 1.3])
+- `scaleRatio = 2/dpr` normalized to `[1,2)` up / `[0.5,1)` down; at zoom >1.5 (up) / >0.75 (down) intervals become `(min,max]` (`maxInclusive` flag) → boundary dprs (powers of two) snap to ratio 2. Physical size = integer multiple of native sprite px; dpr tracked via `pixelRatio` ref on resize
+- Auto windows are zoom-relative: scaling on when `up <= 1.3*zoom || down >= 0.85*zoom`, direction down iff `up > 1.3*zoom` — icons follow app zoom stepwise (ratio jumps at threshold crossings)
+- Two tiers: `--icon-scale-ratio` (View B mini thumbs, always when enabled) and `--secondary-icon-scaling` (View A thumbs + compare unit card, only when `scaleRatio` ∈ [0.7, 1.3] × zoomModifier)
 - Vars are removed when off → consumers' `zoom: calc(...)` invalidates → native size
 - localStorage keys: `zoomModifier` (removed = auto), `iconsScaled`, `scalingDown` (via `storageBool`)
 

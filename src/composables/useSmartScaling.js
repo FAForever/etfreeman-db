@@ -15,19 +15,19 @@ export function useSmartScaling({ resizeFunctions, windowWidth }) {
 
   resizeFunctions.value.callAndAdd(() => pixelRatio.value = window.devicePixelRatio)
 
-  const normalize = (ratio, min, max) => {
-    while (ratio < min) ratio *= 2
-    while (ratio >= max) ratio /= 2
+  const normalize = (ratio, min, max, maxInclusive = false) => {
+    while (maxInclusive ? ratio <= min : ratio < min) ratio *= 2
+    while (maxInclusive ? ratio > max : ratio >= max) ratio /= 2
     return ratio
   }
 
   const ratios = computed(() => {
     const base = 2 / pixelRatio.value
-    return { up: normalize(base, 1, 2), down: normalize(base, 0.5, 1) }
+    return { up: normalize(base, 1, 2, zoomModifier.value > 1.5), down: normalize(base, 0.5, 1, zoomModifier.value > 0.75) }
   })
 
-  const autoIconScaling = computed(() => ratios.value.up <= 1.3 || ratios.value.down >= 0.85)
-  const autoScalingDown = computed(() => ratios.value.up > 1.3)
+  const autoIconScaling = computed(() => ratios.value.up <= 1.3 * zoomModifier.value || ratios.value.down >= 0.85 * zoomModifier.value)
+  const autoScalingDown = computed(() => ratios.value.up > 1.3 * zoomModifier.value)
 
   const iconsScaled = computed(() => manualIconScaling.value ?? autoIconScaling.value)
   const scalingDown = computed(() => manualIconScaling.value ? manualScalingDown.value : autoScalingDown.value)
@@ -39,7 +39,7 @@ export function useSmartScaling({ resizeFunctions, windowWidth }) {
     if (iconsScaled.value) {
       style.setProperty('--icon-scale-ratio', scaleRatio.value)
       style.setProperty('--icon-rendering', 'pixelated')
-      if (scaleRatio.value >= 0.7 && scaleRatio.value <= 1.3) {
+      if (scaleRatio.value >= 0.7 * zoomModifier.value && scaleRatio.value <= 1.3 * zoomModifier.value) {
         style.setProperty('--secondary-icon-scaling', scaleRatio.value)
         style.setProperty('--secondary-icon-rendering', 'pixelated')
       } else {
