@@ -2,6 +2,7 @@
 import { ref, watch, nextTick, computed } from 'vue'
 import { useCompareStore } from '@/stores/compare'
 import { AVAILABLE_VARS, parseStatLabel } from '@/stores/compare/customStatsVars'
+import { newStat } from '@/stores/compare/useCustomStats'
 import Icon from '@/components/Icon.vue'
 import Popup from '@/components/ui/Popup.vue'
 import InfoTip from '@/components/ui/InfoTip.vue'
@@ -14,17 +15,13 @@ const selectedId = ref(null)
 const formulaInput = ref(null)
 const labelInput = ref(null)
 
-const selectedStat = ref({ label: '', formula: '', fullLine: false, alwaysShown: false, shortenValue: false })
+const selectedStat = ref(newStat())
 const parsed = computed(() => parseStatLabel(selectedStat.value.label))
 const storeStat = computed(() => store.customStats.stats.find(s => s.id === selectedId.value))
 
 watch(selectedId, (id) => {
   const stat = store.customStats.stats.find(s => s.id === id)
-  if (stat) {
-    selectedStat.value = { label: stat.label, formula: stat.formula, fullLine: stat.fullLine || false, alwaysShown: stat.alwaysShown || false, shortenValue: stat.shortenValue || false }
-  } else {
-    selectedStat.value = { label: '', formula: '', fullLine: false, alwaysShown: false, shortenValue: false }
-  }
+  selectedStat.value = stat ? { ...newStat(), ...stat } : newStat()
 })
 
 const selectStat = (id) => {
@@ -33,8 +30,8 @@ const selectStat = (id) => {
 
 const addStat = () => {
   store.addStat()
-  const newStat = store.customStats.stats[store.customStats.stats.length - 1]
-  selectedId.value = newStat.id
+  const added = store.customStats.stats[store.customStats.stats.length - 1]
+  selectedId.value = added.id
   nextTick(() => labelInput.value?.focus())
 }
 
@@ -125,13 +122,18 @@ const insertVariable = (varPath) => {
           <label class="csp__field csp__field_checkbox">
             <input type="checkbox" :checked="selectedStat.alwaysShown"
               @change="updateSelectedStat('alwaysShown', $event.target.checked)" />
-            <span>Always show</span>
+            <span>Show even if the value is bad</span>
             <InfoTip text="Usually custom stat is hidden if the value doesnt exist or the calculation function has errors" />
           </label>
           <label class="csp__field csp__field_checkbox">
             <input type="checkbox" :checked="selectedStat.shortenValue"
               @change="updateSelectedStat('shortenValue', $event.target.checked)" />
             <span>Shorten value</span>
+          </label>
+          <label class="csp__field csp__field_checkbox">
+            <input type="checkbox" :checked="selectedStat.hidden"
+              @change="updateSelectedStat('hidden', $event.target.checked)" />
+            <span>Hidden</span>
           </label>
         </div>
         <div v-else class="csp__no-selection">

@@ -5,18 +5,20 @@ const DEFAULTS = {
   stats: []
 }
 
+export const newStat = () => ({
+  label: '',
+  formula: '',
+  fullLine: false,
+  alwaysShown: false,
+  shortenValue: false,
+  hidden: false
+})
+
 export function useCustomStats() {
   const customStats = reactive({ ...DEFAULTS })
 
   const addStat = () => {
-    customStats.stats.push({
-      id: Date.now(),
-      label: '',
-      formula: '',
-      fullLine: false,
-      alwaysShown: false,
-      shortenValue: false
-    })
+    customStats.stats.push({ id: Date.now(), ...newStat() })
   }
 
   const removeStat = (id) => {

@@ -91,7 +91,7 @@ const enrich = (u) => {
 const computedStats = computed(() => {
   const enriched = enrich(unit)
   return customStats.stats
-    .filter(stat => stat.label && stat.formula)
+    .filter(stat => stat.label && stat.formula && !stat.hidden)
     .map(stat => {
       const { pre, post, vars } = parseStatLabel(stat.label)
       const text = vars.length
