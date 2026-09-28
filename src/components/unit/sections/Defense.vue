@@ -76,7 +76,7 @@ defineExpose({ name: 'Defense', isCompact: false, isShown })
           :tooltip="shield.PersonalBubble ? ['PersonalBubble, to be precise', 'bottom-left'] : null" />
       </div>
       <div class="uc__section-line" v-if="shieldType == 'Bubble'">
-        <LineItem text="Shield size:" :value="shield.ShieldSize" />
+        <LineItem text="Shield diameter:" :value="shield.ShieldSize" />
         <LineItem text="Shield overspill:"
           :value="shield.ShieldSpillOverDamageMod ?? unitDefaults.shieldDefaultOverspill" />
       </div>

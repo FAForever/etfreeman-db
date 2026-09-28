@@ -19,6 +19,7 @@ const intelConfig = [
   { key: 'ReactivateTime', label: 'Reactivate Time' },
   { key: 'MaxVisionRadius', label: 'Max Vision Radius' },
   { key: 'MinVisionRadius', label: 'Min Vision Radius' },
+  { key: 'RemoteViewingRadius', label: 'Remote Viewing Radius' },
 ]
 
 const intelItems = intelConfig

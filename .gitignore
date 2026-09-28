@@ -1,5 +1,6 @@
 node_modules
 .claude
+CLAUDE.local.md
 dist
 src/sass/generated
 src/public/data/version.json

@@ -15,7 +15,7 @@ export default {
 
   Intel: ['OmniRadius','VisionRadius', 'WaterVisionRadius', 'RadarRadius', 'SonarRadius',
           'RadarStealthFieldRadius', 'SonarStealthFieldRadius', 'ReactivateTime',
-          'MaxVisionRadius', 'MinVisionRadius'],
+          'MaxVisionRadius', 'MinVisionRadius', 'RemoteViewingRadius'],
 
   Physics: ['MaxSpeed', 'TurnRate', 'BackUpDistance', 'Elevation',
             'FuelUseTime', 'FuelRechargeRate', 'SniperModeSpeedMultiplier','WaterSpeedMultiplier','LandSpeedMultiplier','SubSpeedMultiplier'],
