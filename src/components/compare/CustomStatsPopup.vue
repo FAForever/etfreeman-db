@@ -2,6 +2,7 @@
 import { ref, watch, nextTick, computed } from 'vue'
 import { useCompareStore } from '@/stores/compare'
 import { AVAILABLE_VARS, parseStatLabel } from '@/stores/compare/customStatsVars'
+import Icon from '@/components/Icon.vue'
 import Popup from '@/components/ui/Popup.vue'
 import InfoTip from '@/components/ui/InfoTip.vue'
 
@@ -37,9 +38,10 @@ const addStat = () => {
   nextTick(() => labelInput.value?.focus())
 }
 
-const removeStat = (id) => {
-  store.removeStat(id)
-  if (selectedId.value === id) {
+const removeStat = (stat) => {
+  if (!confirm(`Delete stat "${stat.label || '(unnamed)'}"?`)) return
+  store.removeStat(stat.id)
+  if (selectedId.value === stat.id) {
     selectedId.value = store.customStats.stats[0]?.id || null
   }
 }
@@ -83,7 +85,8 @@ const insertVariable = (varPath) => {
           <div v-for="stat in store.customStats.stats" :key="stat.id" class="csp__stat-item"
             :class="{ selected: selectedId === stat.id }" @click="selectStat(stat.id)">
             <span class="csp__stat-label">{{ stat.label || '(unnamed)' }}</span>
-            <button class="csp__stat-delete" @click.stop="removeStat(stat.id)">×</button>
+            <button class="csp__stat-delete" @click.stop="removeStat(stat)">
+            <Icon name="close" width="7"></Icon></button>
           </div>
         </div>
         <button class="csp__add-btn" @click="addStat">+ Add</button>
@@ -200,13 +203,8 @@ const insertVariable = (varPath) => {
 
   &__stat-delete
     opacity: 0.2
-    background: none
-    border: none
     color: #f66
-    font-size: 18px
-    cursor: pointer
-    padding: 0 4px
-    line-height: 1
+    padding: 4px
     transition: opacity 0.15s
     &:hover
       color: #f00
@@ -217,7 +215,6 @@ const insertVariable = (varPath) => {
     color: white
     padding: 8px
     border-radius: 4px
-    cursor: pointer
     font-size: 13px
     &:hover
       background: rgba(100,150,255,.5)
@@ -326,13 +323,11 @@ const insertVariable = (varPath) => {
 
   &__var-item
     background: rgba(255,255,255,.05)
-    border: none
     color: rgba(255,255,255,.8)
     padding: 5px 8px
     text-align: left
     font-size: 11px
     font-family: monospace
-    cursor: pointer
     border-radius: 3px
     overflow-wrap: anywhere
     &:hover

@@ -41,7 +41,6 @@ const compareText = computed(() => contenders.value.size
     background: var(--bg, #111)
     box-shadow: inset 0 0 var(--insetradius, 8px) 0px var(--scolor, #777)
     transition: all 0.2s, font-size 0s, font-weight 0s
-    cursor: pointer
     color: inherit
     &[disabled]
       --bcolor: #333

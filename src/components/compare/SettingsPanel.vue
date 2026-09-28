@@ -156,9 +156,7 @@ const toggleGroups = [
   background: #111
   color: white
   border: 1px solid #333
-  cursor: pointer
   font-size: 14px
-  font-family: inherit
   transition: all 0.2s
   height: 22px
   &:hover

@@ -12,7 +12,6 @@ import Icon from '../Icon.vue'
 <style lang="sass">
 .back-btn
   border-radius: 5px
-  color: inherit
   --insetradius: 0px
   --bcolor: #888
   --scolor: #777

@@ -86,7 +86,6 @@ defineExpose({ name: 'Enhancements', isShown, isCompact: false, rowSpan })
     display: flex
     justify-content: center
     align-items: center
-    padding: 0
     border: 1px solid rgba(255,255,255,.5)
     border-top: none
     border-bottom: none
@@ -95,7 +94,6 @@ defineExpose({ name: 'Enhancements', isShown, isCompact: false, rowSpan })
     &:last-child
       border-right: none
     background: rgba(0,0,0,0.1)
-    cursor: pointer
     &:hover
       background: rgba(0,0,0,0.2)
     &:not(.active)

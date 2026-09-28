@@ -24,7 +24,6 @@ const thumbClasses = computed(() => [
 
 <style lang="sass">
 .thumb
-  cursor: pointer
   position: relative
   display: block
   border-radius: 5px

@@ -68,7 +68,6 @@ defineExpose({ open })
   display: flex
   justify-content: space-between
   align-items: center
-  cursor: pointer
   transition: all 0.2s
 
   &:hover, &:focus, &.open

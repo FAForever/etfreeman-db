@@ -52,10 +52,7 @@ useClickOutside(popupRef, () => emit('close'))
   top: 4px
   right: 4px
   display: flex
-  background: none
-  border: none
   color: rgba(255,255,255,.5)
-  cursor: pointer
   padding: 6px
   &:hover
     color: white
