@@ -49,6 +49,12 @@ const updateSelectedStat = (field, value) => {
   store.updateStat(selectedId.value, { [field]: value })
 }
 
+const toggleHidden = (stat) => {
+  const hidden = !stat.hidden
+  store.updateStat(stat.id, { hidden })
+  if (selectedId.value === stat.id) selectedStat.value.hidden = hidden
+}
+
 const insertAtCaret = (el, text, apply) => {
   const start = el.selectionStart ?? 0
   const end = el.selectionEnd ?? 0
@@ -82,7 +88,10 @@ const insertVariable = (varPath) => {
           <div v-for="stat in store.customStats.stats" :key="stat.id" class="csp__stat-item"
             :class="{ selected: selectedId === stat.id }" @click="selectStat(stat.id)">
             <span class="csp__stat-label">{{ stat.label || '(unnamed)' }}</span>
-            <button class="csp__stat-delete" @click.stop="removeStat(stat)">
+            <button class="csp__stat-eye" :class="{ off: stat.hidden }"
+              @click.stop="toggleHidden(stat)" title="visibility">
+            <Icon name="eye" width="10"></Icon></button>
+            <button class="csp__stat-delete" @click.stop="removeStat(stat)" title="delete stat">
             <Icon name="close" width="7"></Icon></button>
           </div>
         </div>
@@ -102,7 +111,7 @@ const insertVariable = (varPath) => {
             <span class="csp__var-name">Default value for {{ v }}</span>
             <input class="csp__var-value" :data-var-input="v" :value="storeStat?.vars?.[v]?.value ?? ''"
               @input="store.setVar(selectedId, v, { value: $event.target.value })" />
-            <input class="csp__var-color" type="color" :value="storeStat?.vars?.[v]?.color || '#fff'"
+            <input class="csp__var-color" type="color" :value="storeStat?.vars?.[v]?.color || '#ffffff'"
               @input="store.setVar(selectedId, v, { color: $event.target.value })" />
           </div>
           <div v-if="selectedStat.formula?.match(/Weapons\['ALL'\]/)" class="csp__hint">
@@ -193,8 +202,6 @@ const insertVariable = (varPath) => {
       background: rgba(255,255,255,.1)
     &.selected
       background: rgba(100,150,255,.2)
-    &:hover .csp__stat-delete
-      opacity: 1
 
   &__stat-label
     flex: 1
@@ -203,6 +210,18 @@ const insertVariable = (varPath) => {
     text-overflow: ellipsis
     white-space: nowrap
 
+  &__stat-eye
+    color: #fff
+    padding: 0
+    transition: opacity 0.15s
+    margin-right: 4px
+    &:hover
+      opacity: 1
+    &.off
+      opacity: 0.3
+      &:hover
+        opacity: 0.65
+
   &__stat-delete
     opacity: 0.2
     color: #f66
@@ -210,6 +229,7 @@ const insertVariable = (varPath) => {
     transition: opacity 0.15s
     &:hover
       color: #f00
+      opacity: 1
 
   &__add-btn
     background: rgba(100,150,255,.3)

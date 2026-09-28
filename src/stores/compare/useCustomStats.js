@@ -40,7 +40,7 @@ export function useCustomStats() {
     const stat = customStats.stats.find(s => s.id === id)
     if (!stat) return
     if (!stat.vars) stat.vars = {}
-    stat.vars[name] = { value: '', color: '#fff', ...stat.vars[name], ...patch }
+    stat.vars[name] = { value: '', color: '#ffffff', ...stat.vars[name], ...patch }
   }
 
   const overrides = reactive({ units: {}, all: {} })
