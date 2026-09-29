@@ -31,6 +31,7 @@ const { currentShrinkLevel, optimizeTableWidth, handleExpandChange, isGlobalRead
 
 const anyGroupExpanded = computed(() => weaponGroupRefs.value.some(r => r?.isExpanded))
 watch(anyGroupExpanded, handleExpandChange)
+watch(isShown, v => v && optimizeTableWidth(), { flush: 'post' })
 onMounted(optimizeTableWidth)
 watch(weaponColumns, optimizeTableWidth)
 </script>
