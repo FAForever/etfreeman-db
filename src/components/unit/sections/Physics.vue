@@ -37,6 +37,7 @@ const physicsItems = [
   { text: 'Turn speed', value: air.TurnSpeed },
   { text: 'StartTurnDistance ', value: air.StartTurnDistance },
   { text: 'Backup Distance', value: physics.BackUpDistance},
+  { text: 'Backup Speed', value: physics.MaxSpeedReverse},
   { text: 'Elevation', value: physics.Elevation, dontSkipZero: true },
   { text: 'Combat turn speed', value: air.CombatTurnSpeed },
   { text: 'Fuel use time', value: physics.FuelUseTime, format: formatTime },

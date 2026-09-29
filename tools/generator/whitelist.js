@@ -17,7 +17,7 @@ export default {
           'RadarStealthFieldRadius', 'SonarStealthFieldRadius', 'ReactivateTime',
           'MaxVisionRadius', 'MinVisionRadius', 'RemoteViewingRadius'],
 
-  Physics: ['MaxSpeed', 'TurnRate', 'BackUpDistance', 'Elevation',
+  Physics: ['MaxSpeed', 'TurnRate', 'BackUpDistance', 'MaxSpeedReverse', 'Elevation',
             'FuelUseTime', 'FuelRechargeRate', 'SniperModeSpeedMultiplier','WaterSpeedMultiplier','LandSpeedMultiplier','SubSpeedMultiplier'],
 
   Air: ['MaxAirspeed', 'MinAirspeed', 'TurnSpeed', 'CombatTurnSpeed', 'StartTurnDistance'],
