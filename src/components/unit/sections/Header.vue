@@ -29,7 +29,10 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
   <div class="uheader uc__section" :class="`uheader_${unit.faction}`">
     <a v-if="compareStore.toggles.showUnitId" class="uheader__unitID link link-underline" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
     <a class="uheader__img" :href="blueprintUrl" target="_blank">
-      <img class="uheader__img-bg" :src="`${baseUrl}img/${unit.General.Icon}.webp`">
+      <picture>
+        <source type="image/avif" :srcset="`${baseUrl}img/${unit.General.Icon}-with-border.avif`">
+        <img class="uheader__img-bg" :src="`${baseUrl}img/${unit.General.Icon}-with-border.webp`">
+      </picture>
       <div class="uheader__img-main-wrap">
         <div :class="['uheader__img-main', unit.faction === 'nomads' ? 'icon_nomads' : 'icon_units', `icon-${unit.id}`]" :title="unit.fullName"></div>
       </div>
@@ -71,10 +74,10 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
       position: absolute
       bottom: 0
       left: 0
-      width: 100%
+      width: calc(100% + 4px)
       height: auto
       z-index: -1
-      filter: drop-shadow(1px 1px 0px white) drop-shadow(-1px -1px 0px white) drop-shadow(1px -1px 0px white) drop-shadow(-1px 1px 0px white)
+      margin: -2px
     &-strategic
       position: absolute
       left: 2px
