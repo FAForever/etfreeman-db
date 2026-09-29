@@ -24,10 +24,15 @@ const vetMultiplier = computed(() => {
 const regenBuffIndex = computed(() => {
   if (isSACU.value) return 3
   if (isACU.value) return 2
-  if (unit.tech === 'EXP') return 4
-  if (unit.tech === 'T3') return 2
-  if (unit.tech === 'T2') return 1
-  return 0
+  let index = 0
+  switch (unit.tech) {
+    case 'EXP': return 4
+    case 'T3': index = 2; break
+    case 'T2': index = 1; break
+  }
+  if (unit.Categories?.includes('NAVAL'))
+    index += 1
+  return index
 })
 
 const regenPerLevel = computed(() => {
