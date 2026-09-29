@@ -54,8 +54,9 @@ unit.Weapon?.some(w =>
 )
 const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 
-const isCompact = computed(() => !unit.VeteranMass)
-const expandScore = computed(() => unit.VeteranMass ? EXPAND_SCORE_THRESHOLD : 1)
+const hasTable = computed(() => !!(unit.VeteranMass || unit.VeteranHealingMult))
+const isCompact = computed(() => !hasTable.value)
+const expandScore = computed(() => hasTable.value ? EXPAND_SCORE_THRESHOLD : 1)
 const isShown = computed(() => showedSections['Veterancy'] && canGetVeterancy.value && !!unit.Defense)
 
 defineExpose({ name: 'Veterancy', isCompact, isShown, expandScore })
@@ -66,11 +67,12 @@ defineExpose({ name: 'Veterancy', isCompact, isShown, expandScore })
   <div class="uveterancy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <h2 class="uc__section-title uveterancy__header">Veterancy</h2>
     <div class="uc__section-line">
-      <LineItem text="HP / lvl:" :value="formatNum(hpPerLevel)" />
+      <LineItem v-if="unit.VeteranHealingMult" text="Max HP / lvl:" :value="'+10%'" />
+      <LineItem v-else text="HP / lvl:" :value="formatNum(hpPerLevel)" />
       <LineItem text="Regen / lvl:" :value="'+' + regenPerLevel + '/s'" v-if="regenPerLevel" />
       <LineItem text="Mass to kill / lvl:" :value="formatNum(standardMassPerLevel)" v-if="standardMassPerLevel" />
     </div>
-    <div class="uveterancy__table-wrap" v-if="unit.VeteranMass">
+    <div class="uveterancy__table-wrap" v-if="hasTable">
       <table class="uveterancy__table">
         <thead>
           <tr>
@@ -79,7 +81,11 @@ defineExpose({ name: 'Veterancy', isCompact, isShown, expandScore })
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr v-if="unit.VeteranHealingMult">
+            <td>HP heal&nbsp;/&nbsp;lvl</td>
+            <td v-for="m in unit.VeteranHealingMult">{{ formatNum(unit.Defense.Health * m) }}</td>
+          </tr>
+          <tr v-if="unit.VeteranMass">
             <td>Mass to<br> kill / lvl</td>
             <td v-for="mass in unit.VeteranMass">{{ formatNum(mass) }}</td>
           </tr>
