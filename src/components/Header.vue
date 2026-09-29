@@ -1,7 +1,7 @@
 <template>
   <header class="app-header" v-if="!isMobile">
     <div class="app-header__version">
-      Game version: {{ version }}
+      Game version: <span :class="{ 'app-header__version-loading': !version }">{{ version || '0000' }}</span>
     </div>
     <div class="app-header__view-switcher">
       <router-link to="/" title="view units by kind" :class="['link','link-orange',{ active: route.path === '/' }]">View A</router-link>
@@ -36,6 +36,8 @@ const { version } = useUnitData()
   &__version
     font-size: 10px
     opacity: .5
+    &-loading
+      visibility: hidden
 
   &__view-switcher
     display: flex
