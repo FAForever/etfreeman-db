@@ -54,6 +54,7 @@ unit.Weapon?.some(w =>
 )
 const romanNumerals = ['I', 'II', 'III', 'IV', 'V']
 
+const hasHpUpgrades = computed(() => Object.values(unit.Enhancements || {}).some(e => e.NewHealth))
 const hasTable = computed(() => !!(unit.VeteranMass || unit.VeteranHealingMult))
 const isCompact = computed(() => !hasTable.value)
 const expandScore = computed(() => hasTable.value ? EXPAND_SCORE_THRESHOLD : 1)
@@ -67,8 +68,9 @@ defineExpose({ name: 'Veterancy', isCompact, isShown, expandScore })
   <div class="uveterancy uc__section" v-if="isShown" :class="{ 'uc__section_compact': compactOverride ?? isCompact }">
     <h2 class="uc__section-title uveterancy__header">Veterancy</h2>
     <div class="uc__section-line">
-      <LineItem v-if="unit.VeteranHealingMult" text="Max HP / lvl:" :value="'+10%'" />
+      <LineItem v-if="hasHpUpgrades" text="Max HP / lvl:" :value="'+10%'" />
       <LineItem v-else text="HP / lvl:" :value="formatNum(hpPerLevel)" />
+      <LineItem v-if="hasHpUpgrades && !unit.VeteranHealingMult" text="HP heal / lvl:" :value="formatNum(hpPerLevel)" />
       <LineItem text="Regen / lvl:" :value="'+' + regenPerLevel + '/s'" v-if="regenPerLevel" />
       <LineItem text="Mass to kill / lvl:" :value="formatNum(standardMassPerLevel)" v-if="standardMassPerLevel" />
     </div>
