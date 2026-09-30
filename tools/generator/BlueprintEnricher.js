@@ -70,6 +70,11 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
         unit.Wreckage = DEFAULT_NAVAL_WRECKAGE
       }
 
+      if (unit.Id === 'XRB2308') {
+        unit.Physics = unit.Physics || {}
+        unit.Physics.MaxHitboxDepth = 1.635 // scripted sink depth (Sinker proj, ~4.335) - SizeY 2.7, not derivable from bp
+      }
+
       if (!unit.Weapon || !Array.isArray(unit.Weapon)) return
 
       const deathBuff = Object.values(unit.Buffs || {}).find(b => b.BuffType === 'STUN' && b.Add?.OnDeath)

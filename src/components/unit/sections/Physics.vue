@@ -8,6 +8,8 @@ const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const { showedSections } = useCompareStore()
 
 const physics = unit.Physics || {}
+const isSubmersible = unit.Categories?.includes('SUBMERSIBLE') && (physics.Elevation < 0 || physics.MaxHitboxDepth)
+const isAir = unit.Categories?.includes('AIR')
 const air = unit.Air || {}
 
 const formatTime = (val, formatMap = {}) => {
@@ -30,6 +32,9 @@ const getFinalSpeed = (speed, multiplier) => {
 const backupDistance = round(physics.BackUpDistance >= 0 ? physics.BackUpDistance : 3 * unit.SizeZ, 2)
 const hasReverse = backupDistance > 0 && physics.MaxSpeedReverse > 0
 
+const hitboxDepth = isSubmersible ? round(physics.MaxHitboxDepth ?? -(physics.Elevation + unit.SizeY + (unit.CollisionOffsetY || 0)), 3) : null
+const hitboxTooltip = (suffix = '') => hitboxDepth && [`To damage this submerged unit, a surface-level projectile must have AOE strictly greater than ${hitboxDepth}${suffix}`, 'top left smfont lineitem-value wider']
+
 const physicsItems = [
   { text: 'Speed', value: speedValue.value },
   { text: 'Speed (on land)', value: getFinalSpeed(physics.MaxSpeed, physics.LandSpeedMultiplier) },
@@ -41,7 +46,9 @@ const physicsItems = [
   { text: 'StartTurnDistance ', value: air.StartTurnDistance },
   { text: 'Backup Distance', value: hasReverse ? backupDistance : null },
   { text: 'Backup Speed', value: hasReverse && physics.MaxSpeedReverse !== physics.MaxSpeed ? physics.MaxSpeedReverse : null },
-  { text: 'Elevation', value: physics.Elevation, dontSkipZero: true },
+  { text: 'Elevation', value: isAir ? physics.Elevation : null, dontSkipZero: true },
+  { text: 'Max Hitbox Depth', value: isSubmersible ? physics.MaxHitboxDepth : null, tooltip: hitboxTooltip(' (lower in shallow water)') },
+  { text: 'Hitbox Depth', value: isSubmersible && !physics.MaxHitboxDepth ? hitboxDepth : null, tooltip: hitboxTooltip() },
   { text: 'Combat turn speed', value: air.CombatTurnSpeed },
   { text: 'Fuel use time', value: physics.FuelUseTime, format: formatTime },
   { text: 'Fuel recharge', value: 10 * physics.FuelUseTime / physics.FuelRechargeRate, format: formatTime, formatMap: { Infinity: '-' } }
@@ -60,7 +67,7 @@ defineExpose({ name: 'Physics', isCompact, isShown, expandScore })
     <div class="uc__section-query">
       <h2 class="uc__section-title">Physics</h2>
       <div class="uc__section-line">
-        <LineItem v-for="item in physicsItems" :text="item.text + ':'" :value="item.value" />
+        <LineItem v-for="item in physicsItems" :text="item.text + ':'" :value="item.value" :data-tooltip="item.tooltip?.[0]" :data-tooltip-params="item.tooltip?.[1]" />
       </div>
     </div>
   </div>

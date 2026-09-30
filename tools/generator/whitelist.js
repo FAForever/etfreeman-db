@@ -1,5 +1,5 @@
 export default {
-  root: ['Id', 'Description', 'Categories', 'StrategicIconName', 'VeteranMassMult', 'VeteranHealingMult', 'VeteranMass', 'SplitDamage', 'Buffs', 'SizeZ'],
+  root: ['Id', 'Description', 'Categories', 'StrategicIconName', 'VeteranMassMult', 'VeteranHealingMult', 'VeteranMass', 'SplitDamage', 'Buffs', 'SizeZ', 'SizeY', 'CollisionOffsetY'],
 
   General: ['FactionName', 'Icon', 'UnitName'],
 
