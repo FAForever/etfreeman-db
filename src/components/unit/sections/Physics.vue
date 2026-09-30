@@ -27,6 +27,9 @@ const getFinalSpeed = (speed, multiplier) => {
   return round(speed * multiplier ** power, 2)
 }
 
+const backupDistance = round(physics.BackUpDistance >= 0 ? physics.BackUpDistance : 3 * unit.SizeZ, 2)
+const hasReverse = backupDistance > 0 && physics.MaxSpeedReverse > 0
+
 const physicsItems = [
   { text: 'Speed', value: speedValue.value },
   { text: 'Speed (on land)', value: getFinalSpeed(physics.MaxSpeed, physics.LandSpeedMultiplier) },
@@ -36,8 +39,8 @@ const physicsItems = [
   { text: 'Turn rate', value: physics.TurnRate },
   { text: 'Turn speed', value: air.TurnSpeed },
   { text: 'StartTurnDistance ', value: air.StartTurnDistance },
-  { text: 'Backup Distance', value: physics.BackUpDistance},
-  { text: 'Backup Speed', value: physics.MaxSpeedReverse},
+  { text: 'Backup Distance', value: hasReverse ? backupDistance : null },
+  { text: 'Backup Speed', value: hasReverse && physics.MaxSpeedReverse !== physics.MaxSpeed ? physics.MaxSpeedReverse : null },
   { text: 'Elevation', value: physics.Elevation, dontSkipZero: true },
   { text: 'Combat turn speed', value: air.CombatTurnSpeed },
   { text: 'Fuel use time', value: physics.FuelUseTime, format: formatTime },
