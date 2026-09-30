@@ -7,11 +7,11 @@ const { unit, compactOverride } = defineProps(['unit', 'compactOverride'])
 const { showedSections } = useCompareStore()
 
 const intel = unit.Intel || {}
-
+const isWater = ['amph', 'sea'].includes((unit.General?.Icon || '').split('/')[0])
 const intelConfig = [
   { key: 'OmniRadius', label: 'Omni radius' },
-  { key: 'VisionRadius', label: 'Vision radius' },
-  { key: 'WaterVisionRadius', label: 'Water vision radius' },
+  { label: 'Vision radius', value: intel.MaxVisionRadius ? null : (intel.VisionRadius ?? 10) },
+  { label: 'Water vision radius', value: isWater ? (intel.WaterVisionRadius ?? 10) : null },
   { key: 'RadarRadius', label: 'Radar radius' },
   { key: 'SonarRadius', label: 'Sonar radius' },
   { key: 'RadarStealthFieldRadius', label: 'Radar Stealth radius' },
@@ -23,8 +23,8 @@ const intelConfig = [
 ]
 
 const intelItems = intelConfig
-  .filter(item => intel[item.key])
-  .map(item => ({ text: item.label, value: intel[item.key] }))
+  .filter(item => item.value !== undefined ? item.value : intel[item.key])
+  .map(item => ({ text: item.label, value: item.value !== undefined ? item.value : intel[item.key] }))
 
 const isCompact = computed(() => intelItems.length <= 3)
 const isShown = computed(() => showedSections['Intel'] && intelItems.length > 0)
