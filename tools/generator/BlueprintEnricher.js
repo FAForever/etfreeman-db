@@ -72,7 +72,7 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
 
       if (unit.Id === 'XRB2308') {
         unit.Physics = unit.Physics || {}
-        unit.Physics.MaxHitboxDepth = 1.635 // scripted sink depth (Sinker proj, ~4.335) - SizeY 2.7, not derivable from bp
+        unit.Physics.MaxHitboxDepth = 1.635 // scripted sink elevation 4.335 - SizeY 2.7, verified in-game
       }
 
       if (!unit.Weapon || !Array.isArray(unit.Weapon)) return
