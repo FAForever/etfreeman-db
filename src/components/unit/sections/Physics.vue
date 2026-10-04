@@ -31,6 +31,10 @@ const getFinalSpeed = (speed, multiplier) => {
 
 const backupDistance = round(physics.BackUpDistance >= 0 ? physics.BackUpDistance : 3 * unit.SizeZ, 2)
 const hasReverse = backupDistance > 0 && physics.MaxSpeedReverse > 0
+const backupSpeed = (multiplier) => {
+  if (!hasReverse || (physics.MaxSpeedReverse === physics.MaxSpeed)) return null
+  return getFinalSpeed(physics.MaxSpeedReverse, multiplier)
+}
 
 const hitboxDepth = isSubmersible ? round(physics.MaxHitboxDepth ?? -(physics.Elevation + unit.SizeY + (unit.CollisionOffsetY || 0)), 3) : null
 const hitboxTooltip = (suffix = '') => hitboxDepth && [`To damage this submerged unit, a surface-level projectile must have AOE strictly greater than ${hitboxDepth}${suffix}`, 'top left smfont lineitem-value wider']
@@ -45,7 +49,11 @@ const physicsItems = [
   { text: 'Turn speed', value: air.TurnSpeed },
   { text: 'StartTurnDistance ', value: air.StartTurnDistance },
   { text: 'Backup Distance', value: hasReverse ? backupDistance : null },
-  { text: 'Backup Speed', value: hasReverse && physics.MaxSpeedReverse !== physics.MaxSpeed ? physics.MaxSpeedReverse : null },
+  { text: 'Backup Speed', value: backupSpeed(1) },
+  { text: 'B. Speed (on land)', value: backupSpeed(physics.LandSpeedMultiplier) },
+  { text: 'B. Speed (submerged)', value: backupSpeed(physics.SubSpeedMultiplier) },
+  { text: 'B. Speed (in water)', value: backupSpeed(physics.WaterSpeedMultiplier) },
+  { text: 'B. Speed (sniper mode)', value: backupSpeed(physics.SniperModeSpeedMultiplier) },
   { text: 'Elevation', value: isAir ? physics.Elevation : null, dontSkipZero: true },
   { text: 'Max Hitbox Depth', value: isSubmersible ? physics.MaxHitboxDepth : null, tooltip: hitboxTooltip(' (lower in shallow water)') },
   { text: 'Hitbox Depth', value: isSubmersible && !physics.MaxHitboxDepth ? hitboxDepth : null, tooltip: hitboxTooltip() },
