@@ -2,6 +2,7 @@
 // Tests critical weapon DPS calculations for accuracy
 import { describe, it, expect } from 'vitest'
 import { calculateDps, calculateFiringCycle } from '@/stores/utils/unitDecorator/dps/index.js'
+import { getDoTBreakdown } from '@/stores/utils/unitDecorator/dps/calculations.js'
 
 const calcDps = (weapon) => {
   weapon.firingCycle = calculateFiringCycle(weapon)
@@ -389,5 +390,23 @@ describe('DPS Calculator', () => {
       'MuzzleSalvoDelay': 0.2
     }
     expect(calcDps(weapon)).toBeCloseTo(70, 1)
+  })
+})
+
+describe('getDoTBreakdown', () => {
+  it('Ahwassa bomb (XSA0402) - DoTDelayFirstPulse defers all pulses', () => {
+    expect(getDoTBreakdown({ Damage: 9900, InitialDamage: 1100, DoTPulses: 1, DoTTime: 2.6, DoTDelayFirstPulse: true })).toEqual({
+      hasDoT: true, instant: 1100, dotTotal: 9900, ticks: 1, interval: 2.6, totalTime: 2.6,
+    })
+  })
+
+  it('Miasma (UAB2303) - impact consumes one pulse', () => {
+    expect(getDoTBreakdown({ Damage: 575, DoTPulses: 5, DoTTime: 0.8 })).toEqual({
+      hasDoT: true, instant: 575, dotTotal: 2300, ticks: 4, interval: 0.2, totalTime: 0.8,
+    })
+  })
+
+  it('no flag and single pulse = no DoT', () => {
+    expect(getDoTBreakdown({ Damage: 100, DoTPulses: 1, DoTTime: 2 })).toEqual({ hasDoT: false })
   })
 })

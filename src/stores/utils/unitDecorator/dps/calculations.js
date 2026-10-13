@@ -45,15 +45,16 @@ export const getBeamDamageTicks = (weapon) => {
 export const getDoTBreakdown = (weapon) => {
   if (weapon.BeamLifetime !== undefined) return { hasDoT: false }
 
-  const hasDoT = (weapon.DoTPulses || 1) > 1
-  if (!hasDoT) return { hasDoT: false }
+  const impactPulse = weapon.DoTDelayFirstPulse ? 0 : 1
+  const ticks = (weapon.DoTPulses || 1) - impactPulse
+  const hasDoT = ticks > 0
+  if (!hasDoT) return { hasDoT }
 
-  const ticks = (weapon.DoTPulses || 1) - 1
-  const instant = weapon.Damage + (weapon.InitialDamage || 0)
+  const instant = impactPulse * weapon.Damage + (weapon.InitialDamage || 0)
   const dotTotal = weapon.Damage * ticks
 
   return {
-    hasDoT: true,
+    hasDoT,
     instant,
     dotTotal,
     ticks,
