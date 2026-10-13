@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { fetchDefaults, fetchAllBlueprintsAndScripts, fetchAllProjectiles, fetchAllProjectileScripts } from './fetcher.js'
-import { parseBlueprint, createConfig, parseProjectile, parseProjectileScript, extractOnKilledStunParams } from './parser.js'
+import { parseBlueprint, createConfig, parseProjectile, parseProjectileScript, extractOnKilledStunParams, extractUnitDbData } from './parser.js'
 import { filterUnits, distillUnit } from './Distillator.js'
 import { createEnricher } from './BlueprintEnricher.js'
 import { loadFromCache, loadProjectilesFromCache, loadProjectileScriptsFromCache } from './CacheManager.js'
@@ -41,14 +41,14 @@ async function generate() {
   for (const bp of blueprints) {
     if (bp.scriptContent) unitScriptByUnitId.set(bp.id, bp.scriptContent)
   }
-  const enricher = await createEnricher(fetchProjectiles, parseProjectile, fetchProjectileScripts, parseProjectileScript, unitScriptByUnitId, extractOnKilledStunParams)
+  const enricher = await createEnricher(fetchProjectiles, parseProjectile, fetchProjectileScripts, parseProjectileScript, unitScriptByUnitId, extractOnKilledStunParams, extractUnitDbData)
 
   console.log('\nDistilling units...')
   const slimUnits = units.map(distillUnit)
 
   console.log('\nEnriching units...')
   slimUnits.forEach(u => enricher.enrich(u))
-  console.log(`${enricher.weaponsWithFragments} fragment weapons,\n${enricher.weaponsWithCost} cost weapons,\n${enricher.weaponsWithChildCount} child projectile weapons\n${enricher.weaponsWithAntiMissileFlare} anti-missile flare weapons\n${enricher.weaponsWithDeathStun} death-stun weapons`)
+  console.log(`${enricher.weaponsWithFragments} fragment weapons,\n${enricher.weaponsWithCost} cost weapons,\n${enricher.weaponsWithChildCount} child projectile weapons\n${enricher.weaponsWithAntiMissileFlare} anti-missile flare weapons\n${enricher.weaponsWithUnitDbDataComment} unitDb-annotated weapons\n${enricher.weaponsWithDeathStun} death-stun weapons`)
 
   console.log('\nGenerating output files...')
   if (withFat) {

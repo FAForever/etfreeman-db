@@ -67,7 +67,7 @@ export const getTooltipAttrs = (weapon, col) => {
     const layer = getLayerTargetTooltip(weapon)
     const stun = getStunTooltip(weapon)
     stunActive = !!stun
-    tooltip = [[layer, stun].filter(Boolean).join('\n'), getEnergyTooltip(weapon)].filter(Boolean).join('\n\n')
+    tooltip = [[layer, stun].filter(Boolean).join('\n'), weapon.tooltip, getEnergyTooltip(weapon)].filter(Boolean).join('\n\n')
   }
   else if ([Column.CYCLE, Column.CYCLE_TO_SHIELDS].includes(col))
     tooltip = getDetailedCycle(weapon, col === Column.CYCLE_TO_SHIELDS, isOneTimeUse(weapon)) || null
@@ -75,7 +75,7 @@ export const getTooltipAttrs = (weapon, col) => {
 
   if (!tooltip) return {}
   const params = col === Column.TYPE
-    ? (stunActive || weapon.Overcharge ? 'widest-top-right' : 'big-top-right')
+    ? (stunActive || weapon.Overcharge || weapon.tooltip ? 'widest-top-right' : 'big-top-right')
     : 'big-top-left'
   return {
     'data-tooltip': tooltip,

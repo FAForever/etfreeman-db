@@ -44,7 +44,7 @@ export default {
            'FireOnDeath', 'ForceSingleFire', 'ManualFire', 'WeaponUnpackAnimation',
            'MaxRadius', 'MinRadius', 'Damage', 'DamageRadius', 'DamageToShields',
            'InitialDamage', 'NukeInnerRingRadius', 'NukeOuterRingRadius',
-           'NukeInnerRingDamage', 'NukeOuterRingDamage', 'DoTTime', 'DoTPulses',
+           'NukeInnerRingDamage', 'NukeOuterRingDamage', 'DoTDelayFirstPulse', 'DoTTime', 'DoTPulses',
            'MuzzleVelocity', 'BeamLifetime', 'BeamCollisionDelay', 'FireTargetLayerCapsTable',
            'FiringRandomness', 'FiringRandomnessWhileMoving', 'FiringTolerance',
            'TurretYawRange', 'MuzzleSalvoSize', 'MuzzleSalvoDelay',

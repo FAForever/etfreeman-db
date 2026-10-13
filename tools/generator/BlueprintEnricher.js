@@ -15,15 +15,24 @@ function buildProjectileIndex(projectilesRaw, parseProjectile) {
   return projectiles
 }
 
-function buildScriptIndex(scriptsRaw, parseProjectileScript) {
+function buildScriptIndex(scriptsRaw, parseProjectileScript, extractUnitDbData) {
   const scripts = {}
+  const contentById = new Map(scriptsRaw.map(s => [s.id.toLowerCase(), s.content]))
   for (const script of scriptsRaw) {
+    let data = null
     try {
-      const data = parseProjectileScript(script.content)
-      if (data) scripts[script.id.toLowerCase()] = data
+      data = parseProjectileScript(script.content)
     } catch (error) {
       console.error(error)
     }
+    let unitDb = null
+    try {
+      unitDb = extractUnitDbData(script.content, id => contentById.get(id))
+    } catch (error) {
+      throw new Error(`${script.id}: ${error.message}`)
+    }
+    if (unitDb) data = { ...(data || {}), unitDb }
+    if (data) scripts[script.id.toLowerCase()] = data
   }
   return scripts
 }
@@ -43,7 +52,7 @@ function getTotalFragmentMultiplier(fragmentId, projectiles) {
   return multiplier
 }
 
-export async function createEnricher(fetchProjectiles, parseProjectile, fetchProjectileScripts, parseProjectileScript, unitScriptByUnitId, extractOnKilledStunParams) {
+export async function createEnricher(fetchProjectiles, parseProjectile, fetchProjectileScripts, parseProjectileScript, unitScriptByUnitId, extractOnKilledStunParams, extractUnitDbData) {
   console.log('\nLoading projectiles...')
   const projectilesRaw = await fetchProjectiles()
   const projectiles = buildProjectileIndex(projectilesRaw, parseProjectile)
@@ -51,7 +60,7 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
 
   console.log('\nLoading projectile scripts...')
   const scriptsRaw = await fetchProjectileScripts()
-  const scripts = buildScriptIndex(scriptsRaw, parseProjectileScript)
+  const scripts = buildScriptIndex(scriptsRaw, parseProjectileScript, extractUnitDbData)
   console.log(`  ✓ Loaded ${Object.keys(scripts).length} scripts`)
 
   return {
@@ -62,6 +71,7 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
     weaponsWithCost: 0,
     weaponsWithChildCount: 0,
     weaponsWithAntiMissileFlare: 0,
+    weaponsWithUnitDbDataComment: 0,
     weaponsWithDeathStun: 0,
 
     enrich(unit) {
@@ -138,6 +148,11 @@ export async function createEnricher(fetchProjectiles, parseProjectile, fetchPro
         if (script?.isAntiMissileFlare) {
           weapon.isAntiMissileFlare = { deflectLimit: 3, deflectRadius: 23  } // The values are hardcoded in if statement, in fa repo, requires PR to fix
           this.weaponsWithAntiMissileFlare++
+        }
+
+        if (script?.unitDb) {
+          Object.assign(weapon, script.unitDb)
+          this.weaponsWithUnitDbDataComment++
         }
 
         if (weapon.WeaponCategory === 'Anti Navy') {

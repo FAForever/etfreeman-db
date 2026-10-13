@@ -1,4 +1,5 @@
 import luaparse from 'luaparse';
+import WHITELIST from './whitelist.js';
 
 export function parseBlueprint(content) {
   const ast = luaparse.parse(content, { comments: false, scope: true });
@@ -255,6 +256,90 @@ export function parseOvercharge(content) {
   const match = content.match(/local\s+energyRatio\s*=\s*([\d.]+)/)
   if (!match) throw new Error('Failed to parse energyRatio from overcharge.lua')
   return { overchargeEnergyRatio: parseFloat(match[1]) }
+}
+
+const WEAPON_KEYS = new Set(WHITELIST.Weapon.filter(k => typeof k === 'string'))
+const LITERAL_TYPES = new Set(['NumericLiteral', 'StringLiteral', 'BooleanLiteral'])
+export const UNIT_DB_DATA_LINE = /^--\s*UnitDatabaseData:\s*(\{.*\})\s*$/gm
+
+function parseTopLevelLocals(content) {
+  const ast = luaparse.parse(content, { comments: false })
+  const locals = {}
+  for (const node of ast.body) {
+    if (node.type !== 'LocalStatement') continue
+    node.variables.forEach((v, i) => {
+      if (node.init[i] && LITERAL_TYPES.has(node.init[i].type)) locals[v.name] = astToObject(node.init[i])
+    })
+  }
+  return locals
+}
+
+export function extractUnitDbData(content, getFileContent) {
+  const fail = (msg) => { throw new Error(`UnitDatabaseData: ${msg}`) }
+  const matches = [...content.matchAll(UNIT_DB_DATA_LINE)]
+  if (!matches.length) return null
+  if (matches.length > 1) fail('more than one annotation line')
+
+  let json
+  try {
+    json = JSON.parse(matches[0][1])
+  } catch (e) {
+    fail(`invalid JSON: ${e.message}`)
+  }
+
+  const { files, tooltip, ...bpKeys } = json
+  const result = { ...bpKeys }
+
+  for (const key of Object.keys(result)) {
+    const base = key.endsWith('Ticks') ? key.slice(0, -5) : key
+    if (!WEAPON_KEYS.has(base)) fail(`unknown key "${key}"`)
+  }
+  if (tooltip !== undefined && typeof tooltip !== 'string') fail('"tooltip" must be a string')
+
+  const sources = [parseTopLevelLocals(content)]
+  if (files !== undefined) {
+    if (!Array.isArray(files)) fail('"files" must be an array')
+    for (const path of files) {
+      const id = String(path).match(/([^/]+)_script\.lua$/i)?.[1]?.toLowerCase()
+      const fileContent = id ? getFileContent(id) : null
+      if (!fileContent) fail(`file not fetched: "${path}"`)
+      sources.push(parseTopLevelLocals(fileContent))
+    }
+  }
+
+  const resolve = (name) => {
+    let value
+    let count = 0
+    for (const locals of sources) {
+      if (name in locals) { value = locals[name]; count++ }
+    }
+    if (!count) fail(`no top-level literal "${name}" in scope`)
+    if (count > 1) fail(`"${name}" defined in ${count} in-scope files`)
+    return value
+  }
+
+  const resolveValue = (value) => {
+    if (typeof value !== 'string') return value
+    const whole = value.match(/^\$\{(\w+)\}$/)
+    if (whole) return resolve(whole[1])
+    const out = value.replace(/\$\{(\w+)\}/g, (_, n) => String(resolve(n)))
+    if (out.includes('${')) fail(`unresolved placeholder in "${out.slice(0, 60)}"`)
+    return out
+  }
+
+  for (const key of Object.keys(result)) {
+    result[key] = resolveValue(result[key])
+    if (!key.endsWith('Ticks')) continue
+    const value = result[key]
+    if (typeof value !== 'number') fail(`"${key}" must resolve to a number`)
+    delete result[key]
+    const base = key.slice(0, -5)
+    if (base in result) fail(`both "${base}" and "${key}" present`)
+    result[base] = value / 10
+  }
+  if (tooltip !== undefined) result.tooltip = resolveValue(tooltip)
+
+  return result
 }
 
 export function createConfig({ versionContent, shieldContent, overchargeContent, blueprintsUnitsContent, defaultComponentsContent, unitContent }) {

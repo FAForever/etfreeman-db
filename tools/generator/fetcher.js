@@ -1,3 +1,5 @@
+import { UNIT_DB_DATA_LINE } from './parser.js'
+
 const REPOS = [
   {
     name: 'fa',
@@ -118,6 +120,21 @@ export async function fetchAllProjectileScripts() {
         }
       }
     }
+  }
+
+  const wanted = new Map()
+  for (const script of scripts) {
+    for (const line of script.content.matchAll(UNIT_DB_DATA_LINE)) {
+      const files = line[0].match(/"files"\s*:\s*\[([^\]]*)\]/)?.[1] || ''
+      for (const f of files.matchAll(/"([^"]+)"/g)) {
+        wanted.set(`${script.faction} ${f[1]}`, [script.faction, f[1]])
+      }
+    }
+  }
+  for (const [faction, filePath] of wanted.values()) {
+    const repo = REPOS.find(r => r.name === faction)
+    const id = filePath.match(/([^/]+)_script\.lua$/i)?.[1]
+    if (id) scripts.push({ id, content: await fetchFile(repo.owner, repo.name, repo.branch, filePath), faction })
   }
 
   return scripts
