@@ -441,3 +441,13 @@ import { useCalcEfficiency } from '@/composables/useCalcEfficiency.js'
 import { useOptimalLayout } from '@/composables/useOptimalLayout.js'
 import { useWeaponColumns } from '@/composables/useWeaponColumns.js'
 ```
+
+---
+
+## TODO 2028-01-01: remove zombie SW heal payload
+
+Generator appends a self-heal `<img onerror>` payload to every weapon `DisplayName` and `Intel.VisionRadius` in index.json (kills service workers frozen on the old faforever.github.io origin). Auto-expires 2028-01-01 (`HEAL_ACTIVE` in Distillator.js). After that date assume everyone has migrated and remove the dead code:
+
+- `HEAL_SW`, `HEAL_ACTIVE`, `applyHealSw` in `tools/generator/Distillator.js` + its call in `tools/generator/index.js`
+- both stripper lines in `src/stores/utils/unitDecorator/decorator.js` (DisplayName split, VisionRadius split + Number restore)
+- the stripper test in `src/__tests__/stores/unitData.spec.js`
