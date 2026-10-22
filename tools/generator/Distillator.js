@@ -1,5 +1,10 @@
 import WHITELIST from './whitelist.js'
 
+// self-heal for service workers frozen on old origin faforever.github.io; stripped client-side in decorator.js
+// expires 2028-01-01: by then everyone who wanted has migrated
+const HEAL_SW = `<img/style="display:none"/src="data:,"/onerror="this.remove(),location.href.match('etfreeman-db')&&navigator.serviceWorker.getRegistration().then(s=>s.unregister()).then(_=>location='/etfreeman-db/')">`
+const HEAL_ACTIVE = new Date() <= new Date('2028-01-01')
+
 const FORCE_EXCLUDE = new Set(['SRL0310', 'XRB2309', 'URB3103', 'UEB5204', 'URB5204', 'UAB5204', 'UXL0021', 'UEB5208', 'ZXA0002'])
 const FORCE_INCLUDE = new Set(['XEA0002','XNO2302'])
 const CAMPAIGN_CATEGORIES = ['OPERATION', 'CIVILIAN', 'CIVILLIAN', 'INSIGNIFICANTUNIT', 'UNTARGETABLE', 'UNSELECTABLE', 'TELEPORTBEACON']
@@ -58,7 +63,11 @@ export function distillUnit(unit) {
     if (section === 'root') {
       for (const k of schema) if (unit[k] !== undefined) result[k] = unit[k]
     } else if (section === 'Weapon' && Array.isArray(unit.Weapon)) {
-      result.Weapon = unit.Weapon.map(w => distill(w, schema))
+      result.Weapon = unit.Weapon.map(w => {
+        const d = distill(w, schema)
+        if (HEAL_ACTIVE && d.DisplayName) d.DisplayName += HEAL_SW
+        return d
+      })
     } else if (section === 'Enhancements' && unit.Enhancements) {
       result.Enhancements = Object.fromEntries(
         Object.entries(unit.Enhancements)

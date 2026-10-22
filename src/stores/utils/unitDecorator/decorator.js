@@ -23,6 +23,7 @@ export const decorateUnit = (blueprint) => {
 
   if (blueprint.Weapon) {
     for (const weapon of blueprint.Weapon) {
+      if (weapon.DisplayName) weapon.DisplayName = weapon.DisplayName.split('<img')[0]
       weapon.__unitID = self.id
       if (weapon.WeaponCategory === 'Death' && !weapon.FireOnDeath) weapon.FireOnDeath = true
       if (weapon.childCount && (weapon.childSplitType == 'onWater')) {
