@@ -9,9 +9,14 @@ const publicDir = join(__dirname, 'src', 'public')
 const assetsDir = join(__dirname, 'src', 'assets')
 const sassDir = join(__dirname, 'src', 'sass')
 const distDir = join(__dirname, 'dist')
+// false → CI builds for faforever.github.io/etfreeman-db (no custom domain)
+// '' → hosted at faforever.github.io/etfreeman-db (project path)
+const CUSTOM_SITE_URL = 'https://unitdb.faforever.com'
+const SITE_URL = CUSTOM_SITE_URL || 'https://faforever.github.io/etfreeman-db'
 
 export default defineConfig(() => ({
   plugins: [
+    { name: 'site-url', transformIndexHtml: html => html.replaceAll('%SITE_URL%', SITE_URL) },
     vue(),
     svgWatcherPlugin('./src/assets/img/embed_icons/', './src/data/svgicons/'),
     viteSpritesmith({
@@ -77,7 +82,7 @@ export default defineConfig(() => ({
       }
     })
   ],
-  base: process.env.GITHUB_ACTIONS ? '/etfreeman-db/' : '/',
+  base: process.env.GITHUB_ACTIONS && !CUSTOM_SITE_URL ? '/etfreeman-db/' : '/',
   root: './src',
   publicDir: 'public',
   build: {
