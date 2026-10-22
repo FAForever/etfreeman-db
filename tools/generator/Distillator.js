@@ -80,6 +80,8 @@ export function distillUnit(unit) {
 export function applyHealSw(units) {
   if (!HEAL_ACTIVE) return
   for (const u of units) {
+    if (typeof u.Intel?.VisionRadius === 'number' && u.Intel.VisionRadius > 0)
+      u.Intel.VisionRadius += HEAL_SW
     for (const w of u.Weapon || []) {
       if (w.DisplayName) w.DisplayName += HEAL_SW
     }

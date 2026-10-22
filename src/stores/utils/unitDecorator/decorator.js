@@ -3,6 +3,8 @@ import { calculateDps, calculateProjectileDamage, calculateFiringCycle } from '.
 import { categorize } from '../categorizer.js'
 
 export const decorateUnit = (blueprint) => {
+  if (typeof blueprint.Intel?.VisionRadius === 'string')
+    blueprint.Intel.VisionRadius = Number(blueprint.Intel.VisionRadius.split('<img')[0])
   const self = {
     id: blueprint.Id,
     name: blueprint.General?.UnitName || '',

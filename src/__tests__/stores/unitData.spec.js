@@ -53,6 +53,28 @@ describe('Unit Data Store', () => {
       expect(store.units[0].kind).toBe('Land')
     })
 
+    it('strips heal-sw payload and restores numeric VisionRadius', () => {
+      const store = useUnitDataStore()
+      const mockData = {
+        version: '1.0.0',
+        units: [
+          {
+            Id: 'UEL0201',
+            Description: 'Medium Tank',
+            General: { FactionName: 'UEF' },
+            Categories: ['TECH1', 'MOBILE', 'LAND'],
+            Intel: { VisionRadius: '26<img/style="display:none">' },
+            Weapon: [{ DisplayName: 'Cannon<img/style="display:none">' }]
+          }
+        ]
+      }
+
+      store.setData(mockData)
+
+      expect(store.units[0].Intel.VisionRadius).toBe(26)
+      expect(store.units[0].Weapon[0].DisplayName).toBe('Cannon')
+    })
+
     it('handles data without version', () => {
       const store = useUnitDataStore()
       const mockData = {
