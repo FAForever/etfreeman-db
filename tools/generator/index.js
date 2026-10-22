@@ -3,7 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { fetchDefaults, fetchAllBlueprintsAndScripts, fetchAllProjectiles, fetchAllProjectileScripts } from './fetcher.js'
 import { parseBlueprint, createConfig, parseProjectile, parseProjectileScript, extractOnKilledStunParams, extractUnitDbData } from './parser.js'
-import { filterUnits, distillUnit } from './Distillator.js'
+import { filterUnits, distillUnit, applyHealSw } from './Distillator.js'
 import { createEnricher } from './BlueprintEnricher.js'
 import { loadFromCache, loadProjectilesFromCache, loadProjectileScriptsFromCache } from './CacheManager.js'
 
@@ -49,6 +49,8 @@ async function generate() {
   console.log('\nEnriching units...')
   slimUnits.forEach(u => enricher.enrich(u))
   console.log(`${enricher.weaponsWithFragments} fragment weapons,\n${enricher.weaponsWithCost} cost weapons,\n${enricher.weaponsWithChildCount} child projectile weapons\n${enricher.weaponsWithAntiMissileFlare} anti-missile flare weapons\n${enricher.weaponsWithUnitDbDataComment} unitDb-annotated weapons\n${enricher.weaponsWithDeathStun} death-stun weapons`)
+
+  applyHealSw(slimUnits)
 
   console.log('\nGenerating output files...')
   if (withFat) {

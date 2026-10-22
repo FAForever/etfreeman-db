@@ -20,8 +20,6 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const { contenders, toggleUnitSelection, setUnitSelection, clearSelection, smartSelect } = useContenders({ unitsMap })
 
   const setData = (json) => {
-    const healCount = (json.units || []).reduce(
-      (n, u) => n + (u.Weapon || []).filter(w => w.DisplayName?.includes('<img')).length, 0)
     units.value = decorateUnits(json.units || [])
     version.value = json.version || null
     unitDefaults.value = {
@@ -35,8 +33,6 @@ export const useUnitDataStore = defineStore('unitData', () => {
     }
 
     unitsMap.value = Object.fromEntries(units.value.map(u => [u.id, u]))
-
-    if (healCount) console.log(`heal-sw: stripped ${healCount} tags`)
   }
 
   const loadData = () => {

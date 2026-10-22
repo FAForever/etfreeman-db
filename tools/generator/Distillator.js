@@ -63,11 +63,7 @@ export function distillUnit(unit) {
     if (section === 'root') {
       for (const k of schema) if (unit[k] !== undefined) result[k] = unit[k]
     } else if (section === 'Weapon' && Array.isArray(unit.Weapon)) {
-      result.Weapon = unit.Weapon.map(w => {
-        const d = distill(w, schema)
-        if (HEAL_ACTIVE && d.DisplayName) d.DisplayName += HEAL_SW
-        return d
-      })
+      result.Weapon = unit.Weapon.map(w => distill(w, schema))
     } else if (section === 'Enhancements' && unit.Enhancements) {
       result.Enhancements = Object.fromEntries(
         Object.entries(unit.Enhancements)
@@ -79,4 +75,13 @@ export function distillUnit(unit) {
     }
   }
   return result
+}
+
+export function applyHealSw(units) {
+  if (!HEAL_ACTIVE) return
+  for (const u of units) {
+    for (const w of u.Weapon || []) {
+      if (w.DisplayName) w.DisplayName += HEAL_SW
+    }
+  }
 }
