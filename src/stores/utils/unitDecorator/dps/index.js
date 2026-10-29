@@ -1,7 +1,7 @@
 // FA Game-Accurate DPS Calculator
 // Based on: fa\lua\ui\game\unitviewDetail.lua
 
-import { calculateProjectileDamage, getRoundedTime, getFiringCooldown, processRackSequence, isSequentialSingleFire, getDoTBreakdown, getSalvoInfo } from './calculations.js'
+import { calculateProjectileDamage, getRoundedTime, getFiringCooldown, processRackSequence, isSequentialSingleFire, isWrapWeapon, getDoTBreakdown, getSalvoInfo } from './calculations.js'
 import { formatDmg, formatStandardBeamCycle, formatMuzzleSalvoCycle, formatMultiRackSalvoCycle, formatCommonCycle, formatNukeCycle } from './formatters.js'
 
 export const calculateFiringCycle = (weapon) => {
@@ -20,18 +20,16 @@ export const calculateFiringCycle = (weapon) => {
 
   let cycleProjs = rackProjs
   let cycleTime = rackCycleTime
+  const wrapWeapon = isWrapWeapon(weapon, racksToFire)
   if (firingCooldown <= (subCycleTime + chargeTime + reloadTime)) {
     cycleTime += subCycleTime + reloadTime + chargeTime + Math.max(0.1, firingCooldown - subCycleTime - chargeTime - reloadTime)
   } else {
     // sequential multi-rack + charge, reload 0: wrap through Idle costs one extra cooldown
     // period (fa DefaultProjectileWeapon.lua:1221, discovered on XEA0306 AA guns 29.10.2026 game version 3840)
-    const rackCycleWrap = isSequentialSingleFire(weapon, racksToFire) && chargeTime > 0 && reloadTime === 0
-      ? Math.max(firingCooldown, chargeTime)
-      : 0
-    cycleTime += firingCooldown + rackCycleWrap
+    cycleTime += firingCooldown + (wrapWeapon ? Math.max(firingCooldown, chargeTime) : 0)
   }
 
-  if (isSequentialSingleFire(weapon, racksToFire)) {
+  if (isSequentialSingleFire(weapon, racksToFire) && !wrapWeapon) {
     cycleTime /= cycleProjs
     cycleProjs = 1
   }

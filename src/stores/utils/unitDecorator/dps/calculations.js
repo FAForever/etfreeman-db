@@ -96,6 +96,14 @@ export const isSequentialSingleFire = (weapon, racksToFire) => {
   )
 }
 
+export const isWrapWeapon = (weapon, racksToFire = weapon.RackBones?.length || 0) => {
+  if (!isSequentialSingleFire(weapon, racksToFire)) return false
+  const chargeTime = getRoundedTime(weapon, 'RackSalvoChargeTime')
+  const reloadTime = getRoundedTime(weapon, 'RackSalvoReloadTime')
+  return chargeTime > 0 && reloadTime === 0 &&
+    getFiringCooldown(weapon) > chargeTime + getRoundedTime(weapon, 'MuzzleChargeDelay')
+}
+
 export const processRackSequence = (weapon, firingCooldown, chargeTime, muzzleDelays, muzzleChargeDelay) => {
   let cycleProjs = 0
   let cycleTime = 0

@@ -391,6 +391,24 @@ describe('DPS Calculator', () => {
     }
     expect(calcDps(weapon)).toBeCloseTo(70, 1)
   })
+
+  it('Continental (XEA0306) - Flayer SAM rack-cycle wrap', () => {
+    const weapon = {
+      'Damage': 20,
+      'DamageRadius': 0,
+      'RateOfFire': 3.3333333333333335,
+      'RackBones': Array.from({ length: 6 }, (_, i) => ({ 'MuzzleBones': [`Turret_Muzzle_0${i + 1}`] })),
+      'RackFireTogether': false,
+      'RackSalvoSize': 1,
+      'RackSalvoChargeTime': 0.2,
+      'RackSalvoReloadTime': 0,
+      'MuzzleSalvoSize': 1,
+      'MuzzleSalvoDelay': 0
+    }
+    weapon.firingCycle = calculateFiringCycle(weapon)
+    expect(weapon.firingCycle).toEqual({ cycleProjs: 6, cycleTime: 2.1 })
+    expect(calculateDps(weapon, false)).toBeCloseTo(57.14, 1)
+  })
 })
 
 describe('getDoTBreakdown', () => {
