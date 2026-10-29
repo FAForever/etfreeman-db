@@ -23,7 +23,12 @@ export const calculateFiringCycle = (weapon) => {
   if (firingCooldown <= (subCycleTime + chargeTime + reloadTime)) {
     cycleTime += subCycleTime + reloadTime + chargeTime + Math.max(0.1, firingCooldown - subCycleTime - chargeTime - reloadTime)
   } else {
-    cycleTime += firingCooldown
+    // sequential multi-rack + charge, reload 0: wrap through Idle costs one extra cooldown
+    // period (fa DefaultProjectileWeapon.lua:1221, discovered on XEA0306 AA guns 29.10.2026 game version 3840)
+    const rackCycleWrap = isSequentialSingleFire(weapon, racksToFire) && chargeTime > 0 && reloadTime === 0
+      ? Math.max(firingCooldown, chargeTime)
+      : 0
+    cycleTime += firingCooldown + rackCycleWrap
   }
 
   if (isSequentialSingleFire(weapon, racksToFire)) {
