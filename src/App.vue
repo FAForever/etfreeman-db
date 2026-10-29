@@ -51,6 +51,7 @@ html
   zoom: calc(1 / var(--app-zoom))
 
 body
+  font-size: 16px
   display: flex
   flex-direction: column
   min-height: calc(100vh / var(--app-zoom))
