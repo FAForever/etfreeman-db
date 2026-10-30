@@ -79,7 +79,7 @@ export const getSalvoInfo = (weapon) => {
 
 export const getRoundedTime = (weapon, prop) => {
   const val = weapon[prop] || 0
-  return val > 0 ? Math.max(0.1, MATH_IRound(10 * val) / 10) : 0
+  return val > 0 ? Math.max(0.1, Math.trunc(10 * val) / 10) : 0
 }
 
 export const getFiringCooldown = (weapon) => {
