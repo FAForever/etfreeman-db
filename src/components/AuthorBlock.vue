@@ -1,10 +1,13 @@
 <script setup>
+import { ref } from 'vue'
 
+const link = ref(window.authorLinkOverride || 'https://boosty.to/etfreeman')
+window.authorLink = link
 </script>
 
 <template>
   <div class="author">
-    <a href="https://boosty.to/etfreeman" target="_blank" class="author__link">
+    <a :href="link" target="_blank" class="author__link">
       <span class="author__link-emoji">❤️</span> support<br> the author
     </a>
   </div>
