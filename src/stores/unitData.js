@@ -17,7 +17,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
   const tierTree = computed(() => generateTierTree(visibleUnits.value))
   const typeTree = computed(() => generateTypeTree(visibleUnits.value))
 
-  const { contenders, toggleUnitSelection, setUnitSelection, clearSelection, smartSelect } = useContenders({ unitsMap })
+  const { contenders, compareContenders, toggleUnitSelection, setUnitSelection, clearSelection, smartSelect } = useContenders({ unitsMap })
 
   const setData = (json) => {
     units.value = decorateUnits(json.units || [])
@@ -49,7 +49,7 @@ export const useUnitDataStore = defineStore('unitData', () => {
   }
 
   return {
-    version, units, unitsMap, unitDefaults, contenders,
+    version, units, unitsMap, unitDefaults, contenders, compareContenders,
     visibleUnits, tierTree, typeTree,
     loadData, setData, setUnitSelection, toggleUnitSelection, clearSelection, smartSelect,
   }

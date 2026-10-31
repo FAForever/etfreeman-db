@@ -3,6 +3,8 @@ import { ref } from 'vue'
 export function useContenders({ unitsMap }) {
   const contenders = ref(new Set())
   const updateContenders = (unitId, selected) => selected ? contenders.value.add(unitId) : contenders.value.delete(unitId)
+  const compareContenders = () => contenders.value.size &&
+    import('@/router').then(router => router.default.push('/' + [...contenders.value].join(',')))
 
   const toggleUnitSelection = (unit) => {
     unit.selected = !unit.selected
@@ -29,5 +31,5 @@ export function useContenders({ unitsMap }) {
       .forEach(toggleUnitSelection)
   }
 
-  return { contenders, toggleUnitSelection, setUnitSelection, clearSelection, smartSelect }
+  return { contenders, compareContenders, toggleUnitSelection, setUnitSelection, clearSelection, smartSelect }
 }

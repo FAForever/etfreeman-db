@@ -1,12 +1,13 @@
 <script setup>
 import ThumbComponent from '../ThumbComponent.vue'
 import { computed, inject } from 'vue'
+import { useDoubleClickHandler } from '@/composables/useDoubleClickHandler.js'
 import { useUnitData } from '@/composables/useUnitData.js'
 import { useFilterStore } from '@/stores/filterStore.js'
 
 defineProps(['section'])
 
-const { smartSelect } = useUnitData()
+const { smartSelect, compareContenders } = useUnitData()
 const filterStore = useFilterStore()
 const iconsScaled = inject('iconsScaled')
 const scaleRatio = inject('scaleRatio')
@@ -19,10 +20,16 @@ const sizeClass = computed(() => {
   return null
 })
 
-const toggleUnitsOfTheSameType = (unitsByFaction) => {
-  const units = Object.values(unitsByFaction).flat()
-  smartSelect(units)
-}
+const unitsOfTheSameType = (unitsByFaction) => Object.values(unitsByFaction).flat()
+const toggleUnitsOfTheSameType = (unitsByFaction) => smartSelect(unitsOfTheSameType(unitsByFaction))
+
+const { handleClick } = useDoubleClickHandler({
+  clickFunction: toggleUnitsOfTheSameType,
+  doubleClickFunction: (unitsByFaction) => {
+    if (!unitsOfTheSameType(unitsByFaction).some(u => u.selected)) toggleUnitsOfTheSameType(unitsByFaction)
+    compareContenders()
+  }
+})
 
 const hasSelected = (unitsByFaction) => {
   const units = filterStore.effectiveVisibleFactions.flatMap(f => unitsByFaction[f] || [])
@@ -38,7 +45,7 @@ const hasSelected = (unitsByFaction) => {
         <ThumbComponent v-for="unit in (unitsByFaction[faction] || [])" :key="unit.id" :item="unit" :mini="true" />
       </div>
       <div class="section__type-title">
-        <a class="link-orange" @click="toggleUnitsOfTheSameType(unitsByFaction)">
+        <a class="link-orange" @click="handleClick($event, unitsByFaction)">
           <span>{{ typeName }}</span>
         </a>
       </div>

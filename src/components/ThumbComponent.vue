@@ -1,5 +1,5 @@
 <template>
-  <a :class="thumbClasses" @click="handleUnitClick(item, $event)" :title="item.fullName">
+  <a :class="thumbClasses" @click="handleClick($event, item)" :title="item.fullName">
     <div :class="['thumb__inner', item.faction === 'nomads' ? 'icon_nomads' : 'icon_units', `icon-${item.id}`]">
       <span :class="['strategic', 'icon_strategic', `icon-${item.faction}_${item.strategicIcon}`]" />
       <span v-if="!mini && item.fullName?.endsWith('HQ')" class="thumb__HQ">HQ</span>
@@ -10,12 +10,18 @@
 <script setup>
 import { useUnitData } from '@/composables/useUnitData';
 import { useDoubleClickHandler } from '@/composables/useDoubleClickHandler';
-import { useRouter } from 'vue-router';
 import { computed } from 'vue';
-const router = useRouter()
+
 const props = defineProps(['item', 'mini'])
-const { toggleUnitSelection, contenders } = useUnitData()
-const { handleUnitClick } = useDoubleClickHandler(toggleUnitSelection, contenders, router)
+const { toggleUnitSelection, compareContenders } = useUnitData()
+const { handleClick } = useDoubleClickHandler(
+  {
+    clickFunction: toggleUnitSelection,
+    doubleClickFunction: (unit) => {
+      if (!unit.selected) toggleUnitSelection(unit)
+      compareContenders()
+    }
+  })
 const thumbClasses = computed(() => [
   'thumb', `thumb_${props.item.faction.toLowerCase()}`, { selected: props.item.selected },
   ...(props.mini ? ['thumb_mini', 'link-highlight'] : [])

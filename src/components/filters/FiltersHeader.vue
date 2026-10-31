@@ -1,11 +1,9 @@
 <script setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useUnitData } from '@/composables/useUnitData.js'
 import Icon from '../Icon.vue'
 
-const router = useRouter()
-const { clearSelection, contenders } = useUnitData()
+const { clearSelection, contenders, compareContenders } = useUnitData()
 
 const compareText = computed(() => contenders.value.size
   ? `compare&nbsp;<span>${contenders.value.size}</span>&nbsp;unit${contenders.value.size > 1 ? 's' : ''}`
@@ -15,7 +13,7 @@ const compareText = computed(() => contenders.value.size
 <template>
   <header class="filtersHeader">
     <button class="filtersHeader__btn filtersHeader__compare" :class="{ 'filtersHeader__compare_active': contenders.size }" 
-      title="compare" :disabled="!contenders.size" @click="router.push('/' + [...contenders].join(','))"
+      title="compare" :disabled="!contenders.size" @click="compareContenders"
       >
       <div v-html="compareText" />
     </button>

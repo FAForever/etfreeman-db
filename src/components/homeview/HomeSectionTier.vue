@@ -1,15 +1,25 @@
 <script setup>
 import { ref } from 'vue'
 import ThumbComponent from '../ThumbComponent.vue'
+import { useDoubleClickHandler } from '@/composables/useDoubleClickHandler.js'
 import { useUnitData } from '@/composables/useUnitData.js'
 
 const props = defineProps(['data', 'buttonCount'])
 
-const { smartSelect } = useUnitData()
+const { smartSelect, compareContenders } = useUnitData()
 const selectColumn = index => {
   const units = Object.values(props.data).map(arr => arr[index - 1]).filter(Boolean)
   smartSelect(units)
 }
+const { handleClick } = useDoubleClickHandler({
+  clickFunction: selectColumn,
+  doubleClickFunction: (index) => {
+    const units = Object.values(props.data).map(arr => arr[index - 1]).filter(Boolean)
+    const anySelected = units.some(u => u.selected)
+    if (!anySelected) selectColumn(index)
+    compareContenders()
+  }
+})
 
 const activeColumn = ref(null)
 const onMouseOver = (e) => {
@@ -26,10 +36,10 @@ const onMouseOut = (e) => {
   <div class="tier">
     <div class="tier__rows" @mouseover="onMouseOver" @mouseout="onMouseOut">
       <div class="tier__row tier__row_buttons">
-        <button v-for="n in buttonCount" :key="n" @click="selectColumn(n)" class="tier__colselect"
+        <button v-for="n in buttonCount" :key="n" @click="handleClick($event, n)" class="tier__colselect"
           :class="{ 'active': activeColumn == n }">+</button>
       </div>
-      <div v-for="[faction, units] in Object.entries(data)" :key="faction" class="tier__row" >
+      <div v-for="[faction, units] in Object.entries(data)" :key="faction" class="tier__row">
         <ThumbComponent v-for="unit in units" :key="unit.id" :item="unit" />
       </div>
     </div>

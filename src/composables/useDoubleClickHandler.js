@@ -1,24 +1,19 @@
-import { ref } from 'vue'
-
 const maxDoubleClickDelay = 200
 
-export function useDoubleClickHandler(toggleUnitSelection, contenders, router) {
-  const lastClickTime = ref(0)
-  const lastClickUnit = ref(null)
+export function useDoubleClickHandler({ clickFunction, doubleClickFunction }) {
+  let lastClickTime = 0
+  let lastTarget = null
 
-  const handleUnitClick = (unit) => {
+  const handleClick = (e, ...args) => {
     const now = performance.now()
-    const isDoubleClick = lastClickUnit.value === unit && (now - lastClickTime.value) < maxDoubleClickDelay
+    const isDoubleClick = (now - lastClickTime) < maxDoubleClickDelay
+    const sameTarget = lastTarget === e.currentTarget
+    lastClickTime = now
+    lastTarget = e.currentTarget
 
-    if (isDoubleClick) {
-      if (!unit.selected) toggleUnitSelection(unit)
-      router.push('/' + [...contenders.value].join(','))
-    } else {
-      lastClickUnit.value = unit
-      lastClickTime.value = now
-      toggleUnitSelection(unit)
-    }
+    if (isDoubleClick && sameTarget) doubleClickFunction(...args)
+    else clickFunction(...args)
   }
 
-  return { handleUnitClick }
+  return { handleClick }
 }
