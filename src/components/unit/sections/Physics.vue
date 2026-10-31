@@ -20,7 +20,10 @@ const formatTime = (val, formatMap = {}) => {
 }
 
 const speedValue = computed(() => {
-  if (air.MaxAirspeed) return `${air.MinAirspeed || 0}-${air.MaxAirspeed}`
+  if (air.MaxAirspeed) {
+    if (!air.MinAirspeed || air.MinAirspeed == air.MaxAirspeed) return air.MaxAirspeed
+    return `${air.MinAirspeed}-${air.MaxAirspeed}`
+  }
   return physics.MaxSpeed || 0
 })
 
