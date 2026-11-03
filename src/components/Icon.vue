@@ -14,7 +14,7 @@ if (!icons[props.name]?.viewBox) {
 </script>
 
 <template>
-  <svg class="icon" v-bind="$attrs" :viewBox="icons[name]?.viewBox" :width="width || icons[name]?.width">
+  <svg class="icon" v-bind="$attrs" :viewBox="icons[name]?.viewBox" :style="{ width: (width || icons[name]?.width) + 'px' }">
     <use :xlink:href="`#${name}`" />
   </svg>
 </template>
