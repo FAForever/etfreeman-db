@@ -59,7 +59,7 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
   &__img
     align-self: center
     position: relative
-    margin: 2px
+    margin: 1px
     &-main
       width: 64px
       height: 64px
@@ -70,14 +70,16 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
         overflow: hidden
         width: 64px
         height: 64px
+        border-right: 1px solid transparent
+        border-bottom: 1px solid transparent
     &-bg
       position: absolute
       bottom: 0
       left: 0
-      width: calc(100% + 4px)
+      width: calc(100% + 2px)
       height: auto
       z-index: -1
-      margin: -2px
+      margin: -1px
     &-strategic
       position: absolute
       left: 2px
@@ -89,7 +91,7 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
         left: 3px
         top: 3px
   &__content
-    margin-top: 2px
+    margin-top: 1px
     display: flex
     flex-direction: column
     align-items: flex-start
