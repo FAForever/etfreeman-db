@@ -162,7 +162,7 @@ export default function viteSpritesmith(options = {}) {
           }
         })
           .composite(compositeOps)
-          .avif({ quality: 30, effort: isProduction ? 9 : 2 })
+          .avif({ quality: 32, effort: isProduction ? 9 : 2 })
           .toFile(avifDest)
       }
 
