@@ -1,5 +1,5 @@
 <template>
-  <div class="uc faction" :class="[unit.faction.toLowerCase()]"
+  <div class="uc faction" :class="[unit.faction.toLowerCase(), { 'uc_no-titles': compareStore.toggles.hideSectionTitles }]"
     :style="{ gridRow: `span ${layoutInfo.rowCount}` }">
     <component v-for="section in sortedSections" :key="section.name"
       :is="SectionComponents[section.name]" ref="sectionRefs" :unit="unit"
@@ -118,6 +118,10 @@ defineExpose({ sections })
     padding-bottom: 10px
   &:hover
     z-index: 100
+  &_no-titles
+    .uc__section-title
+      font-size: 0
+      height: 0
   @each $name, $color in colors.$factions
     &.#{$name}
       background: linear-gradient(rgba(0,0,0,.37), rgba(0,0,0,.37))

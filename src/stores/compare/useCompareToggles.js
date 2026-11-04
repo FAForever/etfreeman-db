@@ -7,7 +7,7 @@ const TOGGLE_DEFAULTS = {
   enhancementsTabs: true,
   highlightGroupedWeapons: true,
   compactSections: true,
-  linedUpSections: !isMobile
+  hideSectionTitles: false
 }
 
 const MINOR_WEAPON_STATS_DEFAULTS = {

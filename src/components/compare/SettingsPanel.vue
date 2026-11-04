@@ -48,7 +48,7 @@ const toggleGroups = [
     title: 'General',
     toggles: [
       { model: toRef(store.toggles, 'showUnitId'), label: 'Show unit ID' },
-      { model: toRef(store.toggles, 'linedUpSections'), label: 'Line up sections' },
+      { model: toRef(store.toggles, 'hideSectionTitles'), label: 'Hide section titles' },
       { model: toRef(store.toggles, 'compactSections'), label: 'Compact sections' },
       { model: toRef(store.toggles, 'enhancementsTabs'), label: 'Enhancements: tabs' }
     ]

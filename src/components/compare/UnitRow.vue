@@ -1,6 +1,6 @@
 <template>
   <div class="unitRow" :style="{ '--units-per-row': units.length }"
-    :class="{ 'unitRow_no-align': !compareStore.toggles.linedUpSections, 'unitRow_initializing': !isReady }">
+    :class="{ 'unitRow_initializing': !isReady }">
     <UnitComponent v-for="u in units" ref="unitRefs" :key="u.id" :unit="u"
       :sectionOrder="sectionOrder" :compactOverrides="compactOverrides"/>
   </div>
@@ -8,12 +8,10 @@
 
 <script setup>
 import { ref, toRef } from 'vue'
-import { useCompareStore } from '@/stores/compare'
 import { useRowAlignment } from '@/composables/useRowAlignment.js'
 import UnitComponent from '../UnitComponent.vue'
 
 const props = defineProps(['units'])
-const compareStore = useCompareStore()
 const unitRefs = ref([])
 
 const { isReady, sectionOrder, compactOverrides } = useRowAlignment(unitRefs, toRef(props, 'units'))
@@ -29,7 +27,7 @@ const { isReady, sectionOrder, compactOverrides } = useRowAlignment(unitRefs, to
   gap: 0 var(--unitgap)
   &:not(:last-child)
     margin-bottom: var(--unitgap)
-  &_no-align
+  @include from(699.98px)
     align-items: start
     --uc-template-rows: auto
   &_initializing
