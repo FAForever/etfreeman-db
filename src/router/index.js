@@ -11,15 +11,17 @@ let initialPreferredView = getPreferredView()
 
 const router = createRouter({
   history: createWebHashHistory(),
-  scrollBehavior: () => ({ top: 0 }),
+  scrollBehavior: (to, from) => to.name === from.name ? false : { top: 0 },
   routes: [
     {
       path: '/',
+      name: 'viewA',
       component: HomeView,
       beforeEnter: () => setPreferredView('/')
     },
     {
       path: '/by-type',
+      name: 'viewB',
       component: ByTypeView,
       beforeEnter: () => setPreferredView('/by-type')
     },

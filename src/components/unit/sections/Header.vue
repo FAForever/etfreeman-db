@@ -2,10 +2,21 @@
 import Icon from '../../Icon.vue'
 import CostsList from '@/components/ui/CostsList.vue'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCompareStore } from '@/stores/compare'
+import { restoreFontsFromCache } from '@/composables/useAutoShrinkTable'
 
 const { unit } = defineProps(['unit'])
 const compareStore = useCompareStore()
+const router = useRouter()
+
+let freezeWeaponsTimer
+const removeUnit = () => {
+  restoreFontsFromCache.value = true
+  router.replace('/' + compareStore.unitIDs.filter(id => id !== unit.id).join(','))
+  clearTimeout(freezeWeaponsTimer)
+  freezeWeaponsTimer = setTimeout(() => restoreFontsFromCache.value = false, 100)
+}
 
 const baseUrl = import.meta.env.BASE_URL
 const blueprintUrl = computed(() => {
@@ -27,6 +38,9 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
 
 <template>
   <div class="uheader uc__section" :class="`uheader_${unit.faction}`">
+    <div v-if="!compareStore.toggles.showUnitId" class="uheader__close-wrap">
+      <button class="uheader__close" @click="removeUnit"><Icon name="close" width="10" /></button>
+    </div>
     <a v-if="compareStore.toggles.showUnitId" class="uheader__unitID link link-underline" :href="blueprintUrl" target="_blank">{{ unit.id }}</a>
     <a class="uheader__img" :href="blueprintUrl" target="_blank">
       <picture>
@@ -136,4 +150,25 @@ defineExpose({ name: 'Header', isShown, isCompact: false })
     z-index: 10
     &:hover
       opacity: 1
+  &__close-wrap
+    position: absolute
+    top: -10px
+    right: 0
+    width: 40px
+    height: 40px
+    z-index: 5
+    border-radius: 0 0 0 100%
+    &:hover
+      --close-opacity: .2
+  &__close
+    position: absolute
+    top: 2px
+    right: 1px
+    display: flex
+    color: white
+    padding: 6px
+    opacity: var(--close-opacity, 0)
+    transition: opacity .2s ease-out
+    &:hover
+      opacity: .7
 </style>

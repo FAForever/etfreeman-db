@@ -1,6 +1,8 @@
 import { ref, nextTick, computed, reactive, onUnmounted } from 'vue'
 
 const MAX_SHRINK_LEVEL = 12
+const shrinkCache = new Map()
+export const restoreFontsFromCache = ref(false)
 const readySet = reactive(new Set())
 const isGlobalReady = computed(() => {
   for (const readyRef of readySet)
@@ -8,7 +10,7 @@ const isGlobalReady = computed(() => {
   return true
 })
 
-export function useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs) {
+export function useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs, cacheKey) {
   const currentShrinkLevel = ref(0)
   const expandedShrinkLevel = ref(null)
   const collapsedShrinkLevel = ref(null)
@@ -16,6 +18,14 @@ export function useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs) {
 
   readySet.add(isReady)
   onUnmounted(() => readySet.delete(isReady))
+
+  let cached = restoreFontsFromCache.value ? shrinkCache.get(cacheKey) : null
+  if (cached) {
+    expandedShrinkLevel.value = cached.expanded
+    collapsedShrinkLevel.value = cached.collapsed
+    currentShrinkLevel.value = cached.collapsed
+    isReady.value = true
+  }
 
   const findShrinkLevel = async (initial = 0) => {
     const wrap = tableWrapRef.value
@@ -38,6 +48,10 @@ export function useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs) {
   }
 
   const optimizeTableWidth = async () => {
+    if (cached) {
+      cached = null
+      return await setAllExpanded(false)
+    }
     await document.fonts.ready
     isReady.value = false
 
@@ -48,6 +62,7 @@ export function useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs) {
     collapsedShrinkLevel.value = await findShrinkLevel(Math.max(0, expandedShrinkLevel.value - 3))
 
     isReady.value = true
+    shrinkCache.set(cacheKey, { expanded: expandedShrinkLevel.value, collapsed: collapsedShrinkLevel.value })
   }
 
   const handleExpandChange = (isExpanded) => {

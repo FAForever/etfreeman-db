@@ -27,7 +27,7 @@ const tableRef = ref(null)
 const weaponGroupRefs = ref([])
 
 const { currentShrinkLevel, optimizeTableWidth, handleExpandChange, isGlobalReady }
-  = useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs)
+  = useAutoShrinkTable(tableWrapRef, tableRef, weaponGroupRefs, unit.id)
 
 const anyGroupExpanded = computed(() => weaponGroupRefs.value.some(r => r?.isExpanded))
 watch(anyGroupExpanded, handleExpandChange)
